@@ -60,8 +60,6 @@ RUN chmod 0755 /usr/local/bin/task-init.sh
 ENV PGDATA=/var/lib/postgresql/data \
     POSTGRES_DB=voiceenv \
     POSTGRES_USER=voiceenv \
-    POSTGRES_PASSWORD=voiceenv \
-    TOOL_DB_DSN="host=127.0.0.1 port=5432 dbname=voiceenv user=voiceenv password=voiceenv" \
     TOOL_SERVER_URL=http://127.0.0.1:8080 \
     STATE_OUT_DIR=/out
 

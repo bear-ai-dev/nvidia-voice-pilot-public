@@ -8,7 +8,10 @@
 #   3. The admin plane refuses a wrong bearer token.
 #   4. The population generator is absent from the image.
 #   5. No annotated transcript reached the agent-visible workspace.
-#   6. The agent CAN reach the tool server, which is the whole interface.
+#   6. The agent account cannot connect to PostgreSQL directly, over TCP or the
+#      socket, as the app role or the superuser. The grader scores end state, so
+#      a direct write would be indistinguishable from doing the work.
+#   7. The agent CAN reach the tool server, which is the whole interface.
 #
 # A COPY line saying mode 0700 proves nothing on its own; a base image that
 # already created the parent, or a later layer that widened it, would not show up
@@ -71,6 +74,15 @@ for task_dir in $(select_tasks "$@"); do
     expect_denied "$container" "read expected_final_state.json" \
         "cat /var/lib/task-data/verifier/expected_final_state.json"
     expect_denied "$container" "read admin token" "cat /var/lib/task-data/admin_token"
+    expect_denied "$container" "read the database DSN" "cat /var/lib/task-data/db_dsn"
+    expect_denied "$container" "no database password in the environment" \
+        "env | grep -qi -e password -e TOOL_DB_DSN"
+    for role in voiceenv postgres agent; do
+        expect_denied "$container" "psql over TCP as $role" \
+            "psql -h 127.0.0.1 -U $role -d voiceenv -w -c 'SELECT 1'"
+        expect_denied "$container" "psql over the socket as $role" \
+            "psql -U $role -d voiceenv -w -c 'SELECT 1'"
+    done
     expect_denied "$container" "admin plane with a wrong token" \
         "curl -sf -H 'Authorization: Bearer wrong' http://127.0.0.1:8080/_admin/state"
     expect_denied "$container" "admin plane with no token" \

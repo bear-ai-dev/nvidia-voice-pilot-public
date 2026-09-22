@@ -19,10 +19,9 @@ OUT_DIR=${STATE_OUT_DIR:-/out}
 # Separate from READY_DIR because pg_ctl writes here as the postgres user, while
 # the readiness marker stays under /tmp where the harness healthcheck looks.
 LOG_DIR=/var/log/task-infra
-
-psql_super() {
-    su postgres -c "psql --quiet --no-psqlrc -v ON_ERROR_STOP=1 $*"
-}
+# The tool server's connection string, password included. Root-only, beside the
+# admin token, so the agent account can reach the database only through the tools.
+DSN_FILE=/var/lib/task-data/db_dsn
 
 apply_sql() {
     # Applied in filename order: 001 schema, 002 catalogs, 003 population,
@@ -59,13 +58,15 @@ start_postgres() {
 
     if [ ! -s "$PGDATA/PG_VERSION" ]; then
         echo "initialising cluster"
-        su postgres -c "initdb --username=postgres --auth-local=trust \
-            --auth-host=trust --encoding=UTF8 -D $PGDATA" > "$LOG_DIR/initdb.log" 2>&1
+        # Peer auth on the socket lets only the postgres OS user in as the
+        # superuser; TCP needs a password the agent account cannot read. The
+        # agent runs in this container, so trust auth would hand it the database.
+        su postgres -c "initdb --username=postgres --auth-local=peer \
+            --auth-host=scram-sha-256 --encoding=UTF8 -D $PGDATA" > "$LOG_DIR/initdb.log" 2>&1
         # Loopback only. Nothing outside the container talks to the database
         # directly; the tools are the interface.
         echo "listen_addresses = '127.0.0.1'" >> "$PGDATA/postgresql.conf"
         echo "fsync = off" >> "$PGDATA/postgresql.conf"
-        echo "host all all 127.0.0.1/32 trust" >> "$PGDATA/pg_hba.conf"
     fi
 
     su postgres -c "pg_ctl -D $PGDATA -l $LOG_DIR/postgres.log -w -t 60 start" \
@@ -74,8 +75,18 @@ start_postgres() {
     su postgres -c "psql --quiet --no-psqlrc -d postgres -tAc \
         \"SELECT 1 FROM pg_roles WHERE rolname='${POSTGRES_USER}'\"" \
         | grep -q 1 || su postgres -c "psql --quiet --no-psqlrc -d postgres -c \
-            \"CREATE ROLE ${POSTGRES_USER} LOGIN SUPERUSER PASSWORD '${POSTGRES_PASSWORD}';\"" \
-            > /dev/null
+            \"CREATE ROLE ${POSTGRES_USER} LOGIN;\"" > /dev/null
+
+    # A fresh password per container, sent over stdin so it never appears in a
+    # process listing, and kept only in the root-only DSN file.
+    if [ ! -s "$DSN_FILE" ]; then
+        local password
+        password=$(head -c 24 /dev/urandom | od -An -tx1 | tr -d ' \n')
+        printf "ALTER ROLE %s PASSWORD '%s';\n" "$POSTGRES_USER" "$password" \
+            | su postgres -c "psql --quiet --no-psqlrc -v ON_ERROR_STOP=1 -d postgres" > /dev/null
+        ( umask 077 && printf 'host=127.0.0.1 port=5432 dbname=%s user=%s password=%s\n' \
+            "$POSTGRES_DB" "$POSTGRES_USER" "$password" > "$DSN_FILE" )
+    fi
 }
 
 start_tool_server() {

@@ -7,20 +7,26 @@ from __future__ import annotations
 
 import os
 from contextlib import contextmanager
+from functools import cache
 
 import psycopg2
 import psycopg2.extras
 
-DSN = os.environ.get(
-    "TOOL_DB_DSN",
-    "host=127.0.0.1 port=5432 dbname=voiceenv user=voiceenv password=voiceenv",
-)
+# Written by task-init.sh with a per-container password. Read from a root-only
+# file rather than the environment, which the agent's processes inherit.
+DSN_FILE = os.environ.get("TOOL_DB_DSN_FILE", "/var/lib/task-data/db_dsn")
+
+
+@cache
+def dsn() -> str:
+    with open(DSN_FILE) as fh:
+        return fh.read().strip()
 
 
 @contextmanager
 def transaction():
     """Yield a dict cursor inside a transaction, committing on clean exit."""
-    conn = psycopg2.connect(DSN)
+    conn = psycopg2.connect(dsn())
     try:
         conn.autocommit = False
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
