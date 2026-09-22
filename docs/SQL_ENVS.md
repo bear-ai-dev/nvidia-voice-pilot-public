@@ -118,6 +118,15 @@ generated at startup and written to `/var/lib/task-data/admin_token`, mode 0600
 root-owned. An agent account cannot read it, so an agent can observe the world
 only through the tools.
 
+The database itself is closed to the agent account too, which matters because the
+agent runs in the same container and the grader scores end state: an agent with a
+SQL session could write the expected rows directly and score 1.0 without calling a
+tool. PostgreSQL uses peer auth on its socket, so only the `postgres` OS user gets
+in there, and scram over TCP. The app role is not a superuser, and its password is
+generated per container into `/var/lib/task-data/db_dsn`, mode 0600 root-owned,
+where the tool server reads it. It is never in the image environment, which the
+agent's processes would inherit.
+
 Argument validation runs before any SQL, against the registry's `parameters`
 schema, so `additionalProperties: false`, `required`, and every enum are enforced
 at the boundary rather than incidentally by a query returning no rows.
@@ -600,6 +609,7 @@ can leave a stale verdict or none at all.
 | Oracle tool calls with no transcript at all | 0.0 |
 | A read-only tool called many extra times | still 1.0 |
 | Agent account reads `/var/lib/task-data/` | denied |
+| Agent account connects to PostgreSQL, any role, TCP or socket | denied |
 | A deliberate number-form defect | `env_check.sh` fails |
 
 The last one is worth doing explicitly: a verifier that has never been observed
@@ -631,4 +641,5 @@ final states can be diffed directly.
 - No `__pycache__`, `.local/`, or generator output committed.
 - `gen_seed.py` excluded from the build context by `.dockerignore`.
 - Verify containment against the built image, not against `COPY` lines: an agent
-  shell must get permission denied on `/var/lib/task-data`.
+  shell must get permission denied on `/var/lib/task-data` and must not be able to
+  open a database session.

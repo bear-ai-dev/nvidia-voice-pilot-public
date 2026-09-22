@@ -191,6 +191,7 @@ Each task demonstrates all of these:
 | Correct records, a required fact left unsaid | 0.0, `db` 1 and `communicate` 0 |
 | Correct records, nothing said at all | 0.0 |
 | Agent account reads `verifier-data/` or the admin token | denied |
+| Agent account opens a PostgreSQL session | denied |
 | `GET /_admin/state`, wrong or absent token | 401 |
 | `gen_seed.py` or the annotated transcript in the image | absent |
 | Schema-invalid arguments | 400 |
