@@ -22,7 +22,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-from db import NotFound, ToolRefusal, all_rows, allocate_id, one, scalar, scenario_value
+from db import NotFound, ToolRefusal, all_rows, allocate_id, one, scalar, scenario_id, scenario_value
 from projection import as_float, as_int, compact
 
 # Reservation states that occupy a seat and count against a duplicate check. A
@@ -885,7 +885,9 @@ def verify_customer_identity(cur, args) -> dict:
         # A cleared verification is filed under the customer it cleared, so
         # verifying the same person twice in one call resolves to the one record
         # rather than to a second one.
-        verification_id = (scenario_value(cur, "next_identity_verification_id")
+        verification_id = (scenario_id(cur, "next_identity_verification_id",
+                                       "identity_verifications", "verification_id",
+                                       {"customer_id": customer["customer_id"]})
                            or f"verification-{customer['slug']}-booking")
     else:
         # An attempt that cleared nobody is its own record. Filing it under the
@@ -1161,7 +1163,8 @@ def book_reservation(cur, args) -> dict:
 
     remainder = _cents(charged_total - certificate_applied)
     code = _allocate_confirmation_code(cur)
-    reservation_id = scenario_value(cur, "next_reservation_id") or f"reservation-{code}"
+    reservation_id = (scenario_id(cur, "next_reservation_id", "reservations", "reservation_id")
+                      or f"reservation-{code}")
     created_at = scenario_value(cur, "scenario_time")
     currency = scenario_value(cur, "currency")
     seat_selection_available = bool(scalar(

@@ -16,7 +16,7 @@ import datetime as dt
 import re
 from decimal import Decimal
 
-from db import NotFound, ToolRefusal, all_rows, allocate_id, one, scenario_value
+from db import NotFound, ToolRefusal, all_rows, allocate_id, one, scenario_id, scenario_value
 from projection import as_float, as_list_always, compact
 
 MONTH_NUMBERS = {
@@ -274,7 +274,9 @@ def verify_customer_identity(cur, args) -> dict:
         "SELECT case_slug FROM service_cases WHERE customer_id = %s AND status = 'open'",
         (customer["customer_id"],),
     )
-    forced_id = scenario_value(cur, "next_identity_verification_id")
+    forced_id = scenario_id(cur, "next_identity_verification_id",
+                            "identity_verifications", "verification_id",
+                            {"customer_id": customer["customer_id"]})
     if forced_id:
         verification_id = forced_id
     elif case:
@@ -361,11 +363,14 @@ def start_trusted_channel_confirmation(cur, args) -> dict:
 
     now = scenario_value(cur, "scenario_time")
     purpose = args["purpose"]
-    confirmation_id = scenario_value(cur, "next_channel_confirmation_id") or (
+    confirmation_id = scenario_id(
+        cur, "next_channel_confirmation_id", "channel_confirmations", "confirmation_id",
+        {"customer_id": customer["customer_id"], "purpose": purpose}) or (
         f"confirmation-{purpose.replace('_', '-')}-{customer['verification_key']}")
     # Starting the same purpose again re-sends the challenge on the same record
     # rather than opening a second one, and resets it to 'sent': a re-sent
-    # challenge is not a completed one.
+    # challenge is not a completed one. It goes to the channel named this time,
+    # so the record and the reply agree on where the code went.
     cur.execute(
         """
         INSERT INTO channel_confirmations
@@ -374,6 +379,8 @@ def start_trusted_channel_confirmation(cur, args) -> dict:
         VALUES (%s, %s, %s, %s, %s, 'sent', %s, %s, NULL, %s)
         ON CONFLICT (confirmation_id) DO UPDATE
             SET status = 'sent', verified_at = NULL, sent_at = EXCLUDED.sent_at,
+                channel_id = EXCLUDED.channel_id,
+                masked_destination = EXCLUDED.masked_destination,
                 expires_at = EXCLUDED.expires_at,
                 verification_id = EXCLUDED.verification_id
         """,
@@ -882,7 +889,8 @@ def resolve_card_restriction(cur, args) -> dict:
             # customer confirmed it.
             if available < row["amount"]:
                 continue
-            new_id = scenario_value(cur, "next_represented_transaction_id") or _unique_id(
+            new_id = scenario_id(cur, "next_represented_transaction_id",
+                                 "transactions", "transaction_id") or _unique_id(
                 cur, "transactions", "transaction_id",
                 f"{row['merchant_key']}-authorization-{as_amount(row['amount'])}")
             cur.execute(
@@ -922,7 +930,8 @@ def resolve_card_restriction(cur, args) -> dict:
 def create_travel_notice(cur, args) -> dict:
     card = _card(cur, args["customer_id"], args.get("card_last4"))
     customer = _customer(cur, args["customer_id"])
-    notice_id = scenario_value(cur, "next_travel_notice_id") or _unique_id(
+    notice_id = scenario_id(cur, "next_travel_notice_id",
+                            "travel_notices", "notice_id") or _unique_id(
         cur, "travel_notices", "notice_id",
         f"travel-notice-{customer['notice_slug']}"
         f"-{destination_slug(args['destinations'][0])}")
@@ -1106,7 +1115,8 @@ def create_secure_self_service_session(cur, args) -> dict:
         suffix = f"-{resource['short_ref'] or args['resource_id']}"
     else:
         suffix = ""
-    session_id = scenario_value(cur, "next_self_service_session_id") or _unique_id(
+    session_id = scenario_id(cur, "next_self_service_session_id",
+                             "self_service_sessions", "session_id") or _unique_id(
         cur, "self_service_sessions", "session_id",
         f"session-{profile['session_slug']}{suffix}")
 
@@ -1265,7 +1275,8 @@ def send_secure_notification(cur, args) -> dict:
 
     # A notification is named after the secure resource it points at, so the
     # audit trail links the two without a second lookup.
-    notification_id = scenario_value(cur, "next_notification_id") or _unique_id(
+    notification_id = scenario_id(cur, "next_notification_id",
+                                  "notifications", "notification_id") or _unique_id(
         cur, "notifications", "notification_id",
         "notification-" + re.sub(r"^session-", "", resource_id))
     cur.execute(

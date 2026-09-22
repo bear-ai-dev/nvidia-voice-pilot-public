@@ -31,7 +31,7 @@ from __future__ import annotations
 import datetime as dt
 from decimal import Decimal
 
-from db import NotFound, ToolRefusal, all_rows, allocate_id, one, scenario_value
+from db import NotFound, ToolRefusal, all_rows, allocate_id, one, scenario_id, scenario_value
 from projection import as_float, as_int, as_list_always, compact
 
 # Case states that still represent work in progress. Anything else is history
@@ -50,6 +50,18 @@ OPEN_CASE_STATUSES = [
 
 def _now(cur) -> dt.datetime:
     return dt.datetime.fromisoformat(scenario_value(cur, "scenario_time"))
+
+
+def _new_case_number(cur) -> str:
+    return (scenario_id(cur, "next_support_case_id", "cases", "case_number")
+            or allocate_id(cur, "support_case"))
+
+
+def _case_display_number(cur, case_number: str) -> str:
+    """The customer-facing number: the recorded one only for the recorded case."""
+    if case_number == scenario_value(cur, "next_support_case_id"):
+        return scenario_value(cur, "next_support_case_number") or case_number
+    return case_number
 
 
 def _money(value):
@@ -769,7 +781,7 @@ def open_delivery_trace(cur, args) -> dict:
                            int(hour), int(minute), tzinfo=now.tzinfo)
     deadline_display = _clock_display(deadline, now)
 
-    case_number = scenario_value(cur, "next_support_case_id") or allocate_id(cur, "support_case")
+    case_number = _new_case_number(cur)
     cur.execute(
         """
         INSERT INTO cases
@@ -800,7 +812,7 @@ def open_delivery_trace(cur, args) -> dict:
     # separate authorized call.
     return compact([
         ("case_id", case_number),
-        ("case_number", scenario_value(cur, "next_support_case_number") or case_number),
+        ("case_number", _case_display_number(cur, case_number)),
         ("status", policy["initial_status"]),
         ("carrier_response_deadline", deadline_display),
         ("replacement_created", False),
@@ -860,7 +872,7 @@ def open_refund_trace(cur, args) -> dict:
 
     policy = _case_policy(cur, "refund_trace")
     now = _now(cur)
-    case_number = scenario_value(cur, "next_support_case_id") or allocate_id(cur, "support_case")
+    case_number = _new_case_number(cur)
     # Evidence is attached when the return the customer named is a completed
     # return on the same order, which is the only thing Westline can attest to.
     evidence_attached = accepted_return["return_status"] == "complete"
@@ -883,7 +895,7 @@ def open_refund_trace(cur, args) -> dict:
     )
     return {
         "case_id": case_number,
-        "case_number": scenario_value(cur, "next_support_case_number") or case_number,
+        "case_number": _case_display_number(cur, case_number),
         "status": policy["initial_status"],
         "review_window_business_days": [policy["review_window_min_days"],
                                         policy["review_window_max_days"]],
@@ -1206,7 +1218,9 @@ def send_case_notification(cur, args) -> dict:
             f"no verified {args['channel']} destination is on file for this case")
 
     now = _now(cur)
-    notification_id = scenario_value(cur, "next_notification_id") or f"notification-{case['case_number']}"
+    notification_id = scenario_id(
+        cur, "next_notification_id", "notifications", "notification_id",
+        {"case_number": case["case_number"]}) or f"notification-{case['case_number']}"
     # A resend is the same message going out again, so it keeps its identifier
     # and restarts from the delivery state a fresh send has.
     cur.execute(

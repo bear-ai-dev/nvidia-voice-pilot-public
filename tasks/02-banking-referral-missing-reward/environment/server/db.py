@@ -62,6 +62,26 @@ def scenario_value(cur, key: str) -> str | None:
     return scalar(cur, "SELECT value FROM scenario WHERE key = %s", (key,))
 
 
+def scenario_id(cur, key: str, table: str, column: str,
+                owner: dict | None = None) -> str | None:
+    """The scenario's seeded identifier for a new record, while it is still free.
+
+    Seeded identifiers let a replay reproduce the recorded ones, but each names
+    one record. A second create that reused it would collide with the first, or
+    an upsert would silently rewrite it, so once the identifier is taken it is
+    only reused when the existing row has the same `owner` values (a re-send to
+    the same customer, say). Otherwise this returns None and the caller issues
+    an ordinary identifier.
+    """
+    fixed = scenario_value(cur, key)
+    if not fixed:
+        return None
+    row = one(cur, f"SELECT * FROM {table} WHERE {column} = %s", (fixed,))
+    if row is None or (owner and all(row[k] == v for k, v in owner.items())):
+        return fixed
+    return None
+
+
 def allocate_id(cur, entity_type: str, scope: str = "") -> str:
     """Issue the next identifier for an entity type, advancing the allocator.
 
