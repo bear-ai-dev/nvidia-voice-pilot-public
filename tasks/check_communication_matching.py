@@ -200,15 +200,16 @@ def main() -> int:
         # number word must not be found inside a compound such as forty-five.
         for entry in required:
             for form in entry["any_of"]:
+                normal = grade.normalize(form)
+                matches = grade.form_matcher(normal)
                 typographic = form.replace("'", "\u2019").replace("-", "\u2013")
-                if typographic != form and not grade.form_matcher(
-                        grade.normalize(form))(grade.normalize(f"so, {typographic}, ok")):
+                if typographic != form and not matches(
+                        grade.normalize(f"so, {typographic}, ok")):
                     problems.append(
                         f"{entry['id']}: {form!r} misses its typographic "
                         f"rendering {typographic!r}"
                     )
-                if grade.BARE_WORD.fullmatch(grade.normalize(form)) and grade.form_matcher(
-                        grade.normalize(form))(f"about {grade.normalize(form)}-five"):
+                if grade.BARE_WORD.fullmatch(normal) and matches(f"about {normal}-five"):
                     problems.append(
                         f"{entry['id']}: bare word {form!r} matched inside a compound"
                     )

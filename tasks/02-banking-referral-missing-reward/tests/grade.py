@@ -194,10 +194,14 @@ def form_matcher(form: str):
 
     if BARE_WORD.fullmatch(form):
         pattern = re.compile(r"(?<!-)\b" + re.escape(form) + r"\b")
-        return lambda text: any(
-            not NUMBER_WORD_COMPOUND.match(text, m.end())
-            for m in pattern.finditer(text)
-        )
+
+        def matches_word(text: str) -> bool:
+            for candidate in pattern.finditer(text):
+                if not NUMBER_WORD_COMPOUND.match(text, candidate.end()):
+                    return True
+            return False
+
+        return matches_word
     return lambda text: form in text
 
 
