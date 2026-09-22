@@ -1,0 +1,1659 @@
+{
+ "conversation_id": "pharmacy-travel-refill",
+ "domain": "pharmacy",
+ "task": {
+  "description": {
+   "purpose": "Verify the patient, read that his albuterol claim was rejected as refill too soon, get a one-time lost-medication override from the plan and rerun the claim at a 15 dollar copay, flag his travel, check a later-closing backup store, and enable the SMS ready alert while the prescription waits for pharmacist verification.",
+   "relevant_policies": "domains/pharmacy/policy.md",
+   "notes": "The app's processing label hides the real blocker, which must be read from the record. The payer decides the override, the priority note cannot skip pharmacist verification, and store hours and stock for the backup location must come from tools."
+  },
+  "user_scenario": {
+   "persona": "A nervous, stammering patient who repeats words and trails off. He is worried the doctor never sent the prescription and becomes grateful and relieved as the problem is solved.",
+   "instructions": {
+    "domain": "pharmacy",
+    "reason_for_call": "Your prescription was supposed to be ready this afternoon, but the pharmacy app still says it is being processed and you want to know what is going on.",
+    "known_info": "You are Miles Carter, born June 14, 1988.\nThe prescription is an albuterol inhaler that your doctor should have sent this morning.\nYou filled an inhaler last month but left it in a hotel room, and you told the doctor's office that when you asked for the refill.\nYou are leaving town again tomorrow morning.\nYou have one inhaler at home with a couple of doses left.\nIt is about 6:15 PM now and you are about 25 minutes from the pharmacy.",
+    "unknown_info": "You do not know why the prescription is stuck, what your copay will be, or the pharmacy's or any other store's closing time for certain.",
+    "task_instructions": "Open by saying your prescription was supposed to be ready this afternoon but the app still says processing, and ask whether they know anything. Give your name and date of birth together when asked, and say it is the albuterol inhaler your doctor should have sent this morning. If told it stopped at insurance, say the app did not say anything about insurance and ask if you missed something. When asked about a recent inhaler, explain you filled one last month but left it in a hotel room and told the doctor's office. If the agent mentions an override the plan may need to discuss with you, ask if they can call them right now because you leave town tomorrow morning and need it. If asked, say you have one at home with a couple of doses left but need the new one before the trip. Stay on the line while they call.\n\nAfter hearing the result, ask if it is ready now. Ask when they close, suggesting the pharmacy counter closes at 7:00. Say it is about 6:15 now and you are about 25 minutes away and ask if that is fine. Ask them to make sure it does not get pushed to tomorrow. Ask what happens if you do not get the text by about 6:45. Ask whether the other location's counter also closes at 7:00 or later. If they suggest keeping it at this store, agree to leave it there unless they cannot finish it, in which case a transfer is fine. Ask whether you can pay in the app before you get there. Then thank them, say you were worried the doctor never sent it, say you will watch for the text, thank them for calling the insurance, and end the call."
+   }
+  },
+  "communicate_info": [
+   "refill is too soon",
+   "one-time lost medication override",
+   "co-pay is $15",
+   "about 30 minutes",
+   "closes at 9:00"
+  ],
+  "nl_assertions": [
+   "Agent confirms the caller's name and date of birth before discussing the prescription.",
+   "Agent requests a lost-medication override from the insurance plan and reports the plan's decision rather than deciding it itself.",
+   "Agent tells the caller that the pharmacist still has to check the prescription and that flagging it cannot skip that verification.",
+   "Agent advises the caller to wait for the ready text before driving over and to call back if he has not heard by 6:45.",
+   "Agent tells the caller that the Park Avenue store has the same inhaler in stock but advises against transferring it yet.",
+   "Agent tells the caller that the ready alert is set to his mobile number and that he can pay the 15 dollar copay at pickup if the app does not offer prepay."
+  ],
+  "reward_basis": [
+   "DB",
+   "COMMUNICATE"
+  ]
+ },
+ "tables": {
+  "claim_overrides": 0,
+  "claims": 308,
+  "fill_queue": 308,
+  "id_allocator": 2,
+  "insurance_plans": 5,
+  "medications": 40,
+  "notification_destinations": 191,
+  "patients": 105,
+  "plan_override_rules": 20,
+  "prescriptions": 308,
+  "scenario": 4,
+  "specialist_transfers": 0,
+  "store_inventory": 1000,
+  "stores": 25,
+  "transfer_requests": 0
+ },
+ "rows": {
+  "notification_destinations": {
+   "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e": {
+    "channel": "sms",
+    "destination_id": "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e",
+    "masked_destination": "***-***-on-file",
+    "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
+    "verified": true
+   }
+  },
+  "claims": {
+   "308": {
+    "claim_seq": 308,
+    "copay": null,
+    "currency": null,
+    "override_id": null,
+    "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+    "reason": "refill_too_soon",
+    "status": "rejected",
+    "submitted_at": "2026-08-27T10:48:00-05:00"
+   }
+  },
+  "fill_queue": {
+   "9670dbb4-6227-48ed-99fc-7ce746085502": {
+    "estimated_minutes": null,
+    "pharmacist_verification_required": null,
+    "position": null,
+    "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+    "priority_note": "absent",
+    "status": "blocked_by_claim"
+   }
+  },
+  "medications": {
+   "9dcd4906-4db3-4290-bccd-afde111823cb": {
+    "controlled": false,
+    "display_name": "albuterol inhaler",
+    "form": "metered-dose inhaler",
+    "medication_id": "9dcd4906-4db3-4290-bccd-afde111823cb",
+    "strength": "90 mcg/actuation"
+   }
+  },
+  "prescriptions": {
+   "9670dbb4-6227-48ed-99fc-7ce746085502": {
+    "customer_facing_status": "processing",
+    "days_supply": 30,
+    "fill_store_id": "8e22d41d-843c-4e73-95c0-3c9877366ba9",
+    "last_fill_date": "2026-08-05",
+    "medication_id": "9dcd4906-4db3-4290-bccd-afde111823cb",
+    "notification_channel": null,
+    "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
+    "payment_options": [
+     "app_prepay_if_offered_when_ready",
+     "pay_15_at_pickup"
+    ],
+    "prescriber": "Dr. Elena Vasquez",
+    "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+    "prescription_valid": true,
+    "priority_reason": "traveling on 2026-08-28; waiting for pickup on the evening of 2026-08-27",
+    "quantity": "1 inhaler (8.5 g)",
+    "ready_alert": null,
+    "ready_alert_destination_id": "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e",
+    "received_at": "2026-08-27T10:42:00-05:00",
+    "refills_remaining": 3,
+    "workflow_status": "awaiting_pharmacist_verification"
+   }
+  },
+  "stores": {
+   "8e22d41d-843c-4e73-95c0-3c9877366ba9": {
+    "address": "1420 Oak Street",
+    "counter_closes_at": "19:00",
+    "display_name": "Oak Street Pharmacy",
+    "district": "north-loop",
+    "front_store_closes_at": "22:00",
+    "front_store_closes_later": true,
+    "proximity_rank": 0,
+    "queue_estimated_minutes": 30,
+    "queue_next_position": 1,
+    "services": [
+     "immunization",
+     "consultation"
+    ],
+    "store_id": "8e22d41d-843c-4e73-95c0-3c9877366ba9",
+    "timezone": "America/Chicago"
+   },
+   "155059ca-b6aa-4372-b0af-86c2d681c393": {
+    "address": null,
+    "counter_closes_at": "21:00",
+    "display_name": "Park Avenue",
+    "district": "north-loop",
+    "front_store_closes_at": null,
+    "front_store_closes_later": false,
+    "proximity_rank": 10,
+    "queue_estimated_minutes": 25,
+    "queue_next_position": 2,
+    "services": null,
+    "store_id": "155059ca-b6aa-4372-b0af-86c2d681c393",
+    "timezone": "America/Chicago"
+   }
+  },
+  "patients": {
+   "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb": {
+    "allergies": [],
+    "date_of_birth": "1988-06-14",
+    "full_name": "Miles Carter",
+    "insurance_plan_id": "plan-midwest-choice-ppo",
+    "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
+    "preferred_store_id": "8e22d41d-843c-4e73-95c0-3c9877366ba9"
+   }
+  },
+  "plan_override_rules": {
+   "plan-midwest-choice-ppo|lost_medication": {
+    "decision": "approved_one_time",
+    "override_id": "9e90544a-3497-4aee-a1f0-4437d4f4684c",
+    "plan_id": "plan-midwest-choice-ppo",
+    "reason": "lost_medication"
+   }
+  },
+  "scenario": {
+   "scenario_time": {
+    "key": "scenario_time",
+    "value": "2026-08-27T18:12:00-05:00"
+   }
+  },
+  "insurance_plans": {
+   "plan-midwest-choice-ppo": {
+    "copay": 15.0,
+    "currency": "USD",
+    "display_name": "Midwest Choice PPO",
+    "paid_payment_options": [
+     "app_prepay_if_offered_when_ready",
+     "pay_15_at_pickup"
+    ],
+    "plan_id": "plan-midwest-choice-ppo",
+    "unpaid_payment_options": [
+     "pay_at_pickup"
+    ]
+   }
+  },
+  "claim_overrides": {
+   "9e90544a-3497-4aee-a1f0-4437d4f4684c": {
+    "override_id": "9e90544a-3497-4aee-a1f0-4437d4f4684c",
+    "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+    "reason": "lost_medication",
+    "status": "approved_one_time",
+    "urgency_context": "Patient leaves town on the morning of 2026-08-28 and needs the inhaler on the evening of 2026-08-27",
+    "requested_at": "2026-08-27T18:12:00-05:00",
+    "consumed_at": null
+   }
+  },
+  "store_inventory": {
+   "155059ca-b6aa-4372-b0af-86c2d681c393|9dcd4906-4db3-4290-bccd-afde111823cb": {
+    "in_stock": true,
+    "medication_id": "9dcd4906-4db3-4290-bccd-afde111823cb",
+    "on_hand_units": 4,
+    "reserved": false,
+    "store_id": "155059ca-b6aa-4372-b0af-86c2d681c393"
+   }
+  }
+ },
+ "events": [
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "Oak Street Pharmacy. This is Aaron. How can I help you?",
+   "start": 0.54,
+   "end": 3.18,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Miles",
+   "text": "Hey, um, I- I'm calling about a prescription that was supposed to be ready this afternoon. Um, the app still, still says it's, um, being processed. I was wondering if you knew anything about that.",
+   "start": 4.18,
+   "end": 13.69,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "Okay. I can check the status. What's your name and date of birth?",
+   "start": 14.72,
+   "end": 18.44,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Miles",
+   "text": "Um, Miles Carter. June 14th, uh, 1988.",
+   "start": 19.1,
+   "end": 23.22,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "ph-001",
+   "name": "lookup_patient",
+   "arguments": {
+    "full_name": "Miles Carter",
+    "date_of_birth": "1988-06-14"
+   },
+   "label": "patient lookup implied before prescription retrieval",
+   "at": 24.0,
+   "status": 200,
+   "output": {
+    "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
+    "match": "unique",
+    "verified_notification_destinations": [
+     {
+      "destination_id": "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e",
+      "channel": "sms",
+      "masked_destination": "***-***-on-file",
+      "verified": true
+     }
+    ]
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "notification_destinations": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
+        "verified": true
+       },
+       "matched": [
+        "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "patients": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {},
+       "matched": [
+        "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
+        "patient-aiko-fontaine-069",
+        "patient-andre-carter-032",
+        "patient-andre-delgado-068",
+        "patient-andre-duarte-057",
+        "patient-andre-nakamura-080",
+        "patient-andre-santoro-062",
+        "patient-bianca-moreau-018",
+        "patient-bianca-okonkwo-033",
+        "patient-bianca-santoro-002",
+        "patient-bram-fontaine-040",
+        "patient-bram-sorensen-028",
+        "patient-bram-vasquez-058",
+        "patient-bram-vasquez-075",
+        "patient-bram-whitfield-099",
+        "patient-camila-marchetti-066",
+        "patient-celia-carter-048",
+        "patient-colette-abbasi-003",
+        "patient-colette-carter-101",
+        "patient-colette-castellanos-037",
+        "patient-colette-mbeki-071",
+        "patient-dana-brennan-082",
+        "patient-dana-ilyin-041",
+        "patient-dana-ilyin-072",
+        "patient-desmond-achebe-060",
+        "patient-devon-achebe-019",
+        "patient-devon-kovacs-039",
+        "patient-devon-moreau-064",
+        "patient-devon-novak-053",
+        "patient-errol-kaur-045",
+        "patient-errol-oyelaran-014",
+        "patient-farah-brennan-012",
+        "patient-farah-fontaine-031",
+        "patient-farah-kaur-056",
+        "patient-farah-marchetti-035",
+        "patient-farah-novak-049",
+        "patient-grant-bergstrom-054",
+        "patient-grant-nakamura-046",
+        "patient-grant-okonkwo-103",
+        "patient-hugo-novak-073",
+        "patient-imani-duarte-086",
+        "patient-imani-okonkwo-006",
+        "patient-jonah-lindqvist-050",
+        "patient-jonah-novak-009",
+        "patient-jonah-vasquez-065",
+        "patient-kelsey-achebe-063",
+        "patient-kelsey-carter-088",
+        "patient-kelsey-kaur-007",
+        "patient-kelsey-moreau-008",
+        "patient-kwame-castellanos-100",
+        "patient-leah-abbasi-026",
+        "patient-leah-lindqvist-051",
+        "patient-leah-thorne-021",
+        "patient-lorna-abbasi-036",
+        "patient-lorna-carteret-081",
+        "patient-lorna-okonkwo-078",
+        "patient-malik-ferraro-077",
+        "patient-malik-haddad-020",
+        "patient-malik-ilyin-095",
+        "patient-malik-nakamura-092",
+        "patient-malik-vasquez-029",
+        "patient-marcus-kaur-042",
+        "patient-marcus-marchetti-011",
+        "patient-marcus-sorensen-059",
+        "patient-miles-carter-013",
+        "patient-miles-fontaine-097",
+        "patient-miles-moreau-061",
+        "patient-miles-oyelaran-043",
+        "patient-nadia-castellanos-001",
+        "patient-nadia-castellanos-024",
+        "patient-nadia-castellanos-084",
+        "patient-nadia-mbeki-004",
+        "patient-nadia-novak-023",
+        "patient-noor-carter-030",
+        "patient-noor-carteret-090",
+        "patient-noor-lindqvist-091",
+        "patient-owen-ferraro-087",
+        "patient-petra-achebe-044",
+        "patient-petra-delgado-093",
+        "patient-petra-fontaine-074",
+        "patient-petra-kovacs-022",
+        "patient-petra-mbeki-070",
+        "patient-petra-vasquez-005",
+        "patient-priya-achebe-047",
+        "patient-priya-reyes-038",
+        "patient-rahul-brennan-017",
+        "patient-rahul-moreau-000",
+        "patient-rahul-okonkwo-076",
+        "patient-rahul-thorne-102",
+        "patient-renata-carteret-096",
+        "patient-renata-haddad-085",
+        "patient-renata-okonkwo-010",
+        "patient-rosa-oyelaran-025",
+        "patient-sana-haddad-052",
+        "patient-sana-marchetti-016",
+        "patient-silas-oyelaran-079",
+        "patient-tomas-abbasi-034",
+        "patient-tomas-haddad-015",
+        "patient-tomas-sorensen-094",
+        "patient-trevor-achebe-027",
+        "patient-trevor-okonkwo-098",
+        "patient-trevor-thorne-089",
+        "patient-victor-ferraro-055",
+        "patient-victor-haddad-067",
+        "patient-victor-thorne-083"
+       ]
+      }
+     ],
+     "scanned": false
+    }
+   },
+   "writes": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "Thank you.",
+   "start": 24.64,
+   "end": 24.92,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "And which medication are you expecting?",
+   "start": 26.42,
+   "end": 28.03,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Miles",
+   "text": "Um, the inhaler, uh, Albuterol. I think, uh, my doctor should have sent it this morning.",
+   "start": 28.88,
+   "end": 34.019,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "All right. Give me a moment.",
+   "start": 35.2,
+   "end": 36.3,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "ph-002",
+   "name": "get_prescription",
+   "arguments": {
+    "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
+    "medication_name": "albuterol inhaler"
+   },
+   "label": "open the prescription record",
+   "at": 36.5,
+   "status": 200,
+   "output": {
+    "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+    "medication_id": "9dcd4906-4db3-4290-bccd-afde111823cb",
+    "medication_name": "albuterol inhaler",
+    "received_at": "2026-08-27T10:42:00-05:00",
+    "prescription_valid": true,
+    "workflow_status": "claim_rejected",
+    "customer_facing_status": "processing",
+    "fill_store": {
+     "store_id": "8e22d41d-843c-4e73-95c0-3c9877366ba9",
+     "display_name": "Oak Street Pharmacy",
+     "counter_closes_at": "19:00",
+     "front_store_closes_later": true
+    },
+    "claim": {
+     "status": "rejected",
+     "reason": "refill_too_soon"
+    },
+    "queue": {
+     "status": "blocked_by_claim"
+    },
+    "notification": {
+     "ready_alert_destination_id": "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e"
+    },
+    "payment_options": [
+     "pay_at_pickup"
+    ]
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "claims": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502"
+       },
+       "matched": [
+        "308"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "fill_queue": {
+     "keys": [
+      "9670dbb4-6227-48ed-99fc-7ce746085502"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "medications": {
+     "keys": [
+      "9dcd4906-4db3-4290-bccd-afde111823cb"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "prescriptions": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb"
+       },
+       "matched": [
+        "9670dbb4-6227-48ed-99fc-7ce746085502"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "stores": {
+     "keys": [
+      "8e22d41d-843c-4e73-95c0-3c9877366ba9"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "I see the prescription. It's with me. It came in at 10:42, but it stopped at the insurance step.",
+   "start": 44.84,
+   "end": 52.02,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Miles",
+   "text": "Um, what did- what do you mean, uh, insurance? The app didn't say anything about insurance or anything. It just said, um, that it was processing. Did I miss something?",
+   "start": 52.18,
+   "end": 59.56,
+   "emotions": [
+    "confused"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "Um, yeah, so the app message is pretty general. The claim rejected because the plan thinks that the refill is too soon. Did you by any chance have or fill another inhaler recently?",
+   "start": 60.44,
+   "end": 71.98,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Miles",
+   "text": "Um, I- I think, I think I did it, uh, last month, but I left that one in a h- hotel room and I told the doctor's office that, um, when I was asking for a, uh, for a refill.",
+   "start": 73.36,
+   "end": 83.52,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "Okay. Give me one moment.",
+   "start": 84.62,
+   "end": 85.78,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "The new prescription is valid. I'm seeing that the issue here is the payment. We can ask the insurance for a lost medication override, but they may need to speak with you.",
+   "start": 89.5,
+   "end": 99.3,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Miles",
+   "text": "Uh, is there any way you can call them right now? I'm leaving town again tomorrow morning a- and I kinda need it.",
+   "start": 99.78999999999999,
+   "end": 105.97999999999999,
+   "emotions": [
+    "concerned"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "Okay. I can start it. One second. Before I do, do you need the inhaler tonight or do you have another one available with you?",
+   "start": 106.02000000000001,
+   "end": 112.759,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Miles",
+   "text": "Uh, I got, I got one at home with, um, maybe a f- a couple doses left, but I need the new one before I go on the trip.",
+   "start": 113.53999999999999,
+   "end": 119.1,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "Understood.",
+   "start": 120.22,
+   "end": 120.68,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "Let me call the plan while you're on the line. It may take a couple minutes. Okay?",
+   "start": 122.12,
+   "end": 126.6,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Miles",
+   "text": "Yeah. Thank you.",
+   "start": 126.66,
+   "end": 127.18,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "ph-003",
+   "name": "request_claim_override",
+   "arguments": {
+    "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+    "reason": "lost_medication",
+    "urgency_context": "Patient leaves town on the morning of 2026-08-28 and needs the inhaler on the evening of 2026-08-27"
+   },
+   "label": "contact the insurance plan for an override",
+   "at": 127.5,
+   "status": 200,
+   "output": {
+    "override_id": "9e90544a-3497-4aee-a1f0-4437d4f4684c",
+    "status": "approved_one_time"
+   },
+   "matches_recording": true,
+   "write_tool": true,
+   "reads": {
+    "claim_overrides": {
+     "keys": [
+      "9e90544a-3497-4aee-a1f0-4437d4f4684c"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "patients": {
+     "keys": [
+      "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "plan_override_rules": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "plan_id": "plan-midwest-choice-ppo",
+        "reason": "lost_medication"
+       },
+       "matched": [
+        "plan-midwest-choice-ppo|lost_medication"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "prescriptions": {
+     "keys": [
+      "9670dbb4-6227-48ed-99fc-7ce746085502"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "scenario_time"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "claim_overrides",
+     "key": "9e90544a-3497-4aee-a1f0-4437d4f4684c",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "override_id": "9e90544a-3497-4aee-a1f0-4437d4f4684c",
+      "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+      "reason": "lost_medication",
+      "status": "approved_one_time",
+      "urgency_context": "Patient leaves town on the morning of 2026-08-28 and needs the inhaler on the evening of 2026-08-27",
+      "requested_at": "2026-08-27T18:12:00-05:00",
+      "consumed_at": "2026-08-27T18:12:00-05:00"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "Thank you for holding.",
+   "start": 185.7,
+   "end": 186.95,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "ph-004",
+   "name": "submit_prescription_claim",
+   "arguments": {
+    "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+    "override_id": "9e90544a-3497-4aee-a1f0-4437d4f4684c"
+   },
+   "label": "rerun the insurance claim",
+   "at": 187.2,
+   "status": 200,
+   "output": {
+    "claim_status": "paid",
+    "copay": 15,
+    "currency": "USD",
+    "next_workflow_status": "awaiting_pharmacist_verification",
+    "queue": {
+     "status": "active",
+     "position": 1,
+     "estimated_minutes": 30
+    },
+    "payment_options": [
+     "app_prepay_if_offered_when_ready",
+     "pay_15_at_pickup"
+    ]
+   },
+   "matches_recording": true,
+   "write_tool": true,
+   "reads": {
+    "claim_overrides": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "override_id": "9e90544a-3497-4aee-a1f0-4437d4f4684c",
+        "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502"
+       },
+       "matched": [
+        "9e90544a-3497-4aee-a1f0-4437d4f4684c"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "claims": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "fill_queue": {
+     "keys": [
+      "9670dbb4-6227-48ed-99fc-7ce746085502"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "insurance_plans": {
+     "keys": [
+      "plan-midwest-choice-ppo"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "patients": {
+     "keys": [
+      "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "prescriptions": {
+     "keys": [
+      "9670dbb4-6227-48ed-99fc-7ce746085502"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "scenario_time"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "stores": {
+     "keys": [
+      "8e22d41d-843c-4e73-95c0-3c9877366ba9"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "claim_overrides",
+     "key": "9e90544a-3497-4aee-a1f0-4437d4f4684c",
+     "kind": "updated",
+     "columns": [
+      "consumed_at"
+     ],
+     "before": {
+      "override_id": "9e90544a-3497-4aee-a1f0-4437d4f4684c",
+      "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+      "reason": "lost_medication",
+      "status": "approved_one_time",
+      "urgency_context": "Patient leaves town on the morning of 2026-08-28 and needs the inhaler on the evening of 2026-08-27",
+      "requested_at": "2026-08-27T18:12:00-05:00",
+      "consumed_at": null
+     },
+     "after": {
+      "override_id": "9e90544a-3497-4aee-a1f0-4437d4f4684c",
+      "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+      "reason": "lost_medication",
+      "status": "approved_one_time",
+      "urgency_context": "Patient leaves town on the morning of 2026-08-28 and needs the inhaler on the evening of 2026-08-27",
+      "requested_at": "2026-08-27T18:12:00-05:00",
+      "consumed_at": "2026-08-27T18:12:00-05:00"
+     }
+    },
+    {
+     "table": "claims",
+     "key": "309",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "claim_seq": 309,
+      "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+      "status": "paid",
+      "reason": null,
+      "copay": 15.0,
+      "currency": "USD",
+      "override_id": "9e90544a-3497-4aee-a1f0-4437d4f4684c",
+      "submitted_at": "2026-08-27T18:12:00-05:00"
+     }
+    },
+    {
+     "table": "fill_queue",
+     "key": "9670dbb4-6227-48ed-99fc-7ce746085502",
+     "kind": "updated",
+     "columns": [
+      "estimated_minutes",
+      "pharmacist_verification_required",
+      "position",
+      "status"
+     ],
+     "before": {
+      "estimated_minutes": null,
+      "pharmacist_verification_required": null,
+      "position": null,
+      "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+      "priority_note": "absent",
+      "status": "blocked_by_claim"
+     },
+     "after": {
+      "estimated_minutes": 30,
+      "pharmacist_verification_required": true,
+      "position": 1,
+      "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+      "priority_note": "present",
+      "status": "active"
+     }
+    },
+    {
+     "table": "prescriptions",
+     "key": "9670dbb4-6227-48ed-99fc-7ce746085502",
+     "kind": "updated",
+     "columns": [
+      "payment_options",
+      "workflow_status"
+     ],
+     "before": {
+      "customer_facing_status": "processing",
+      "days_supply": 30,
+      "fill_store_id": "8e22d41d-843c-4e73-95c0-3c9877366ba9",
+      "last_fill_date": "2026-08-05",
+      "medication_id": "9dcd4906-4db3-4290-bccd-afde111823cb",
+      "notification_channel": null,
+      "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
+      "payment_options": [
+       "pay_at_pickup"
+      ],
+      "prescriber": "Dr. Elena Vasquez",
+      "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+      "prescription_valid": true,
+      "priority_reason": null,
+      "quantity": "1 inhaler (8.5 g)",
+      "ready_alert": null,
+      "ready_alert_destination_id": "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e",
+      "received_at": "2026-08-27T10:42:00-05:00",
+      "refills_remaining": 3,
+      "workflow_status": "claim_rejected"
+     },
+     "after": {
+      "customer_facing_status": "processing",
+      "days_supply": 30,
+      "fill_store_id": "8e22d41d-843c-4e73-95c0-3c9877366ba9",
+      "last_fill_date": "2026-08-05",
+      "medication_id": "9dcd4906-4db3-4290-bccd-afde111823cb",
+      "notification_channel": "sms",
+      "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
+      "payment_options": [
+       "app_prepay_if_offered_when_ready",
+       "pay_15_at_pickup"
+      ],
+      "prescriber": "Dr. Elena Vasquez",
+      "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+      "prescription_valid": true,
+      "priority_reason": "traveling on 2026-08-28; waiting for pickup on the evening of 2026-08-27",
+      "quantity": "1 inhaler (8.5 g)",
+      "ready_alert": "enabled",
+      "ready_alert_destination_id": "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e",
+      "received_at": "2026-08-27T10:42:00-05:00",
+      "refills_remaining": 3,
+      "workflow_status": "awaiting_pharmacist_verification"
+     }
+    },
+    {
+     "table": "stores",
+     "key": "8e22d41d-843c-4e73-95c0-3c9877366ba9",
+     "kind": "updated",
+     "columns": [
+      "queue_next_position"
+     ],
+     "before": {
+      "address": "1420 Oak Street",
+      "counter_closes_at": "19:00",
+      "display_name": "Oak Street Pharmacy",
+      "district": "north-loop",
+      "front_store_closes_at": "22:00",
+      "front_store_closes_later": true,
+      "proximity_rank": 0,
+      "queue_estimated_minutes": 30,
+      "queue_next_position": 1,
+      "services": [
+       "immunization",
+       "consultation"
+      ],
+      "store_id": "8e22d41d-843c-4e73-95c0-3c9877366ba9",
+      "timezone": "America/Chicago"
+     },
+     "after": {
+      "address": "1420 Oak Street",
+      "counter_closes_at": "19:00",
+      "display_name": "Oak Street Pharmacy",
+      "district": "north-loop",
+      "front_store_closes_at": "22:00",
+      "front_store_closes_later": true,
+      "proximity_rank": 0,
+      "queue_estimated_minutes": 30,
+      "queue_next_position": 2,
+      "services": [
+       "immunization",
+       "consultation"
+      ],
+      "store_id": "8e22d41d-843c-4e73-95c0-3c9877366ba9",
+      "timezone": "America/Chicago"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "They approved a one-time lost medication override. I reran the claim and I'm seeing that your co-pay is $15.",
+   "start": 187.549,
+   "end": 195.44,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Miles",
+   "text": "Okay. Um, great. So is it, is it ready now?",
+   "start": 196.42000000000002,
+   "end": 199.64,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "Um, not quite yet. The pharmacist on our side still has to check it. You're next in the queue and we're looking at about 30 minutes.",
+   "start": 199.72,
+   "end": 208.14,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Miles",
+   "text": "Um, when do you guys close? It closes at, on the pharmacy it's at, um, 7:00, right? Like it closes at 7:00?",
+   "start": 208.26,
+   "end": 214.28,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "Our counter closes at 7:00 but the front store usually stays a lot open, uh, open a lot later.",
+   "start": 214.32,
+   "end": 219.18,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Miles",
+   "text": "Right. So it's, it's like, um, 6:15 now and I'm about 25 minutes away. Is that, is that, is that good? Is that fine?",
+   "start": 220.38,
+   "end": 228.6,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "Okay. Well, I think if you leave after you get the ready text you should make it. I don't wanna tell you to come before the pharmacist finishes the check though.",
+   "start": 229.68,
+   "end": 237.07999999999998,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Miles",
+   "text": "Yeah. No, no, yeah. I, I get it. Uh, can you, can you make sure it doesn't get pushed to tomorrow though? Is that possible?",
+   "start": 238.07999999999998,
+   "end": 243.1,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "I can flag- Yeah. All good. I can flag it on my end that you're traveling and waiting for it tonight. I can't skip the pharmacist's verification, but it is already in the active queue.",
+   "start": 243.14,
+   "end": 255.68,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "ph-005",
+   "name": "update_prescription",
+   "arguments": {
+    "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+    "priority_reason": "traveling on 2026-08-28; waiting for pickup on the evening of 2026-08-27"
+   },
+   "label": "add a travel-priority note",
+   "at": 255.68,
+   "status": 200,
+   "output": {
+    "status": "updated",
+    "updated_fields": [
+     "priority_reason"
+    ],
+    "queue": {
+     "status": "active",
+     "estimated_minutes": 30,
+     "pharmacist_verification_required": true
+    }
+   },
+   "matches_recording": true,
+   "write_tool": true,
+   "reads": {
+    "fill_queue": {
+     "keys": [
+      "9670dbb4-6227-48ed-99fc-7ce746085502"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "prescriptions": {
+     "keys": [
+      "9670dbb4-6227-48ed-99fc-7ce746085502"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "fill_queue",
+     "key": "9670dbb4-6227-48ed-99fc-7ce746085502",
+     "kind": "updated",
+     "columns": [
+      "priority_note"
+     ],
+     "before": {
+      "estimated_minutes": 30,
+      "pharmacist_verification_required": true,
+      "position": 1,
+      "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+      "priority_note": "absent",
+      "status": "active"
+     },
+     "after": {
+      "estimated_minutes": 30,
+      "pharmacist_verification_required": true,
+      "position": 1,
+      "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+      "priority_note": "present",
+      "status": "active"
+     }
+    },
+    {
+     "table": "prescriptions",
+     "key": "9670dbb4-6227-48ed-99fc-7ce746085502",
+     "kind": "updated",
+     "columns": [
+      "priority_reason"
+     ],
+     "before": {
+      "customer_facing_status": "processing",
+      "days_supply": 30,
+      "fill_store_id": "8e22d41d-843c-4e73-95c0-3c9877366ba9",
+      "last_fill_date": "2026-08-05",
+      "medication_id": "9dcd4906-4db3-4290-bccd-afde111823cb",
+      "notification_channel": null,
+      "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
+      "payment_options": [
+       "app_prepay_if_offered_when_ready",
+       "pay_15_at_pickup"
+      ],
+      "prescriber": "Dr. Elena Vasquez",
+      "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+      "prescription_valid": true,
+      "priority_reason": null,
+      "quantity": "1 inhaler (8.5 g)",
+      "ready_alert": null,
+      "ready_alert_destination_id": "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e",
+      "received_at": "2026-08-27T10:42:00-05:00",
+      "refills_remaining": 3,
+      "workflow_status": "awaiting_pharmacist_verification"
+     },
+     "after": {
+      "customer_facing_status": "processing",
+      "days_supply": 30,
+      "fill_store_id": "8e22d41d-843c-4e73-95c0-3c9877366ba9",
+      "last_fill_date": "2026-08-05",
+      "medication_id": "9dcd4906-4db3-4290-bccd-afde111823cb",
+      "notification_channel": "sms",
+      "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
+      "payment_options": [
+       "app_prepay_if_offered_when_ready",
+       "pay_15_at_pickup"
+      ],
+      "prescriber": "Dr. Elena Vasquez",
+      "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+      "prescription_valid": true,
+      "priority_reason": "traveling on 2026-08-28; waiting for pickup on the evening of 2026-08-27",
+      "quantity": "1 inhaler (8.5 g)",
+      "ready_alert": "enabled",
+      "ready_alert_destination_id": "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e",
+      "received_at": "2026-08-27T10:42:00-05:00",
+      "refills_remaining": 3,
+      "workflow_status": "awaiting_pharmacist_verification"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Miles",
+   "text": "Oh, okay. That, that's great. Uh, what happens if I don't get the text by say like 6:45 or something like that?",
+   "start": 255.74,
+   "end": 262.079,
+   "emotions": [
+    "relieved"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "Okay. Um, I would just call us back before you drive over. If there is a delay we can tell you whether another Oak Street location has it in-stock, but we'd have to transfer the prescription.",
+   "start": 262.12,
+   "end": 272.54,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Miles",
+   "text": "And does that one also close at, on the counter at 7:00 or is it, is it later?",
+   "start": 273.34000000000003,
+   "end": 277.69,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "ph-006",
+   "name": "search_pharmacy_locations",
+   "arguments": {
+    "origin_store_id": "8e22d41d-843c-4e73-95c0-3c9877366ba9",
+    "open_after_local_time": "19:00"
+   },
+   "label": "search nearby Oak Street locations with counters open after 19:00",
+   "at": 278.0,
+   "status": 200,
+   "output": {
+    "locations": [
+     {
+      "store_id": "155059ca-b6aa-4372-b0af-86c2d681c393",
+      "display_name": "Park Avenue",
+      "counter_closes_at": "21:00",
+      "timezone": "America/Chicago"
+     }
+    ]
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "stores": {
+     "keys": [
+      "8e22d41d-843c-4e73-95c0-3c9877366ba9"
+     ],
+     "queries": [
+      {
+       "where": {},
+       "matched": [
+        "155059ca-b6aa-4372-b0af-86c2d681c393",
+        "8e22d41d-843c-4e73-95c0-3c9877366ba9",
+        "ashford-green",
+        "beacon-yard",
+        "bellmont-gate",
+        "brookfield-plaza",
+        "cedar-hill",
+        "crestline-north",
+        "crestline-south",
+        "dockside-market",
+        "fairmount-annex",
+        "granite-park",
+        "harborview",
+        "juniper-row",
+        "lakeside-commons",
+        "maple-grove",
+        "mill-quarter",
+        "orchard-terrace",
+        "palmetto-court",
+        "ridgeway-center",
+        "saltmarsh-corner",
+        "stonegate-square",
+        "sunset-arcade",
+        "thornbury-lane",
+        "willow-crossing"
+       ]
+      }
+     ],
+     "scanned": false
+    }
+   },
+   "writes": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "The Park Avenue store closes at 9:00 I believe. Let me check their stock so we know the backup.",
+   "start": 279.65999999999997,
+   "end": 284.56,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "ph-007",
+   "name": "get_store_inventory",
+   "arguments": {
+    "store_id": "155059ca-b6aa-4372-b0af-86c2d681c393",
+    "medication_id": "9dcd4906-4db3-4290-bccd-afde111823cb"
+   },
+   "label": "check alternate pharmacy inventory",
+   "at": 284.56,
+   "status": 200,
+   "output": {
+    "store_id": "155059ca-b6aa-4372-b0af-86c2d681c393",
+    "medication_id": "9dcd4906-4db3-4290-bccd-afde111823cb",
+    "in_stock": true,
+    "reserved": false
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "medications": {
+     "keys": [
+      "9dcd4906-4db3-4290-bccd-afde111823cb"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "store_inventory": {
+     "keys": [
+      "155059ca-b6aa-4372-b0af-86c2d681c393|9dcd4906-4db3-4290-bccd-afde111823cb"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "stores": {
+     "keys": [
+      "155059ca-b6aa-4372-b0af-86c2d681c393"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "They show the same inhaler in-stock. I wouldn't transfer it yet because ours should be ready first.",
+   "start": 289.22,
+   "end": 296.08,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Miles",
+   "text": "Right. Yeah, yeah. Okay, yeah. We can, we can leave it there. Uh, let's, yeah, unless you, you can't finish it then no, we can transfer it. That's good. Thank you.",
+   "start": 296.84000000000003,
+   "end": 303.82,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "ph-008",
+   "name": "update_prescription",
+   "arguments": {
+    "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+    "notification_channel": "sms",
+    "notification_destination_id": "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e"
+   },
+   "label": "update the prescription notification",
+   "at": 304.2,
+   "status": 200,
+   "output": {
+    "status": "updated",
+    "updated_fields": [
+     "notification_channel",
+     "notification_destination"
+    ],
+    "notification": {
+     "ready_alert": "enabled",
+     "destination_id": "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e",
+     "masked_destination": "***-***-on-file",
+     "verified": true
+    },
+    "queue": {
+     "priority_note": "present"
+    }
+   },
+   "matches_recording": true,
+   "write_tool": true,
+   "reads": {
+    "fill_queue": {
+     "keys": [
+      "9670dbb4-6227-48ed-99fc-7ce746085502"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "notification_destinations": {
+     "keys": [
+      "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e"
+     ],
+     "queries": [
+      {
+       "where": {
+        "destination_id": "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e",
+        "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
+        "verified": true
+       },
+       "matched": [
+        "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "prescriptions": {
+     "keys": [
+      "9670dbb4-6227-48ed-99fc-7ce746085502"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "prescriptions",
+     "key": "9670dbb4-6227-48ed-99fc-7ce746085502",
+     "kind": "updated",
+     "columns": [
+      "notification_channel",
+      "ready_alert"
+     ],
+     "before": {
+      "customer_facing_status": "processing",
+      "days_supply": 30,
+      "fill_store_id": "8e22d41d-843c-4e73-95c0-3c9877366ba9",
+      "last_fill_date": "2026-08-05",
+      "medication_id": "9dcd4906-4db3-4290-bccd-afde111823cb",
+      "notification_channel": null,
+      "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
+      "payment_options": [
+       "app_prepay_if_offered_when_ready",
+       "pay_15_at_pickup"
+      ],
+      "prescriber": "Dr. Elena Vasquez",
+      "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+      "prescription_valid": true,
+      "priority_reason": "traveling on 2026-08-28; waiting for pickup on the evening of 2026-08-27",
+      "quantity": "1 inhaler (8.5 g)",
+      "ready_alert": null,
+      "ready_alert_destination_id": "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e",
+      "received_at": "2026-08-27T10:42:00-05:00",
+      "refills_remaining": 3,
+      "workflow_status": "awaiting_pharmacist_verification"
+     },
+     "after": {
+      "customer_facing_status": "processing",
+      "days_supply": 30,
+      "fill_store_id": "8e22d41d-843c-4e73-95c0-3c9877366ba9",
+      "last_fill_date": "2026-08-05",
+      "medication_id": "9dcd4906-4db3-4290-bccd-afde111823cb",
+      "notification_channel": "sms",
+      "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
+      "payment_options": [
+       "app_prepay_if_offered_when_ready",
+       "pay_15_at_pickup"
+      ],
+      "prescriber": "Dr. Elena Vasquez",
+      "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+      "prescription_valid": true,
+      "priority_reason": "traveling on 2026-08-28; waiting for pickup on the evening of 2026-08-27",
+      "quantity": "1 inhaler (8.5 g)",
+      "ready_alert": "enabled",
+      "ready_alert_destination_id": "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e",
+      "received_at": "2026-08-27T10:42:00-05:00",
+      "refills_remaining": 3,
+      "workflow_status": "awaiting_pharmacist_verification"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "Okay. That's what I'll do. I added the travel note and your mobile number is set for the ready alert.",
+   "start": 304.6,
+   "end": 310.5,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Miles",
+   "text": "Um, also, uh, can I, can I pay in the app before I get there?",
+   "start": 311.52,
+   "end": 314.4,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "Uh, yeah. Once it moves to ready the app may offer pre-pay. If it doesn't you can just pay the $15 co-pay at pickup.",
+   "start": 316.06,
+   "end": 322.24,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Miles",
+   "text": "Okay. Thank you. Thank you. Thank you so much. I was worried the doctor never sent it, so I was kinda freaking out.",
+   "start": 322.84,
+   "end": 328.12,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "All good. No, no, we have it. Uh, the insurance issue is cleared. We're just waiting on the final pharmacy check.",
+   "start": 328.68,
+   "end": 334.4,
+   "emotions": [
+    "reassuring"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Miles",
+   "text": "All right. Okay. Uh, I'll watch for the text and thanks for calling the insurance too.",
+   "start": 335.28,
+   "end": 338.64,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "Uh, you're welcome Miles. Call us by 6:45 if you haven't heard from us, okay?",
+   "start": 340.3,
+   "end": 343.82,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Miles",
+   "text": "Okay, I will. Thank you. Have a, have a great rest of your shift.",
+   "start": 344.44,
+   "end": 347.44,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Aaron",
+   "text": "You too. Bye bye.",
+   "start": 348.06,
+   "end": 349.0,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Miles",
+   "text": "Bye bye.",
+   "start": 349.0,
+   "end": 349.32,
+   "emotions": []
+  }
+ ],
+ "evaluation": {
+  "reward": 1.0,
+  "reward_breakdown": {
+   "DB": 1.0,
+   "COMMUNICATE": 1.0
+  },
+  "db": {
+   "target_hash": "e31cde1a5fbdf227eb9eec2de2555d04e02835f781c0edd2fc0031298ba87932",
+   "predicted_hash": "e31cde1a5fbdf227eb9eec2de2555d04e02835f781c0edd2fc0031298ba87932"
+  },
+  "communicate_checks": [
+   {
+    "info": "refill is too soon",
+    "met": true
+   },
+   {
+    "info": "one-time lost medication override",
+    "met": true
+   },
+   {
+    "info": "co-pay is $15",
+    "met": true
+   },
+   {
+    "info": "about 30 minutes",
+    "met": true
+   },
+   {
+    "info": "closes at 9:00",
+    "met": true
+   }
+  ],
+  "tool_calls": 8,
+  "failed_calls": 0
+ },
+ "variations": [
+  {
+   "name": "Every read issued twice",
+   "expect": "still passes: looking is free",
+   "result": {
+    "reward": 1.0,
+    "reward_breakdown": {
+     "DB": 1.0,
+     "COMMUNICATE": 1.0
+    }
+   }
+  },
+  {
+   "name": "Skip the last write (update_prescription)",
+   "expect": "DB fails: the end state no longer matches",
+   "result": {
+    "reward": 0.0,
+    "reward_breakdown": {
+     "DB": 0.0,
+     "COMMUNICATE": 1.0
+    }
+   }
+  },
+  {
+   "name": "Agent never says “refill is too soon”",
+   "expect": "COMMUNICATE fails: a required fact went unsaid",
+   "result": {
+    "reward": 0.0,
+    "reward_breakdown": {
+     "DB": 1.0,
+     "COMMUNICATE": 0.0
+    }
+   }
+  }
+ ]
+}

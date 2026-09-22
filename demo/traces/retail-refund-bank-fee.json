@@ -1,0 +1,1854 @@
+{
+ "conversation_id": "retail-refund-bank-fee",
+ "domain": "retail",
+ "task": {
+  "description": {
+   "purpose": "Find the split-tender return, explain that the 40 dollar gift-card refund is available while the 146.42 dollar debit refund was submitted but never settled, open payment trace WST735204 against the original card with the return receipt attached, note the replaced card and the overdraft fee on the case, and email the confirmation to the order contact.",
+   "relevant_policies": "domains/retail/policy.md",
+   "notes": "The customer wants the refund resent to his new card, which would risk a duplicate while the first request is open. The agent cannot see his bank, cannot promise a date, and cannot approve the overdraft fee while the trace is open."
+  },
+  "user_scenario": {
+   "persona": "A casual, even-tempered young man who is frustrated about the wait but stays polite. He speaks informally and asks practical questions about timing and what happens next.",
+   "instructions": {
+    "domain": "retail",
+    "reason_for_call": "You returned an item at a Westline store over a week ago and the money for the refund still has not come back to your account.",
+    "known_info": "You are Teddy Torrez.\nThe email on the order is teddy.torrez@harbormail.com.\nThe order number ends in 5624 and the return receipt ends in 9182.\nThe item was a black standing desk converter you ordered online and returned to a store because it was too wide for your desk.\nYou paid 40 dollars with a Westline gift card and the rest with your debit card.\nYou got an email about the gift card portion with a new digital gift card number, which you have not tried yet.\nYou are still missing 146 dollars and 42 cents. Your bank shows no refund, not even a pending one.\nThe debit card you paid with ended in 2047. It was replaced last month and the new card ends in 8163. You believe both are linked to the same checking account.\nYou were charged a small overdraft fee because you were expecting this money back.",
+    "unknown_info": "You do not know the status of the debit refund at Westline or how long a trace takes.",
+    "task_instructions": "Open by saying you are trying to figure out what happened to a refund: you returned something at a store over a week ago and the money has not come back. Say it was ordered online, returned to the store, a black standing desk converter that was too wide for your desk. Give the order and return receipt endings (speak digits one at a time) and your email when asked. Confirm the total sounds right by saying you paid 40 dollars with a Westline gift card and the rest on debit. Say the store told you the return was done, but your email only covered the gift card part and you are still missing 146 dollars and 42 cents. Confirm you got a digital gift card number but have not tried it and are more worried about the debit card.\n\nWhen told the debit refund was not confirmed, ask what that means and whether Westline sent it or not, since your bank shows nothing pending. Then mention your card was replaced last month but should be linked to the same checking account, and ask if that could be an issue. Give the old and new card last four when asked. Ask them to just send it to the new card. Ask how long it will take, noting nine days already feels long, then ask if you might be waiting another week. Ask if a reissue would be a check, saying you do not want store credit for the whole amount. Ask them to confirm the 40 dollar gift card actually works. After the trace is opened, ask them to email it to you. Say you see the email and that it says not to contact the store, and ask whether that means the store cannot do anything. Then mention the small overdraft fee and ask whether Westline covers it; say you just wanted it on record. Ask whether you need to call if the refund appears before then. Say you still wish it were back today but it makes more sense now, say that is everything, thank the agent and end the call."
+   }
+  },
+  "communicate_info": [
+   "one hundred and eighty-six dollars and forty-two cents",
+   "forty dollars available",
+   "hundred and forty-six dollars and forty-two cents",
+   "WST seven three five two oh four",
+   "three to five business days"
+  ],
+  "nl_assertions": [
+   "Agent tells the caller that the debit refund was submitted but never received a settlement confirmation, and does not tell him the money is on the way.",
+   "Agent declines to send the refund to the new card while the first refund request is still open because he could receive it twice.",
+   "Agent tells the caller that it cannot promise a specific day until the processor responds.",
+   "Agent tells the caller that a reissued refund would not automatically become store credit.",
+   "Agent tells the caller that it cannot approve the bank fee while the trace is open, documents it on the case, and does not promise reimbursement.",
+   "Agent sends the trace confirmation to the email address on the order."
+  ],
+  "reward_basis": [
+   "DB",
+   "COMMUNICATE"
+  ]
+ },
+ "tables": {
+  "carrier_scans": 585,
+  "case_items": 40,
+  "case_notes": 18,
+  "case_preferences": 0,
+  "case_type_policy": 2,
+  "cases": 60,
+  "customers": 102,
+  "distribution_centers": 8,
+  "eligible_resolutions": 24,
+  "id_allocator": 3,
+  "note_topics": 5,
+  "notification_templates": 4,
+  "notifications": 0,
+  "order_items": 714,
+  "orders": 362,
+  "payments": 416,
+  "pickup_site_suffixes": 7,
+  "product_variants": 107,
+  "products": 80,
+  "refunds": 431,
+  "replacement_orders": 0,
+  "returns": 176,
+  "scenario": 12,
+  "section_read_cursor": 2,
+  "section_view": 6,
+  "specialist_transfers": 0
+ },
+ "rows": {
+  "order_items": {
+   "standing-desk-converter-black": {
+    "color": "black",
+    "currency": "USD",
+    "item_reference": "standing-desk-converter-black",
+    "line_no": 1,
+    "name": "black standing desk converter",
+    "order_reference": "5820465624",
+    "product_reference": "standing-desk-converter",
+    "total_after_tax": 186.42,
+    "variant_label": null,
+    "variant_reference": "standing-desk-converter-black"
+   }
+  },
+  "orders": {
+   "5820461624": {
+    "customer_id": "customer-teddy-torrez",
+    "destination_label": "home_address_on_order",
+    "fulfillment_status": "delivered",
+    "order_reference": "5820461624",
+    "placed_on": "2026-07-29",
+    "replaces_order_reference": null,
+    "representative_item": "desk lamp"
+   },
+   "5820465024": {
+    "customer_id": "customer-teddy-torrez",
+    "destination_label": "home_address_on_order",
+    "fulfillment_status": "delivered",
+    "order_reference": "5820465024",
+    "placed_on": "2026-06-30",
+    "replaces_order_reference": null,
+    "representative_item": "cutting board"
+   },
+   "5820465624": {
+    "customer_id": "customer-teddy-torrez",
+    "destination_label": "home_address_on_order",
+    "fulfillment_status": "delivered",
+    "order_reference": "5820465624",
+    "placed_on": "2026-08-05",
+    "replaces_order_reference": null,
+    "representative_item": "black standing desk converter"
+   },
+   "5820469624": {
+    "customer_id": "customer-teddy-torrez",
+    "destination_label": "home_address_on_order",
+    "fulfillment_status": "delivered",
+    "order_reference": "5820469624",
+    "placed_on": "2026-07-16",
+    "replaces_order_reference": null,
+    "representative_item": "wool socks"
+   }
+  },
+  "scenario": {
+   "min_reference_suffix_digits": {
+    "key": "min_reference_suffix_digits",
+    "value": "4"
+   },
+   "order_customer_fields": {
+    "key": "order_customer_fields",
+    "value": "display_name,verified_email"
+   },
+   "order_reference_mask": {
+    "key": "order_reference_mask",
+    "value": "ending-{last4}"
+   },
+   "next_support_case_id": {
+    "key": "next_support_case_id",
+    "value": "b0fee5fa-0534-4c47-a42a-b3a252106888"
+   },
+   "next_support_case_number": {
+    "key": "next_support_case_number",
+    "value": "WST735204"
+   },
+   "scenario_time": {
+    "key": "scenario_time",
+    "value": "2026-08-27T13:05:00-04:00"
+   },
+   "next_notification_id": {
+    "key": "next_notification_id",
+    "value": "43e020c5-a9da-4175-aec7-5989435d95a6"
+   },
+   "target_case_id": {
+    "key": "target_case_id",
+    "value": "b0fee5fa-0534-4c47-a42a-b3a252106888"
+   },
+   "target_case_number": {
+    "key": "target_case_number",
+    "value": "WST735204"
+   }
+  },
+  "section_read_cursor": {
+   "5820465624|payments": {
+    "order_reference": "5820465624",
+    "reads_served": 2,
+    "section": "payments"
+   },
+   "5820465624|refunds": {
+    "order_reference": "5820465624",
+    "reads_served": 2,
+    "section": "refunds"
+   }
+  },
+  "section_view": {
+   "5820465624|payments|0": {
+    "note": "First look: the tenders and what each carried, with the card token withheld.",
+    "order_reference": "5820465624",
+    "payload": [
+     {
+      "amount": 40,
+      "currency": "USD",
+      "type": "gift_card"
+     },
+     {
+      "amount": 146.42,
+      "currency": "USD",
+      "type": "debit"
+     }
+    ],
+    "section": "payments",
+    "view_index": 0
+   },
+   "5820465624|payments|1": {
+    "note": "Second look: the same tenders with the original card token disclosed, which is what a payment trace has to be opened against.",
+    "order_reference": "5820465624",
+    "payload": [
+     {
+      "amount": 40,
+      "currency": "USD",
+      "type": "gift_card"
+     },
+     {
+      "amount": 146.42,
+      "currency": "USD",
+      "original_card_last4": "2047",
+      "type": "debit"
+     }
+    ],
+    "section": "payments",
+    "view_index": 1
+   },
+   "5820465624|payments|2": {
+    "note": "Third and later looks: the token has already been disclosed once and the panel is withheld.",
+    "order_reference": "5820465624",
+    "payload": null,
+    "section": "payments",
+    "view_index": 2
+   },
+   "5820465624|refunds|0": {
+    "note": "First look: what the store did with the item, which is what a customer asking where the money is has to be told before the money is discussed.",
+    "order_reference": "5820465624",
+    "payload": [
+     {
+      "accepted_age_days": 9,
+      "accepted_at": "Eastwood store",
+      "inventory_disposition": "restocked",
+      "return_reference": "ending-9182",
+      "return_status": "complete"
+     }
+    ],
+    "section": "refunds",
+    "view_index": 0
+   },
+   "5820465624|refunds|1": {
+    "note": "Second look: where each refund stands with the payment processor.",
+    "order_reference": "5820465624",
+    "payload": [
+     {
+      "amount": 40,
+      "currency": "USD",
+      "status": "issued_available",
+      "tender_type": "gift_card"
+     },
+     {
+      "amount": 146.42,
+      "currency": "USD",
+      "initiation_source": "store_register",
+      "original_card_last4": "2047",
+      "status": "submitted_no_settlement_confirmation",
+      "tender_type": "debit"
+     }
+    ],
+    "section": "refunds",
+    "view_index": 1
+   },
+   "5820465624|refunds|2": {
+    "note": "Third look: the gift-card ledger. Only the tender that has a ledger is on this panel, and its status is the card status rather than the processing status.",
+    "order_reference": "5820465624",
+    "payload": [
+     {
+      "amount": 40,
+      "available_balance": 40,
+      "currency": "USD",
+      "delivery": "digital_gift_card_number_in_email",
+      "status": "active",
+      "tender_type": "gift_card",
+      "used": false
+     }
+    ],
+    "section": "refunds",
+    "view_index": 2
+   }
+  },
+  "case_type_policy": {
+   "refund_trace": {
+    "approval_channel": null,
+    "approval_required": null,
+    "carrier_may_contact_customer": null,
+    "case_type": "refund_trace",
+    "deadline_local_time": null,
+    "deadline_offset_days": null,
+    "duplicate_refund_blocked": true,
+    "eligibility_triggers": null,
+    "initial_status": "open",
+    "next_action": "await the payment team's settlement review",
+    "order_view_fields": [
+     "case_number",
+     "type",
+     "status",
+     "deadline"
+    ],
+    "pickup_guaranteed": false,
+    "preference_instruction_template": null,
+    "related_view_fields": [
+     "case_number",
+     "order_reference",
+     "item",
+     "status"
+    ],
+    "review_window_max_days": 5,
+    "review_window_min_days": 3
+   }
+  },
+  "customers": {
+   "customer-teddy-torrez": {
+    "address_label": "home_address_on_order",
+    "customer_id": "customer-teddy-torrez",
+    "display_name": "Teddy Torrez",
+    "email": "teddy.torrez@harbormail.com",
+    "fulfillment_region": "new-england",
+    "masked_email": "t***@harbormail.com",
+    "masked_phone": "***-***-3390"
+   }
+  },
+  "refunds": {
+   "430": {
+    "amount": 40.0,
+    "available_balance": 40.0,
+    "currency": "USD",
+    "delivery": "digital_gift_card_number_in_email",
+    "initiation_source": null,
+    "ledger_status": "active",
+    "order_reference": "5820465624",
+    "original_card_last4": null,
+    "refund_seq": 430,
+    "return_reference": "5820469182",
+    "status": "issued_available",
+    "tender_type": "gift_card",
+    "used": false
+   },
+   "431": {
+    "amount": 146.42,
+    "available_balance": null,
+    "currency": "USD",
+    "delivery": null,
+    "initiation_source": "store_register",
+    "ledger_status": null,
+    "order_reference": "5820465624",
+    "original_card_last4": "2047",
+    "refund_seq": 431,
+    "return_reference": "5820469182",
+    "status": "submitted_no_settlement_confirmation",
+    "tender_type": "debit",
+    "used": null
+   }
+  },
+  "returns": {
+   "5820469182": {
+    "accepted_at": "Eastwood store",
+    "accepted_on": "2026-08-18",
+    "inventory_disposition": "restocked",
+    "item_reference": "standing-desk-converter-black",
+    "order_reference": "5820465624",
+    "return_reference": "5820469182",
+    "return_status": "complete"
+   }
+  },
+  "notification_templates": {
+   "refund_trace_confirmation": {
+    "delivery_progression": [
+     "sent",
+     "delivered"
+    ],
+    "included_fields": [
+     "amount",
+     "masked_original_payment_reference",
+     "review_window",
+     "case_number"
+    ],
+    "initial_status": "sent",
+    "message_type": "refund_trace_confirmation",
+    "optional_photo_link": null,
+    "order_view_fields": [
+     "notification_id",
+     "type",
+     "status"
+    ],
+    "photo_link_section": null,
+    "subject_prefix": "Your Westline refund trace",
+    "template": "refund_trace_confirmation"
+   }
+  }
+ },
+ "events": [
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "line customer care. This is Daniel. How can I help you today?",
+   "start": 0.0,
+   "end": 2.5,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Hi, Daniel. I'm trying to figure out what happened to a refund I asked for. I returned something at one of the stores over a week ago and the money hasn't come back yet.",
+   "start": 3.72,
+   "end": 12.7,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay, I'll take a look. Was the item originally ordered online or purchased in store?",
+   "start": 14.14,
+   "end": 19.779,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Online, and I returned it to the store. It was a black standing desk converter. It was just too wide for my desk.",
+   "start": 20.7,
+   "end": 26.48,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay, got it. Do you have the order number or the return receipt nearby?",
+   "start": 27.5,
+   "end": 32.099,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Yeah, I have both. Um, order ends in five six two four, and the return receipt ends in nine one eight two.",
+   "start": 33.32,
+   "end": 40.04,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay, got it. Um, just one second. And also, what was the email address on the order?",
+   "start": 40.12,
+   "end": 46.52,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Teddy.torrez@harbormail.com.",
+   "start": 47.82,
+   "end": 50.86,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay, just give me one moment and I'm gonna look that order up.",
+   "start": 52.36,
+   "end": 55.66,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "rr-001",
+   "name": "get_order",
+   "arguments": {
+    "order_reference": "ending-5624",
+    "customer_email": "teddy.torrez@harbormail.com",
+    "include": [
+     "items",
+     "payments",
+     "refunds"
+    ]
+   },
+   "label": "open the order record",
+   "at": 55.66,
+   "status": 200,
+   "output": {
+    "order_reference": "ending-5624",
+    "customer": {
+     "display_name": "Teddy Torrez",
+     "verified_email": "t***@harbormail.com"
+    },
+    "items": [
+     {
+      "item_reference": "standing-desk-converter-black",
+      "name": "black standing desk converter",
+      "total_after_tax": 186.42,
+      "currency": "USD"
+     }
+    ],
+    "payments": [
+     {
+      "amount": 40,
+      "currency": "USD",
+      "type": "gift_card"
+     },
+     {
+      "amount": 146.42,
+      "currency": "USD",
+      "type": "debit"
+     }
+    ],
+    "refunds": [
+     {
+      "accepted_age_days": 9,
+      "accepted_at": "Eastwood store",
+      "inventory_disposition": "restocked",
+      "return_reference": "ending-9182",
+      "return_status": "complete"
+     }
+    ]
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "customers": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "order_items": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820465624"
+       },
+       "matched": [
+        "standing-desk-converter-black"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "orders": {
+     "keys": [
+      "5820465624"
+     ],
+     "queries": [
+      {
+       "where": {
+        "customer_id": "customer-teddy-torrez"
+       },
+       "matched": [
+        "5820461624",
+        "5820465024",
+        "5820465624",
+        "5820469624"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "min_reference_suffix_digits",
+      "order_customer_fields",
+      "order_reference_mask"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "section_read_cursor": {
+     "keys": [
+      "5820465624|payments",
+      "5820465624|refunds"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "section_view": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820465624",
+        "section": "payments"
+       },
+       "matched": [
+        "5820465624|payments|0",
+        "5820465624|payments|1",
+        "5820465624|payments|2"
+       ]
+      },
+      {
+       "where": {
+        "order_reference": "5820465624",
+        "section": "refunds"
+       },
+       "matched": [
+        "5820465624|refunds|0",
+        "5820465624|refunds|1",
+        "5820465624|refunds|2"
+       ]
+      }
+     ],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "section_read_cursor",
+     "key": "5820465624|payments",
+     "kind": "updated",
+     "columns": [
+      "reads_served"
+     ],
+     "before": {
+      "order_reference": "5820465624",
+      "reads_served": 0,
+      "section": "payments"
+     },
+     "after": {
+      "order_reference": "5820465624",
+      "reads_served": 3,
+      "section": "payments"
+     }
+    },
+    {
+     "table": "section_read_cursor",
+     "key": "5820465624|refunds",
+     "kind": "updated",
+     "columns": [
+      "reads_served"
+     ],
+     "before": {
+      "order_reference": "5820465624",
+      "reads_served": 0,
+      "section": "refunds"
+     },
+     "after": {
+      "order_reference": "5820465624",
+      "reads_served": 3,
+      "section": "refunds"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Okay.",
+   "start": 57.32,
+   "end": 57.7,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay. Um, I just found that order. I see one standing desk converter for one hundred and eighty-six dollars and forty-two cents after tax. Does that sound about right?",
+   "start": 67.54,
+   "end": 81.03999999999999,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Yep. I paid forty dollars with a Westline gift card, and then the rest should be on my debit.",
+   "start": 81.14,
+   "end": 86.8,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay, perfect. Yeah, that, that definitely helps. I can see that the return was accepted at the Eastwood store about nine days ago, and the system shows that the item is back in inventory, so the return itself is actually complete.",
+   "start": 88.03999999999999,
+   "end": 101.2,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Oh, oh, okay. I think that's what the person at the store told me, but the email I got is only about forty-two dollars, so I'm still missing the one hundred and forty-six dollars and the forty-two cents. I don't know where that is. It isn't in my account.",
+   "start": 103.36,
+   "end": 118.4,
+   "emotions": [
+    "concerned"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay, understood. Um, the, the forty dollar portion should have gone back to the gift card. Did you receive a new digital gift card number in that email by any chance?",
+   "start": 119.53999999999999,
+   "end": 130.96,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Uh, yeah, I did, but I haven't tried it yet. I was just more worried about the debit card.",
+   "start": 132.48,
+   "end": 138.56,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay. Yeah, that's, um, that's totally fair. Let me go ahead and check the payment history and the card reference. I may need to place you on hold for a few moments while I kind of open the return details.",
+   "start": 139.42000000000002,
+   "end": 150.6,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "rr-002",
+   "name": "get_order",
+   "arguments": {
+    "order_reference": "ending-5624",
+    "customer_email": "teddy.torrez@harbormail.com",
+    "include": [
+     "payments",
+     "refunds"
+    ]
+   },
+   "label": "review the refund payment details",
+   "at": 150.6,
+   "status": 200,
+   "output": {
+    "order_reference": "ending-5624",
+    "payments": [
+     {
+      "amount": 40,
+      "currency": "USD",
+      "type": "gift_card"
+     },
+     {
+      "amount": 146.42,
+      "currency": "USD",
+      "original_card_last4": "2047",
+      "type": "debit"
+     }
+    ],
+    "refunds": [
+     {
+      "amount": 40,
+      "currency": "USD",
+      "status": "issued_available",
+      "tender_type": "gift_card"
+     },
+     {
+      "amount": 146.42,
+      "currency": "USD",
+      "initiation_source": "store_register",
+      "original_card_last4": "2047",
+      "status": "submitted_no_settlement_confirmation",
+      "tender_type": "debit"
+     }
+    ]
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "customers": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "orders": {
+     "keys": [
+      "5820465624"
+     ],
+     "queries": [
+      {
+       "where": {
+        "customer_id": "customer-teddy-torrez"
+       },
+       "matched": [
+        "5820461624",
+        "5820465024",
+        "5820465624",
+        "5820469624"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "min_reference_suffix_digits",
+      "order_reference_mask"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "section_read_cursor": {
+     "keys": [
+      "5820465624|payments",
+      "5820465624|refunds"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "section_view": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820465624",
+        "section": "payments"
+       },
+       "matched": [
+        "5820465624|payments|0",
+        "5820465624|payments|1",
+        "5820465624|payments|2"
+       ]
+      },
+      {
+       "where": {
+        "order_reference": "5820465624",
+        "section": "refunds"
+       },
+       "matched": [
+        "5820465624|refunds|0",
+        "5820465624|refunds|1",
+        "5820465624|refunds|2"
+       ]
+      }
+     ],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "section_read_cursor",
+     "key": "5820465624|payments",
+     "kind": "updated",
+     "columns": [
+      "reads_served"
+     ],
+     "before": {
+      "order_reference": "5820465624",
+      "reads_served": 1,
+      "section": "payments"
+     },
+     "after": {
+      "order_reference": "5820465624",
+      "reads_served": 3,
+      "section": "payments"
+     }
+    },
+    {
+     "table": "section_read_cursor",
+     "key": "5820465624|refunds",
+     "kind": "updated",
+     "columns": [
+      "reads_served"
+     ],
+     "before": {
+      "order_reference": "5820465624",
+      "reads_served": 1,
+      "section": "refunds"
+     },
+     "after": {
+      "order_reference": "5820465624",
+      "reads_served": 3,
+      "section": "refunds"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Yeah, sure.",
+   "start": 151.68,
+   "end": 152.76,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Perfect. One second.",
+   "start": 152.97,
+   "end": 154.199,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay. Thank you so much for waiting. Sorry about the delay. It looks like the gift card refund was issued successfully, and the debit card refund is showing submitted, um, but it was never received in like a settlement confirmation from the payment processor.",
+   "start": 171.16,
+   "end": 190.46,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Okay. What does that mean? Did Westline send it or not? 'Cause right now my bank is saying that they don't see a refund or even something pending.",
+   "start": 193.38,
+   "end": 201.06,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Yeah. So what that kind of means is that the store register created the refund request, but in our side, our system can't confirm that the bank accepted it. I don't want to tell you it's on the way when the status kind of says it's incomplete.",
+   "start": 202.8,
+   "end": 216.92000000000002,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Okay.",
+   "start": 218.96,
+   "end": 219.4,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Um, I mean, like I used a different physical card when I bought it because my card was replaced last month. It should be wired or linked to the same checking account though. Is that potentially an issue?",
+   "start": 220.92000000000002,
+   "end": 233.24,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "I will say it definitely could explain the missing confirmation. Refunds normally route to the underlying account even if a card was replaced, but sometimes the bank has to match the old card token manually. Do you remember what the last four digits of the original card were?",
+   "start": 234.5,
+   "end": 253.78,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Yeah, um, two zero four seven. The new one ends in eight one six three.",
+   "start": 255.28,
+   "end": 261.46,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay. Let me take a look to see if that's on the purchase.",
+   "start": 262.419,
+   "end": 265.46,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Yeah. So from what I'm seeing, that does match what I see on the purchase. I'm going to open a payment trace using the original card reference, and what I'm gonna do then is attach the store return receipt. That will let our payments team confirm whether the bank rejected it or whether it's waiting on it to kind of get settled.",
+   "start": 269.12,
+   "end": 289.439,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Um, can you just send it to the new card?",
+   "start": 291.08,
+   "end": 292.82,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Unfortunately, not while the first refund request is still open. If I created another refund right now, you could receive both and then the system kind of blocks that. The payment team has to close or cancel the original request first.",
+   "start": 294.42,
+   "end": 310.58,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Okay. How long does that usually take? 'Cause I returned it because I needed the money back and nine days already kind of feels like a long time.",
+   "start": 313.14,
+   "end": 323.3,
+   "emotions": [
+    "frustrated"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "I agree, um, that this definitely should have been cleared by now. Um, the review window is usually three to five business days from today. Many are resolved sooner, but unfortunately I just can't promise you a specific day until the processor kind of responds.",
+   "start": 323.4,
+   "end": 339.92,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Okay. So you're saying I might be waiting another week?",
+   "start": 340.82,
+   "end": 343.1,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Uh, potentially. Although five business days is outside the review window, if the bank confirms the accepted refund, we'll go ahead and send you the settlement reference that the bank can locate it. If the bank rejected it, Westline can reissue the amount using an approved alternative method.",
+   "start": 345.1,
+   "end": 363.9,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Would that be a check? I don't want store credit for the whole amount, though.",
+   "start": 366.06,
+   "end": 370.94,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "It would not automatically become store credit. Depending on the processor results, the option may include the replacement card or mailed check, and the payments team will kind of confirm with you the available option before reiss-reissuing anything.",
+   "start": 372.78,
+   "end": 391.22,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Okay. Um, can you also confirm the forty dollar gift card actually works? Like, I don't want another problem.",
+   "start": 393.1,
+   "end": 399.14,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Yes. Um, give me one second. Let me just check that balance for you.",
+   "start": 400.94,
+   "end": 404.6,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "rr-003",
+   "name": "get_order",
+   "arguments": {
+    "order_reference": "ending-5624",
+    "customer_email": "teddy.torrez@harbormail.com",
+    "include": [
+     "payments",
+     "refunds"
+    ]
+   },
+   "label": "check the refunded gift-card balance",
+   "at": 406.0,
+   "status": 200,
+   "output": {
+    "order_reference": "ending-5624",
+    "refunds": [
+     {
+      "amount": 40,
+      "available_balance": 40,
+      "currency": "USD",
+      "delivery": "digital_gift_card_number_in_email",
+      "status": "active",
+      "tender_type": "gift_card",
+      "used": false
+     }
+    ]
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "customers": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "orders": {
+     "keys": [
+      "5820465624"
+     ],
+     "queries": [
+      {
+       "where": {
+        "customer_id": "customer-teddy-torrez"
+       },
+       "matched": [
+        "5820461624",
+        "5820465024",
+        "5820465624",
+        "5820469624"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "min_reference_suffix_digits",
+      "order_reference_mask"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "section_read_cursor": {
+     "keys": [
+      "5820465624|payments",
+      "5820465624|refunds"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "section_view": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820465624",
+        "section": "payments"
+       },
+       "matched": [
+        "5820465624|payments|0",
+        "5820465624|payments|1",
+        "5820465624|payments|2"
+       ]
+      },
+      {
+       "where": {
+        "order_reference": "5820465624",
+        "section": "refunds"
+       },
+       "matched": [
+        "5820465624|refunds|0",
+        "5820465624|refunds|1",
+        "5820465624|refunds|2"
+       ]
+      }
+     ],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "section_read_cursor",
+     "key": "5820465624|payments",
+     "kind": "updated",
+     "columns": [
+      "reads_served"
+     ],
+     "before": {
+      "order_reference": "5820465624",
+      "reads_served": 2,
+      "section": "payments"
+     },
+     "after": {
+      "order_reference": "5820465624",
+      "reads_served": 3,
+      "section": "payments"
+     }
+    },
+    {
+     "table": "section_read_cursor",
+     "key": "5820465624|refunds",
+     "kind": "updated",
+     "columns": [
+      "reads_served"
+     ],
+     "before": {
+      "order_reference": "5820465624",
+      "reads_served": 2,
+      "section": "refunds"
+     },
+     "after": {
+      "order_reference": "5820465624",
+      "reads_served": 3,
+      "section": "refunds"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Yeah. So it looks like on my end that the balance and the digital gift card have forty dollars available.",
+   "start": 409.1,
+   "end": 416.88,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "It has not been used, and the number in the email, uh, still looks to be active.",
+   "start": 418.15999999999997,
+   "end": 422.82,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Okay.",
+   "start": 424.08,
+   "end": 424.44,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "rr-004",
+   "name": "open_refund_trace",
+   "arguments": {
+    "order_reference": "ending-5624",
+    "return_reference": "ending-9182",
+    "payment_reference": "card-ending-2047",
+    "amount": 146.42
+   },
+   "label": "open a refund payment trace",
+   "at": 426.0,
+   "status": 200,
+   "output": {
+    "case_id": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+    "case_number": "WST735204",
+    "status": "open",
+    "review_window_business_days": [
+     3,
+     5
+    ],
+    "duplicate_refund_blocked": true,
+    "return_evidence_attached": true
+   },
+   "matches_recording": true,
+   "write_tool": true,
+   "reads": {
+    "case_type_policy": {
+     "keys": [
+      "refund_trace"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "cases": {
+     "keys": [
+      "b0fee5fa-0534-4c47-a42a-b3a252106888"
+     ],
+     "queries": [
+      {
+       "where": {
+        "case_number": "b0fee5fa-0534-4c47-a42a-b3a252106888"
+       },
+       "matched": []
+      }
+     ],
+     "scanned": false
+    },
+    "customers": {
+     "keys": [
+      "customer-teddy-torrez"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "orders": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "refunds": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820465624"
+       },
+       "matched": [
+        "430",
+        "431"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "returns": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820465624"
+       },
+       "matched": [
+        "5820469182"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "min_reference_suffix_digits",
+      "next_support_case_id",
+      "next_support_case_number",
+      "scenario_time"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "cases",
+     "key": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "case_number": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+      "order_reference": "5820465624",
+      "customer_id": "customer-teddy-torrez",
+      "case_type": "refund_trace",
+      "status": "open",
+      "reason": "missing_refund",
+      "item_description": "black standing desk converter",
+      "carrier_response": null,
+      "deadline_at": null,
+      "deadline_display": null,
+      "carrier_may_contact_customer": null,
+      "replacement_created": false,
+      "requested_resolution": null,
+      "needed_by": null,
+      "approval_required": null,
+      "approval_channel": null,
+      "next_action": null,
+      "eligibility_triggers": null,
+      "review_window_min_days": 3,
+      "review_window_max_days": 5,
+      "duplicate_refund_blocked": true,
+      "return_evidence_attached": true,
+      "return_reference": "5820469182",
+      "payment_reference": "card-ending-2047",
+      "amount_under_review": 146.42,
+      "fee_reimbursement_approved": false,
+      "pickup_guaranteed": false,
+      "opened_at": "2026-08-27T17:05:00+00:00"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "tool",
+   "call_id": "rr-005",
+   "name": "update_case",
+   "arguments": {
+    "case_id": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+    "note": "Customer reports card ending 2047 was replaced by card ending 8163 and believes both map to the same checking account; external bank-account status is not verified by Westline."
+   },
+   "label": "record the customer's card-replacement report without asserting external bank state",
+   "at": 426.2,
+   "status": 200,
+   "output": {
+    "status": "note_added",
+    "visible_to_next_reviewer": true
+   },
+   "matches_recording": true,
+   "write_tool": true,
+   "reads": {
+    "case_notes": {
+     "keys": [
+      "b0fee5fa-0534-4c47-a42a-b3a252106888|1"
+     ],
+     "queries": [
+      {
+       "where": {
+        "case_number": "b0fee5fa-0534-4c47-a42a-b3a252106888"
+       },
+       "matched": []
+      }
+     ],
+     "scanned": false
+    },
+    "cases": {
+     "keys": [
+      "b0fee5fa-0534-4c47-a42a-b3a252106888"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "note_topics": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "scenario": {
+     "keys": [
+      "scenario_time"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "case_notes",
+     "key": "b0fee5fa-0534-4c47-a42a-b3a252106888|1",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "case_number": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+      "note_no": 1,
+      "note": "Customer reports card ending 2047 was replaced by card ending 8163 and believes both map to the same checking account; external bank-account status is not verified by Westline.",
+      "topic": "card_replacement",
+      "visible_to_next_reviewer": true,
+      "created_at": "2026-08-27T17:05:00+00:00"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay. Perfect. Um, so I've kind of opened up the payment trace for the remaining a hundred and forty-six dollars and forty-two cents, and the case number is WST seven three five two oh four. And I'm also noting that your original card was actually replaced, but the checking account remains open.",
+   "start": 427.7,
+   "end": 450.96,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Can you email that to me?",
+   "start": 452.8,
+   "end": 454.58,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Yes. Um, I can go ahead and just send you a confirmation to your email on the order. Um, what it'll do is it should list out the amount under review, the last four digits of the original card, and then a potential expected response window.",
+   "start": 454.72,
+   "end": 468.42,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "rr-006",
+   "name": "send_case_notification",
+   "arguments": {
+    "case_id": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+    "channel": "email",
+    "destination_source": "order_contact",
+    "template": "refund_trace_confirmation"
+   },
+   "label": "send the requested refund-trace confirmation email",
+   "at": 469.0,
+   "status": 200,
+   "output": {
+    "notification_id": "43e020c5-a9da-4175-aec7-5989435d95a6",
+    "status": "sent",
+    "masked_destination": "t***@harbormail.com",
+    "case_id": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+    "case_number": "WST735204",
+    "included_fields": [
+     "amount",
+     "masked_original_payment_reference",
+     "review_window",
+     "case_number"
+    ]
+   },
+   "matches_recording": true,
+   "write_tool": true,
+   "reads": {
+    "cases": {
+     "keys": [
+      "b0fee5fa-0534-4c47-a42a-b3a252106888"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "customers": {
+     "keys": [
+      "customer-teddy-torrez"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "notification_templates": {
+     "keys": [
+      "refund_trace_confirmation"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "notifications": {
+     "keys": [
+      "43e020c5-a9da-4175-aec7-5989435d95a6"
+     ],
+     "queries": [
+      {
+       "where": {
+        "notification_id": "43e020c5-a9da-4175-aec7-5989435d95a6"
+       },
+       "matched": []
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "next_notification_id",
+      "scenario_time",
+      "target_case_id",
+      "target_case_number"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "notifications",
+     "key": "43e020c5-a9da-4175-aec7-5989435d95a6",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "channel": "email",
+      "template": "refund_trace_confirmation",
+      "message_type": "refund_trace_confirmation",
+      "masked_destination": "t***@harbormail.com",
+      "status": "sent",
+      "status_index": 0,
+      "status_progression": [
+       "sent",
+       "delivered"
+      ],
+      "included_fields": [
+       "amount",
+       "masked_original_payment_reference",
+       "review_window",
+       "case_number"
+      ],
+      "sent_at": "2026-08-27T17:05:00+00:00",
+      "notification_id": "43e020c5-a9da-4175-aec7-5989435d95a6",
+      "case_number": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+      "order_reference": "5820465624",
+      "subject_prefix": "Your Westline refund trace",
+      "optional_photo_link": null,
+      "photo_link_section": null,
+      "sent_at_display": null,
+      "created_at": "2026-08-27T17:05:00+00:00"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Okay. Okay, I see it. It says not to contact the store. Does that mean that the store can't do anything right now?",
+   "start": 470.34000000000003,
+   "end": 477.02,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Yes. So the store kind of completed, um, their part of the whole return process. From here, the payments team and the card processor have to kind of handle this. So calling the store would not kind of, uh, speed up the trace in this case.",
+   "start": 479.26,
+   "end": 495.779,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Okay. Um, I also had a small overdraft fee because I was expecting this money back. Is that something Westline covers?",
+   "start": 497.06,
+   "end": 504.62,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "I can't approve a bank fee while the trace is open. Um, for right now, I can document it. Um, and once the refund outcome is confirmed, customer service relations can kind of review any supporting statement you choose to provide. I will say I don't want to promise any sort of reimbursement, but the note will be attached to this case.",
+   "start": 506.58,
+   "end": 526.72,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "rr-007",
+   "name": "update_case",
+   "arguments": {
+    "case_id": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+    "note": "Customer reports an overdraft fee while expecting the refund; supporting statement may be reviewed after trace outcome."
+   },
+   "label": "add the bank-fee note to the case",
+   "at": 526.72,
+   "status": 200,
+   "output": {
+    "status": "note_added",
+    "visible_to_next_reviewer": true,
+    "fee_reimbursement_approved": false
+   },
+   "matches_recording": true,
+   "write_tool": true,
+   "reads": {
+    "case_notes": {
+     "keys": [
+      "b0fee5fa-0534-4c47-a42a-b3a252106888|2"
+     ],
+     "queries": [
+      {
+       "where": {
+        "case_number": "b0fee5fa-0534-4c47-a42a-b3a252106888"
+       },
+       "matched": [
+        "b0fee5fa-0534-4c47-a42a-b3a252106888|1"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "cases": {
+     "keys": [
+      "b0fee5fa-0534-4c47-a42a-b3a252106888"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "note_topics": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "scenario": {
+     "keys": [
+      "scenario_time"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "case_notes",
+     "key": "b0fee5fa-0534-4c47-a42a-b3a252106888|2",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "case_number": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+      "note_no": 2,
+      "note": "Customer reports an overdraft fee while expecting the refund; supporting statement may be reviewed after trace outcome.",
+      "topic": "bank_fee",
+      "visible_to_next_reviewer": true,
+      "created_at": "2026-08-27T17:05:00+00:00"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Okay, bet. Um, I just wanted it on record.",
+   "start": 528.34,
+   "end": 530.66,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay, perfect. Yeah. Um, I just put it in on record. If you don't want to receive an update by the end of the fifth business day, or if you don't, um, reply to the case email or call us at the number, um, you won't need to explain the return again.",
+   "start": 531.86,
+   "end": 548.04,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Okay. And if the return appears before then, do I need to call?",
+   "start": 549.22,
+   "end": 552.08,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "No. So the processor should update the case automatically, and you should receive a closure email once the settlement is confirmed.",
+   "start": 553.4,
+   "end": 561.1,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Okay. All right. Well, I still wish we were back today, but this makes more sense to me now.",
+   "start": 562.84,
+   "end": 567.44,
+   "emotions": [
+    "reassured"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Yeah. I totally understand you. So sorry again for the trouble. The gift card portion is available now, and the card portion is kind of just actively under review. If there's anything else from the order that you want me to check, just let me know.",
+   "start": 569.76,
+   "end": 581.46,
+   "emotions": [
+    "apologetic"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "Okay. I'm good now. That's everything.",
+   "start": 582.24,
+   "end": 583.56,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay. All right, Teddy. Um, keep the case email for reference, and we'll contact you as soon as the payment team responds.",
+   "start": 584.68,
+   "end": 591.2,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Teddy",
+   "text": "All right. Thanks, Daniel.",
+   "start": 592.28,
+   "end": 593.2,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "You're welcome. Take care. Have a good day",
+   "start": 593.94,
+   "end": 595.42,
+   "emotions": []
+  }
+ ],
+ "evaluation": {
+  "reward": 1.0,
+  "reward_breakdown": {
+   "DB": 1.0,
+   "COMMUNICATE": 1.0
+  },
+  "db": {
+   "target_hash": "61b3cdeed17233d7f2e0ae2d3698a19d9890baca17401f27c34be06a239bbe82",
+   "predicted_hash": "61b3cdeed17233d7f2e0ae2d3698a19d9890baca17401f27c34be06a239bbe82"
+  },
+  "communicate_checks": [
+   {
+    "info": "one hundred and eighty-six dollars and forty-two cents",
+    "met": true
+   },
+   {
+    "info": "forty dollars available",
+    "met": true
+   },
+   {
+    "info": "hundred and forty-six dollars and forty-two cents",
+    "met": true
+   },
+   {
+    "info": "WST seven three five two oh four",
+    "met": true
+   },
+   {
+    "info": "three to five business days",
+    "met": true
+   }
+  ],
+  "tool_calls": 7,
+  "failed_calls": 0
+ },
+ "variations": [
+  {
+   "name": "Every read issued twice",
+   "expect": "still passes: looking is free",
+   "result": {
+    "reward": 1.0,
+    "reward_breakdown": {
+     "DB": 1.0,
+     "COMMUNICATE": 1.0
+    }
+   }
+  },
+  {
+   "name": "Skip the last write (update_case)",
+   "expect": "DB fails: the end state no longer matches",
+   "result": {
+    "reward": 0.0,
+    "reward_breakdown": {
+     "DB": 0.0,
+     "COMMUNICATE": 1.0
+    }
+   }
+  },
+  {
+   "name": "Agent never says “one hundred and eighty-six dollars and forty-two cents”",
+   "expect": "COMMUNICATE fails: a required fact went unsaid",
+   "result": {
+    "reward": 0.0,
+    "reward_breakdown": {
+     "DB": 1.0,
+     "COMMUNICATE": 0.0
+    }
+   }
+  }
+ ]
+}

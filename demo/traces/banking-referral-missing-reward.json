@@ -1,0 +1,1395 @@
+{
+ "conversation_id": "banking-referral-missing-reward",
+ "domain": "banking",
+ "task": {
+  "description": {
+   "purpose": "Verify the caller, find his referral and explain from the published terms why the 100 dollar bonus is still pending, then deliver a secure referral-status tracker to his message center with an email notice that a secure message is waiting.",
+   "relevant_policies": "domains/banking/policy.md",
+   "notes": "The referred person is his sister, a third party whose purchases and account details cannot be disclosed or certified. The caller pushes on timing and deadlines, and the agent must not promise a date or estimate a deadline that only the tracker holds."
+  },
+  "user_scenario": {
+   "persona": "A mildly annoyed professional calling from his office. He speaks in short, direct sentences, softens once he understands the process, and gets briefly distracted when someone walks in near the end.",
+   "instructions": {
+    "domain": "banking",
+    "reason_for_call": "You referred your sister for one of the bank's credit cards. She was approved, but your 100 dollar referral bonus never showed up. You have checked the app three times and it just says pending.",
+    "known_info": "You are Daniel Brooks (Brooks spelled B as in Boston, R-O-O-K-S).\nThe email on your profile is daniel.brooks17@gmail.com.\nYour billing ZIP code is 27609.\nYour birthday is October 12.\nYour sister is Alisa Brooks. She applied on August 3 and got the card about 10 days ago. She told you she used it for groceries.\nShe used a different email on her application than the one you invited.",
+    "unknown_info": "You do not know the referral terms, the qualifying purchase window, how long the bonus takes to post, or the exact deadline.",
+    "task_instructions": "Open by saying you referred your sister, she was approved, and the 100 dollar bonus never showed up. Say you are a little annoyed and the app keeps saying pending. Give your name, email, ZIP and birthday only when asked. When asked when your sister applied, say August 3, give her name, and say she got the card about 10 days ago. Mention that she told you she used it for groceries.\n\nIf told it can take up to two billing cycles, push back that the banner made it sound immediate and you thought you would have it by now. Ask whether the 100 dollars is still the offer. Ask how you are supposed to track it without calling every week. If the agent sends you a tracker, say you are opening it and read back that it says purchase qualification pending, and ask if that is the same thing they see. Ask them to email the link too. If they say the tool stays inside online banking but offer an email notice that a secure message is waiting, say okay, do that.\n\nWhen asked if there is anything else, first say that is pretty much it, then ask whether pending means Alisa did something wrong or has not paid her balance yet. Then mention she used a different email on the application than the one you invited and ask if that could break the match. Say she was about to try applying again. Mention the tracker has a question mark next to qualifying purchase; if asked to read it, say it reads: Purchases must be eligible and fully posted, not returned or cash-like. Say she bought groceries so that sounds eligible. Ask for the dates again, then ask whether December is the deadline. Finally say someone just walked into your office and that you are writing to your sister telling her not to reapply, then end the call."
+   }
+  },
+  "communicate_info": [
+   "100 dollars statement credit",
+   "within 90 days",
+   "2 billing cycles",
+   "RF8241",
+   "August 2nd"
+  ],
+  "nl_assertions": [
+   "Agent verifies the caller's billing ZIP and birth month and day before discussing the referral.",
+   "Agent tells the caller that approval alone does not trigger the referral reward.",
+   "Agent tells the caller that it cannot see or disclose his sister's purchases or balance and cannot confirm her purchase from his profile.",
+   "Agent tells the caller that his sister should not reapply.",
+   "Agent tells the caller that the working tracker stays inside online banking and that the email only says a secure message is waiting.",
+   "Agent does not give the caller an estimated deadline and tells him to use the date shown in the tracker."
+  ],
+  "reward_basis": [
+   "DB",
+   "COMMUNICATE"
+  ]
+ },
+ "tables": {
+  "card_accounts": 283,
+  "card_products": 12,
+  "card_restrictions": 50,
+  "card_section_policy": 6,
+  "card_section_read_cursor": 0,
+  "card_section_view": 6,
+  "channel_confirmations": 25,
+  "customers": 102,
+  "delivery_channels": 2,
+  "id_allocator": 2,
+  "identity_verifications": 42,
+  "kb_records": 53,
+  "notification_templates": 7,
+  "notifications": 40,
+  "referrals": 127,
+  "restriction_transactions": 90,
+  "scenario": 11,
+  "self_service_sessions": 53,
+  "service_cases": 68,
+  "session_deliveries": 79,
+  "specialist_transfers": 0,
+  "transactions": 582,
+  "travel_notices": 55,
+  "trusted_channels": 118,
+  "welcome_offers": 15,
+  "workflow_profiles": 3
+ },
+ "rows": {
+  "scenario": {
+   "scenario_time": {
+    "key": "scenario_time",
+    "value": "2026-08-28T09:09:00-04:00"
+   },
+   "time_status": {
+    "key": "time_status",
+    "value": "available"
+   },
+   "timezone": {
+    "key": "timezone",
+    "value": "America/New_York"
+   },
+   "next_identity_verification_id": {
+    "key": "next_identity_verification_id",
+    "value": "05f09e63-bd3c-4a75-813f-5429ac6d685c"
+   },
+   "target_referral_id": {
+    "key": "target_referral_id",
+    "value": "ce7d58b0-b5fc-42cb-a6e0-7a57929e1205"
+   },
+   "target_referral_reference": {
+    "key": "target_referral_reference",
+    "value": "RF8241"
+   },
+   "next_self_service_session_id": {
+    "key": "next_self_service_session_id",
+    "value": "b549b0e6-fced-4596-8794-db42a62476a6"
+   },
+   "next_notification_id": {
+    "key": "next_notification_id",
+    "value": "4f70ccca-a2a3-4b99-ae66-cfb9d0e975c8"
+   }
+  },
+  "customers": {
+   "34d61a18-ede8-4533-b130-7e5937bc1e9d": {
+    "account_id": "SF241903",
+    "billing_zip": "27609",
+    "birth_day": 12,
+    "birth_month": 10,
+    "caller_channel_match": null,
+    "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+    "family_name": "Brooks",
+    "full_name": "Daniel Brooks",
+    "login_identifier_kind": "email",
+    "mobile_last4": "3318",
+    "notice_slug": "daniel",
+    "notification_email": "daniel.brooks17@gmail.com",
+    "primary_email": "daniel.brooks17@gmail.com",
+    "required_verification_methods": [
+     "billing_zip",
+     "birth_month_day"
+    ],
+    "verification_key": "daniel-brooks"
+   }
+  },
+  "service_cases": {
+   "case-daniel-brooks-referral": {
+    "case_id": "case-daniel-brooks-referral",
+    "case_kind": "referral",
+    "case_slug": "referral",
+    "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+    "opened_at": "2026-08-28T09:08:03-04:00",
+    "status": "open"
+   }
+  },
+  "referrals": {
+   "ce7d58b0-b5fc-42cb-a6e0-7a57929e1205": {
+    "application_status": "approved",
+    "deadline_on": "2026-10-31",
+    "display_rank": 100,
+    "invited_at_display": "August 2",
+    "invited_channel": "email",
+    "invited_masked": "a-brooks…",
+    "invited_on": "2026-08-02",
+    "offer": "$100 statement credit",
+    "offer_version_record_id": "dab2da6a-4343-4ea3-9b0d-df98a0c96360",
+    "qualification_status": "purchase_pending",
+    "referral_id": "ce7d58b0-b5fc-42cb-a6e0-7a57929e1205",
+    "referring_customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d"
+   }
+  },
+  "delivery_channels": {
+   "secure_message": {
+    "channel": "secure_message",
+    "delivered_status": "delivered",
+    "destination_source": "none"
+   }
+  },
+  "workflow_profiles": {
+   "referral_status": {
+    "access_location": null,
+    "allowed_customer_actions": null,
+    "claim_tracked": false,
+    "credit_pull_authorized": null,
+    "display_label_template": null,
+    "resource_suffix_source": "resource_id",
+    "resume_supported": true,
+    "save_and_continue": null,
+    "session_slug": "referral",
+    "visible_stages": [
+     "invite",
+     "approval",
+     "qualification",
+     "reward_posting"
+    ],
+    "workflow": "referral_status"
+   }
+  },
+  "notification_templates": {
+   "secure_message_waiting": {
+    "channel": "email",
+    "contains_working_secure_link": false,
+    "status_on_send": "sent",
+    "template": "secure_message_waiting"
+   }
+  }
+ },
+ "events": [
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "...help you with?",
+   "start": 0.0,
+   "end": 0.541,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "Hi. I referred my sister for one of your cards. She was approved, and the 100 dollars bonus never showed up. Honestly, a little annoyed. I've checked the app 3 times, and it just keeps saying pending.",
+   "start": 1.72,
+   "end": 13.7,
+   "emotions": [
+    "annoyed"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "I see. I can completely get why that's frustrating. Let's pull up the referral and see exactly where it's getting held up. May I have your full name?",
+   "start": 15.46,
+   "end": 21.96,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "Daniel Brooks. Brooks, B as in Boston, R-O-O-K-S.",
+   "start": 23.1,
+   "end": 30.02,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "Awesome. Thank you. What email address is on your profile?",
+   "start": 32.2,
+   "end": 34.58,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "daniel.brooks17@gmail.com.",
+   "start": 36.64,
+   "end": 41.06,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "Okay. Uh, just give me a moment while I pull that up.",
+   "start": 43.04,
+   "end": 46.56,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "br-001",
+   "name": "lookup_customer",
+   "arguments": {
+    "email": "daniel.brooks17@gmail.com"
+   },
+   "label": "find the customer by email",
+   "at": 47.16,
+   "status": 200,
+   "output": {
+    "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+    "match": "unique",
+    "required_verification_methods": [
+     "billing_zip",
+     "birth_month_day"
+    ]
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "customers": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "trusted_channels": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+        "enrolled": true
+       },
+       "matched": []
+      }
+     ],
+     "scanned": false
+    }
+   },
+   "writes": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "br-002",
+   "name": "get_current_time",
+   "arguments": {},
+   "label": "retrieve the current time for verification records",
+   "at": 57.0,
+   "status": 200,
+   "output": {
+    "status": "available",
+    "timestamp": "2026-08-28T09:09:00-04:00",
+    "timezone": "America/New_York"
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "scenario": {
+     "keys": [
+      "scenario_time",
+      "time_status",
+      "timezone"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "All right. I'm recording the verification time at 9:09 AM,",
+   "start": 57.14,
+   "end": 60.64,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "uh, the 28th of August 2026. I'll ask 2 questions for your profile. Please don't provide a full card number, okay?",
+   "start": 62.12,
+   "end": 68.72,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "Yeah, go ahead.",
+   "start": 70.3,
+   "end": 71.02,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "What is your billing zip and the month and day of birth?",
+   "start": 78.84,
+   "end": 83.02,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "2, 7, 6, 0, 9, October 12th.",
+   "start": 85.24,
+   "end": 89.86,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "Hello?",
+   "start": 94.92,
+   "end": 95.18,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "2, 7, 6, 0, 9, October 12th.",
+   "start": 98.38,
+   "end": 102.03,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "All right. I'm checking that now. This may take a few seconds, okay?",
+   "start": 106.74000000000001,
+   "end": 109.8,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "br-003",
+   "name": "verify_customer_identity",
+   "arguments": {
+    "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+    "billing_zip": "27609",
+    "birth_month_day": "October 12",
+    "verified_at": "2026-08-28T09:09:00-04:00"
+   },
+   "label": "validate the supplied identity factors",
+   "at": 130.8,
+   "status": 200,
+   "output": {
+    "verification_id": "05f09e63-bd3c-4a75-813f-5429ac6d685c",
+    "status": "verified",
+    "matched_methods": [
+     "billing_zip",
+     "birth_month_day"
+    ],
+    "verified_at": "2026-08-28T09:09:00-04:00"
+   },
+   "matches_recording": true,
+   "write_tool": true,
+   "reads": {
+    "customers": {
+     "keys": [
+      "34d61a18-ede8-4533-b130-7e5937bc1e9d"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "identity_verifications": {
+     "keys": [
+      "05f09e63-bd3c-4a75-813f-5429ac6d685c"
+     ],
+     "queries": [
+      {
+       "where": {
+        "verification_id": "05f09e63-bd3c-4a75-813f-5429ac6d685c"
+       },
+       "matched": []
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "next_identity_verification_id",
+      "scenario_time"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "service_cases": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+        "status": "open"
+       },
+       "matched": [
+        "case-daniel-brooks-referral"
+       ]
+      }
+     ],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "identity_verifications",
+     "key": "05f09e63-bd3c-4a75-813f-5429ac6d685c",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "verification_id": "05f09e63-bd3c-4a75-813f-5429ac6d685c",
+      "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+      "required_methods": [
+       "billing_zip",
+       "birth_month_day"
+      ],
+      "status": "verified",
+      "matched_methods": [
+       "billing_zip",
+       "birth_month_day"
+      ],
+      "verified_at": "2026-08-28T09:09:00-04:00",
+      "expires_at": "2026-08-28T09:39:00-04:00",
+      "time_asserted": true
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "All right, thanks. You're verified. About when did your sister apply?",
+   "start": 130.98,
+   "end": 133.76,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "August 3rd. Her name is Alisa Brooks. She got the card maybe 10 days ago.",
+   "start": 135.12,
+   "end": 141.22,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "Okay, let me look at what the system has on that.",
+   "start": 142.84,
+   "end": 144.44,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "br-004",
+   "name": "get_referrals",
+   "arguments": {
+    "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d"
+   },
+   "label": "retrieve referrals created by the customer",
+   "at": 145.0,
+   "status": 200,
+   "output": {
+    "referrals": [
+     {
+      "referral_id": "ce7d58b0-b5fc-42cb-a6e0-7a57929e1205",
+      "reference_code": "RF8241",
+      "invited_at": "August 2",
+      "invited_contact": {
+       "channel": "email",
+       "masked": "a-brooks…"
+      },
+      "application_status": "approved",
+      "qualification_status": "purchase_pending",
+      "offer": "$100 statement credit"
+     }
+    ]
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "customers": {
+     "keys": [
+      "34d61a18-ede8-4533-b130-7e5937bc1e9d"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "referrals": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "referring_customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d"
+       },
+       "matched": [
+        "ce7d58b0-b5fc-42cb-a6e0-7a57929e1205"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "target_referral_id",
+      "target_referral_reference"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "I see an invitation sent August 2nd to an email beginning",
+   "start": 147.5,
+   "end": 150.91,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "a-brooks. The referral status says approved. Purchase requirement pending.",
+   "start": 152.38,
+   "end": 157.12,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "She told me she used it for groceries.",
+   "start": 158.44,
+   "end": 160.68,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "The referral record does not show her private transactions. Uh, I'm going to check the published terms for what qualifies and when the reward posts.",
+   "start": 165.14,
+   "end": 172.88,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "Okay, hang on one second while I update it for you. Okay.",
+   "start": 177.64,
+   "end": 179.94,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "br-005",
+   "name": "search_knowledge_base",
+   "arguments": {
+    "query": "referral qualifying purchase rules and reward posting time"
+   },
+   "label": "review referral qualification and reward-posting terms",
+   "at": 180.44,
+   "status": 200,
+   "output": {
+    "record_id": "10b2dc73-a682-4061-b3e6-96e0b2ea4eab",
+    "effective_at": "2026-07-01",
+    "excluded": [
+     "cash advances",
+     "balance transfers",
+     "fees",
+     "returned purchases"
+    ],
+    "ordinary_retail_purchase": "eligible_if_posted_in_window_and_not_returned",
+    "posting_window": "up to two billing cycles after qualifying purchase posts",
+    "purchase_pending_meanings": [
+     "qualifying purchase has not posted",
+     "referral match is processing",
+     "reward has not reached posting stage"
+    ],
+    "qualifying_purchase_window_days": 90
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "kb_records": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    }
+   },
+   "writes": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "The current terms require the referred customer to make a qualifying purchase within 90 days. The bonus can take up to 2 billing cycles after that purchase posts.",
+   "start": 198.44,
+   "end": 205.76,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "2 billing cycles? The banner made it sound immediate. I thought I would have gotten it by now.",
+   "start": 207.82,
+   "end": 214.12,
+   "emotions": [
+    "frustrated"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "I understand why that feels slow, but approval alone does not trigger the reward, and I cannot see or disclose your sister's purchase history from your account.",
+   "start": 214.12,
+   "end": 220.54,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "Can you at least tell me if the 100 dollars is still the offer?",
+   "start": 223.62,
+   "end": 226.7,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "Okay, yeah. Give me just a moment while I pull that up, okay?",
+   "start": 228.48,
+   "end": 230.5,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "br-006",
+   "name": "search_knowledge_base",
+   "arguments": {
+    "query": "offer amount and deadline for referral RF8241"
+   },
+   "label": "confirm the referral offer and deadline",
+   "at": 231.0,
+   "status": 200,
+   "output": {
+    "record_id": "dab2da6a-4343-4ea3-9b0d-df98a0c96360",
+    "effective_at": "2026-08-02",
+    "deadline_status": "not_passed",
+    "exact_deadline": "available_in_tracker",
+    "offer": "$100 statement credit"
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "kb_records": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    }
+   },
+   "writes": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "Yes. Your invitation was created under the 100 dollars statement credit offer. If her qualifying purchase posted, the deadline has not passed.",
+   "start": 241.3,
+   "end": 248.52,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "How am I supposed to track it without calling every week?",
+   "start": 249.9,
+   "end": 252.54,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "I can send you a reference, uh, referral status tool. It shows invite approval, qualification, and reward posting stages without exposing your sister's account details.",
+   "start": 253.7,
+   "end": 262.64,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "All right, I'm gonna check that now. This may take a few seconds, okay?",
+   "start": 265.72,
+   "end": 268.24,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "br-007",
+   "name": "create_secure_self_service_session",
+   "arguments": {
+    "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+    "workflow": "referral_status",
+    "resource_id": "ce7d58b0-b5fc-42cb-a6e0-7a57929e1205",
+    "delivery_channels": [
+     "secure_message"
+    ]
+   },
+   "label": "send the referral-status self-service tracker",
+   "at": 268.74,
+   "status": 200,
+   "output": {
+    "session_id": "b549b0e6-fced-4596-8794-db42a62476a6",
+    "status": "issued",
+    "submitted": false,
+    "visible_stages": [
+     "invite",
+     "approval",
+     "qualification",
+     "reward_posting"
+    ],
+    "deliveries": [
+     {
+      "channel": "secure_message",
+      "status": "delivered"
+     }
+    ]
+   },
+   "matches_recording": true,
+   "write_tool": true,
+   "reads": {
+    "customers": {
+     "keys": [
+      "34d61a18-ede8-4533-b130-7e5937bc1e9d"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "delivery_channels": {
+     "keys": [
+      "secure_message"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "referrals": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "referral_id": "ce7d58b0-b5fc-42cb-a6e0-7a57929e1205",
+        "referring_customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d"
+       },
+       "matched": [
+        "ce7d58b0-b5fc-42cb-a6e0-7a57929e1205"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "next_self_service_session_id",
+      "scenario_time"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "self_service_sessions": {
+     "keys": [
+      "b549b0e6-fced-4596-8794-db42a62476a6"
+     ],
+     "queries": [
+      {
+       "where": {
+        "session_id": "b549b0e6-fced-4596-8794-db42a62476a6"
+       },
+       "matched": []
+      }
+     ],
+     "scanned": false
+    },
+    "session_deliveries": {
+     "keys": [
+      "b549b0e6-fced-4596-8794-db42a62476a6|secure_message"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "workflow_profiles": {
+     "keys": [
+      "referral_status"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "self_service_sessions",
+     "key": "b549b0e6-fced-4596-8794-db42a62476a6",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "session_id": "b549b0e6-fced-4596-8794-db42a62476a6",
+      "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+      "workflow": "referral_status",
+      "resource_id": "ce7d58b0-b5fc-42cb-a6e0-7a57929e1205",
+      "status": "issued",
+      "submitted": false,
+      "resume_supported": true,
+      "save_and_continue": null,
+      "credit_pull_authorized": null,
+      "claim_tracked": false,
+      "claim_id": null,
+      "access_location": null,
+      "display_label": null,
+      "allowed_customer_actions": null,
+      "visible_stages": [
+       "invite",
+       "approval",
+       "qualification",
+       "reward_posting"
+      ],
+      "customer_opens": true,
+      "issued_at": "2026-08-28T09:09:00-04:00",
+      "opened_at": null,
+      "expires_at": null
+     }
+    },
+    {
+     "table": "session_deliveries",
+     "key": "b549b0e6-fced-4596-8794-db42a62476a6|secure_message",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "session_id": "b549b0e6-fced-4596-8794-db42a62476a6",
+      "channel": "secure_message",
+      "delivery_rank": 0,
+      "status": "delivered",
+      "masked_destination": null
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "Okay. I just sent the tracker to your secure message center.",
+   "start": 277.74,
+   "end": 280.14,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "Okay, I'm opening it.",
+   "start": 281.98,
+   "end": 283.48,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "It says purchase qualification pending. So that's the same thing you see?",
+   "start": 285.9,
+   "end": 292.5,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "Correct. If it remains pending after 2 billing cycles from her purchase, contact us again and reference referral RF8241.",
+   "start": 292.5,
+   "end": 302.27,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "Can you email the link, too?",
+   "start": 303.98,
+   "end": 305.26,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "For security, the working tool stays inside online banking. Uh, I can send an email notification telling you a secure message is waiting.",
+   "start": 306.8,
+   "end": 314.02,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "Okay, do that.",
+   "start": 315.84,
+   "end": 316.68,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "br-008",
+   "name": "send_secure_notification",
+   "arguments": {
+    "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+    "related_resource_id": "b549b0e6-fced-4596-8794-db42a62476a6",
+    "channel": "email",
+    "template": "secure_message_waiting"
+   },
+   "label": "customer asks for email notification; agent says Done",
+   "at": 318.0,
+   "status": 200,
+   "output": {
+    "notification_id": "4f70ccca-a2a3-4b99-ae66-cfb9d0e975c8",
+    "status": "sent",
+    "masked_destination": "d***@gmail.com",
+    "contains_working_secure_link": false
+   },
+   "matches_recording": true,
+   "write_tool": true,
+   "reads": {
+    "customers": {
+     "keys": [
+      "34d61a18-ede8-4533-b130-7e5937bc1e9d"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "notification_templates": {
+     "keys": [
+      "secure_message_waiting"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "notifications": {
+     "keys": [
+      "4f70ccca-a2a3-4b99-ae66-cfb9d0e975c8"
+     ],
+     "queries": [
+      {
+       "where": {
+        "notification_id": "4f70ccca-a2a3-4b99-ae66-cfb9d0e975c8"
+       },
+       "matched": []
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "next_notification_id",
+      "scenario_time"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "self_service_sessions": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "session_id": "b549b0e6-fced-4596-8794-db42a62476a6",
+        "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d"
+       },
+       "matched": [
+        "b549b0e6-fced-4596-8794-db42a62476a6"
+       ]
+      }
+     ],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "notifications",
+     "key": "4f70ccca-a2a3-4b99-ae66-cfb9d0e975c8",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "notification_id": "4f70ccca-a2a3-4b99-ae66-cfb9d0e975c8",
+      "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+      "related_resource_id": "b549b0e6-fced-4596-8794-db42a62476a6",
+      "channel": "email",
+      "template": "secure_message_waiting",
+      "status": "sent",
+      "masked_destination": "d***@gmail.com",
+      "contains_working_secure_link": false,
+      "sent_at": "2026-08-28T09:09:00-04:00"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "Done. All right. To recap, the referral is attached to the 100 dollars offer. Approval is recorded. Purchase qualification is still pending, and the reward may take up to 2 billing cycles after a qualifying purchase posts.",
+   "start": 320.88,
+   "end": 332.56,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "All right. At least I know it didn't disappear.",
+   "start": 334.65999999999997,
+   "end": 337.26,
+   "emotions": [
+    "relieved"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "Exactly. I hope that's the case. Uh, keep the tracker and reference number. Is there anything else?",
+   "start": 338.44,
+   "end": 342.36,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "Um, [lip smack] no, that's pretty much it. I'm looking at the tracker now. Does pending mean Alisa did something wrong or that she hasn't paid her balance this cycle yet?",
+   "start": 344.24,
+   "end": 354.36,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "Not necessarily. Uh, it could mean the qualifying purchase has not posted, the referral match is still processing, or the reward window has not reached its posting stage. The tracker deliberately does not reveal which purchases she made.",
+   "start": 355.62,
+   "end": 368.98,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "She used a different email on the application than the one I invite- invited. Could that break the match?",
+   "start": 370.53,
+   "end": 377.79,
+   "emotions": [
+    "worried"
+   ]
+  },
+  {
+   "kind": "tool",
+   "call_id": "br-009",
+   "name": "search_knowledge_base",
+   "arguments": {
+    "query": "Referral matching when invitation and application emails differ; duplicate application guidance"
+   },
+   "label": "retrieve email-mismatch and duplicate-application guidance",
+   "at": 379.8,
+   "status": 200,
+   "output": {
+    "record_id": "888435a5-5535-4cf4-acf8-be056a7fc41e",
+    "effective_at": "2026-07-01",
+    "approved_status_meaning": "application is associated to the referral",
+    "email_mismatch_effect": "may delay automated matching",
+    "reapplication_guidance": "do not reapply; use the referred customer's secure account for card questions"
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "kb_records": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    }
+   },
+   "writes": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "It could delay automated matching. The referral record already shows approved, so the application was associated successfully. I would not ask her to reapply, but she should duplicate applications to create",
+   "start": 379.99,
+   "end": 393.79,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "a different problem.",
+   "start": 394.87,
+   "end": 395.49,
+   "emotions": [
+    "reassuring"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "Okay, yeah, because she was about to try it again.",
+   "start": 397.47,
+   "end": 400.01,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "Yeah, please tell her not to. She should use her own secure account for questions about her card. I can discuss your reward, but not her balance, purchases, or approval details.",
+   "start": 401.47,
+   "end": 409.07,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "Understood. The tracker has a little question mark next to qualifying purchase.",
+   "start": 410.83,
+   "end": 415.29,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "Open that description and read the 1st sentence to me.",
+   "start": 416.67,
+   "end": 418.57,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "It says, \"Purchases must be eligible and fully posted, not returned or cash-like.\"",
+   "start": 419.88,
+   "end": 427.31,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "Correct. Cash advances, balance transfers, fees, and returned purchases do not qualify under the terms I found.",
+   "start": 427.31,
+   "end": 432.83,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "She bought cro- groceries, so that sounds eligible.",
+   "start": 434.21,
+   "end": 438.99,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "It generally would, uh, assuming it posted to the referred account within the offer window. I still cannot certify her private transaction from your profile.",
+   "start": 438.99,
+   "end": 449.01,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "Fair. Can you give me the dates again?",
+   "start": 449.01,
+   "end": 451.17,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "Invitation, August 2nd. Application approval is recorded. The qualifying purchase stage remains pending after an eligible purchase post. Allow up to 2 billing cycles for the 100 dollars statement credit.",
+   "start": 452.77,
+   "end": 465.21,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "And December isn't the deadline?",
+   "start": 466.67,
+   "end": 469.17,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "The tracker will show that the actual deadline tied to the invitation. Use that date rather than estimating from today, please.",
+   "start": 469.17,
+   "end": 474.89,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Daniel",
+   "text": "All right, sorry. Someone just walked into my office. I'm writing to her, \"Don't reapply.\"",
+   "start": 475.97,
+   "end": 481.75,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "That is correct. Okay. Please keep referral RF8241 and check the secure tracker for more updates.",
+   "start": 483.07,
+   "end": 493.03,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Darren",
+   "text": "Thank you.",
+   "start": 494.73,
+   "end": 495.09,
+   "emotions": []
+  }
+ ],
+ "evaluation": {
+  "reward": 1.0,
+  "reward_breakdown": {
+   "DB": 1.0,
+   "COMMUNICATE": 1.0
+  },
+  "db": {
+   "target_hash": "68a2a1006856c8f6fbc5d93849e58ae4eccec69d99c27bf97618932d41fd9ce2",
+   "predicted_hash": "68a2a1006856c8f6fbc5d93849e58ae4eccec69d99c27bf97618932d41fd9ce2"
+  },
+  "communicate_checks": [
+   {
+    "info": "100 dollars statement credit",
+    "met": true
+   },
+   {
+    "info": "within 90 days",
+    "met": true
+   },
+   {
+    "info": "2 billing cycles",
+    "met": true
+   },
+   {
+    "info": "RF8241",
+    "met": true
+   },
+   {
+    "info": "August 2nd",
+    "met": true
+   }
+  ],
+  "tool_calls": 9,
+  "failed_calls": 0
+ },
+ "variations": [
+  {
+   "name": "Every read issued twice",
+   "expect": "still passes: looking is free",
+   "result": {
+    "reward": 1.0,
+    "reward_breakdown": {
+     "DB": 1.0,
+     "COMMUNICATE": 1.0
+    }
+   }
+  },
+  {
+   "name": "Skip the last write (send_secure_notification)",
+   "expect": "DB fails: the end state no longer matches",
+   "result": {
+    "reward": 0.0,
+    "reward_breakdown": {
+     "DB": 0.0,
+     "COMMUNICATE": 1.0
+    }
+   }
+  },
+  {
+   "name": "Agent never says “100 dollars statement credit”",
+   "expect": "COMMUNICATE fails: a required fact went unsaid",
+   "result": {
+    "reward": 0.0,
+    "reward_breakdown": {
+     "DB": 1.0,
+     "COMMUNICATE": 0.0
+    }
+   }
+  }
+ ]
+}

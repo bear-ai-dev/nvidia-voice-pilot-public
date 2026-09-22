@@ -1,0 +1,4116 @@
+{
+ "conversation_id": "airline-family-reservation",
+ "domain": "airline",
+ "task": {
+  "description": {
+   "purpose": "Recommend Washington Reagan National for a National Mall stay from the backend comparison, price a nonstop PHX-DCA round trip (October 14 to 19) in standard economy for the caller and her 12-year-old grandson with two checked bags, a free folding walker and optional insurance, verify her identity, validate her 200 dollar certificate, and book reservation B9RT6M with the remainder on her Visa ending 1182.",
+   "relevant_policies": "domains/airline/policy.md",
+   "notes": "Every figure (the one-stop saving, the fare with bags, insurance, the walker's treatment, the certificate value) must come from the tools before it is spoken. Identity must be verified before stored cards or certificates are used, and the agent must not paraphrase ID or custody rules for the minor or promise seats."
+  },
+  "user_scenario": {
+   "persona": "A warm, slightly hesitant grandmother who laughs at herself, sometimes misses what was said, and double-checks details like dates, codes and totals before she is satisfied.",
+   "instructions": {
+    "domain": "airline",
+    "reason_for_call": "You want to book a round trip from Phoenix to Washington for yourself and your grandson, but the website shows three different Washington airports and you do not know which one you need.",
+    "known_info": "You are Linda Marie Carver (Carver spelled C-A-R-V-E-R), born March 8, 1954.\nYour grandson is Evan James Carver, born July 21, 2014. He is 12 years old.\nYou are staying near the National Mall.\nYou want to leave October 14 and come back October 19.\nYour contact email is linda.carver9@outlook.com.\nYou think there is a Visa ending in 1182 already on your account.\nYou have a travel certificate for 200 dollars with code CT-449108 (say it as C-T-449108).\nYou will each check one suitcase, and you travel with a folding walker.\nYour grandson's mother is not traveling, and he does not have a driver's license.",
+    "unknown_info": "You do not know which Washington airport is best, the flight times, the fares, whether the walker costs extra, or the insurance price.",
+    "task_instructions": "Say you are trying to book from Phoenix to Washington for you and your grandson, and the website shows three airports and you do not know which you need. When asked, say you are staying near the National Mall, and give your travel dates. Accept the airport the agent recommends and say you need nonstop, that you are traveling with your 12-year-old grandson, and that you have a folding walker. When told about basic versus standard fares, say you definitely need standard because you have to sit together. If offered a one-stop comparison, agree as long as it is not a five-hour layover; when you hear the saving, say it is not worth it, choose nonstop, and say you will each check one suitcase plus the walker. When the price and insurance are quoted, ask the agent to go ahead and add the insurance.\n\nGive names, birthdates and email when asked. Say you should have a Visa ending in 1182 on the account and a 200 dollar travel certificate; give the code when asked and confirm the readback. After booking, repeat the confirmation code back as B9RT6M to check it. Ask whether the certificate applied, confirm two checked bags, and ask the agent to repeat the airports. Then ask whether you need a letter from your grandson's mother since she is not traveling, and mention he does not have a driver's license. Ask what birth date they entered for him, then confirm yours. Ask whether the certificate code had a zero or the letter O. Ask whether you can choose seats now; when told to use the reservation screen, report that you see 16A and 16B outbound and 14D and 14E on return, then say confirmed. Ask whether the walker needs a serial number. Ask for the total one more time and say it matches your screen. Say you have written down the confirmation and total, thank the agent for being patient, and end the call."
+   }
+  },
+  "communicate_info": [
+   "Washington Reagan National",
+   "$62 total",
+   "$1186.40",
+   "$94.60",
+   "$200",
+   "B9RT6M"
+  ],
+  "nl_assertions": [
+   "Agent verifies the caller's name, date of birth and email before using the stored Visa or the travel certificate.",
+   "Agent tells the caller that the folding walker does not count as paid baggage.",
+   "Agent tells the caller that the trip insurance has exclusions and that she should review the plan document.",
+   "Agent quotes the price including the two checked bags and the insurance before booking the reservation.",
+   "Agent tells the caller that 200 dollars came from the certificate and the rest was charged to the Visa ending in 1182.",
+   "Agent does not paraphrase identification or custody rules for the grandson and directs the caller to official government guidance."
+  ],
+  "reward_basis": [
+   "DB",
+   "COMMUNICATE"
+  ]
+ },
+ "tables": {
+  "airport_area_links": 33,
+  "airports": 40,
+  "baggage_fees": 2,
+  "certificate_redemptions": 23,
+  "confirmation_code_pool": 430,
+  "connecting_itineraries": 7,
+  "connecting_itinerary_segments": 28,
+  "customers": 106,
+  "destination_areas": 15,
+  "fare_options": 400,
+  "fare_quotes": 51,
+  "flight_availability": 2000,
+  "flight_searches": 32,
+  "flights": 200,
+  "id_allocator": 4,
+  "identity_verifications": 50,
+  "insurance_plans": 15,
+  "mobility_device_rules": 13,
+  "payment_allocations": 423,
+  "payment_methods": 197,
+  "reservation_mobility_devices": 44,
+  "reservations": 380,
+  "scenario": 12,
+  "specialist_transfers": 0,
+  "travel_certificates": 66,
+  "travelers": 702
+ },
+ "rows": {
+  "airport_area_links": {
+   "national-mall|1": {
+    "airport_code": "DCA",
+    "area_id": "national-mall",
+    "distance_miles": 3.2,
+    "ground_access_minutes": 18,
+    "proximity_rank": 1
+   },
+   "national-mall|2": {
+    "airport_code": "IAD",
+    "area_id": "national-mall",
+    "distance_miles": 26.4,
+    "ground_access_minutes": 52,
+    "proximity_rank": 2
+   },
+   "national-mall|3": {
+    "airport_code": "BWI",
+    "area_id": "national-mall",
+    "distance_miles": 32.1,
+    "ground_access_minutes": 64,
+    "proximity_rank": 3
+   }
+  },
+  "airports": {
+   "BWI": {
+    "city": "Baltimore",
+    "code": "BWI",
+    "name": "Baltimore/Washington International",
+    "served": true,
+    "state_or_region": "MD",
+    "timezone": "America/New_York",
+    "utc_offset_minutes": -240
+   },
+   "DCA": {
+    "city": "Washington",
+    "code": "DCA",
+    "name": "Washington Reagan National",
+    "served": true,
+    "state_or_region": "DC",
+    "timezone": "America/New_York",
+    "utc_offset_minutes": -240
+   },
+   "IAD": {
+    "city": "Dulles",
+    "code": "IAD",
+    "name": "Washington Dulles International",
+    "served": true,
+    "state_or_region": "VA",
+    "timezone": "America/New_York",
+    "utc_offset_minutes": -240
+   },
+   "PHX": {
+    "city": "Phoenix",
+    "code": "PHX",
+    "name": "Phoenix Sky Harbor",
+    "served": true,
+    "state_or_region": "AZ",
+    "timezone": "America/Phoenix",
+    "utc_offset_minutes": -420
+   }
+  },
+  "fare_options": {
+   "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|basic_economy": {
+    "advance_seat_selection_allowed": false,
+    "base_fare": 219.0,
+    "fare_class": "basic_economy",
+    "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+    "tax_amount": 37.2
+   },
+   "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|standard_economy": {
+    "advance_seat_selection_allowed": true,
+    "base_fare": 241.9,
+    "fare_class": "standard_economy",
+    "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+    "tax_amount": 37.2
+   },
+   "3ac31d55-0dbc-4f79-892e-743257ec9f13|basic_economy": {
+    "advance_seat_selection_allowed": false,
+    "base_fare": 219.0,
+    "fare_class": "basic_economy",
+    "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+    "tax_amount": 37.2
+   },
+   "3ac31d55-0dbc-4f79-892e-743257ec9f13|standard_economy": {
+    "advance_seat_selection_allowed": true,
+    "base_fare": 241.9,
+    "fare_class": "standard_economy",
+    "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+    "tax_amount": 37.2
+   },
+   "BM-DCA-PHX-0730|basic_economy": {
+    "advance_seat_selection_allowed": false,
+    "base_fare": 229.0,
+    "fare_class": "basic_economy",
+    "flight_id": "BM-DCA-PHX-0730",
+    "tax_amount": 37.2
+   },
+   "BM-DCA-PHX-0730|standard_economy": {
+    "advance_seat_selection_allowed": true,
+    "base_fare": 251.9,
+    "fare_class": "standard_economy",
+    "flight_id": "BM-DCA-PHX-0730",
+    "tax_amount": 37.2
+   },
+   "BM-PHX-DCA-1725|basic_economy": {
+    "advance_seat_selection_allowed": false,
+    "base_fare": 229.0,
+    "fare_class": "basic_economy",
+    "flight_id": "BM-PHX-DCA-1725",
+    "tax_amount": 37.2
+   },
+   "BM-PHX-DCA-1725|standard_economy": {
+    "advance_seat_selection_allowed": true,
+    "base_fare": 251.9,
+    "fare_class": "standard_economy",
+    "flight_id": "BM-PHX-DCA-1725",
+    "tax_amount": 37.2
+   },
+   "BM-DCA-ORD-1215|basic_economy": {
+    "advance_seat_selection_allowed": false,
+    "base_fare": 100.0,
+    "fare_class": "basic_economy",
+    "flight_id": "BM-DCA-ORD-1215",
+    "tax_amount": 18.6
+   },
+   "BM-DCA-ORD-1215|standard_economy": {
+    "advance_seat_selection_allowed": true,
+    "base_fare": 112.4,
+    "fare_class": "standard_economy",
+    "flight_id": "BM-DCA-ORD-1215",
+    "tax_amount": 18.6
+   },
+   "BM-ORD-DCA-1310|basic_economy": {
+    "advance_seat_selection_allowed": false,
+    "base_fare": 98.0,
+    "fare_class": "basic_economy",
+    "flight_id": "BM-ORD-DCA-1310",
+    "tax_amount": 18.6
+   },
+   "BM-ORD-DCA-1310|standard_economy": {
+    "advance_seat_selection_allowed": true,
+    "base_fare": 108.0,
+    "fare_class": "standard_economy",
+    "flight_id": "BM-ORD-DCA-1310",
+    "tax_amount": 18.6
+   },
+   "BM-ORD-PHX-1445|basic_economy": {
+    "advance_seat_selection_allowed": false,
+    "base_fare": 104.0,
+    "fare_class": "basic_economy",
+    "flight_id": "BM-ORD-PHX-1445",
+    "tax_amount": 18.6
+   },
+   "BM-ORD-PHX-1445|standard_economy": {
+    "advance_seat_selection_allowed": true,
+    "base_fare": 114.0,
+    "fare_class": "standard_economy",
+    "flight_id": "BM-ORD-PHX-1445",
+    "tax_amount": 18.6
+   },
+   "BM-PHX-ORD-0600|basic_economy": {
+    "advance_seat_selection_allowed": false,
+    "base_fare": 105.0,
+    "fare_class": "basic_economy",
+    "flight_id": "BM-PHX-ORD-0600",
+    "tax_amount": 18.6
+   },
+   "BM-PHX-ORD-0600|standard_economy": {
+    "advance_seat_selection_allowed": true,
+    "base_fare": 118.4,
+    "fare_class": "standard_economy",
+    "flight_id": "BM-PHX-ORD-0600",
+    "tax_amount": 18.6
+   }
+  },
+  "flight_availability": {
+   "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|2026-10-14|basic_economy": {
+    "departure_date": "2026-10-14",
+    "fare_class": "basic_economy",
+    "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+    "seats_remaining": 11
+   },
+   "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|2026-10-14|standard_economy": {
+    "departure_date": "2026-10-14",
+    "fare_class": "standard_economy",
+    "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+    "seats_remaining": 14
+   },
+   "3ac31d55-0dbc-4f79-892e-743257ec9f13|2026-10-19|basic_economy": {
+    "departure_date": "2026-10-19",
+    "fare_class": "basic_economy",
+    "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+    "seats_remaining": 9
+   },
+   "3ac31d55-0dbc-4f79-892e-743257ec9f13|2026-10-19|standard_economy": {
+    "departure_date": "2026-10-19",
+    "fare_class": "standard_economy",
+    "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+    "seats_remaining": 12
+   },
+   "BM-DCA-PHX-0730|2026-10-19|basic_economy": {
+    "departure_date": "2026-10-19",
+    "fare_class": "basic_economy",
+    "flight_id": "BM-DCA-PHX-0730",
+    "seats_remaining": 0
+   },
+   "BM-DCA-PHX-0730|2026-10-19|standard_economy": {
+    "departure_date": "2026-10-19",
+    "fare_class": "standard_economy",
+    "flight_id": "BM-DCA-PHX-0730",
+    "seats_remaining": 0
+   },
+   "BM-PHX-DCA-1725|2026-10-14|basic_economy": {
+    "departure_date": "2026-10-14",
+    "fare_class": "basic_economy",
+    "flight_id": "BM-PHX-DCA-1725",
+    "seats_remaining": 0
+   },
+   "BM-PHX-DCA-1725|2026-10-14|standard_economy": {
+    "departure_date": "2026-10-14",
+    "fare_class": "standard_economy",
+    "flight_id": "BM-PHX-DCA-1725",
+    "seats_remaining": 0
+   },
+   "BM-DCA-ORD-1215|2026-10-19|basic_economy": {
+    "departure_date": "2026-10-19",
+    "fare_class": "basic_economy",
+    "flight_id": "BM-DCA-ORD-1215",
+    "seats_remaining": 12
+   },
+   "BM-DCA-ORD-1215|2026-10-19|standard_economy": {
+    "departure_date": "2026-10-19",
+    "fare_class": "standard_economy",
+    "flight_id": "BM-DCA-ORD-1215",
+    "seats_remaining": 17
+   },
+   "BM-ORD-DCA-1310|2026-10-14|basic_economy": {
+    "departure_date": "2026-10-14",
+    "fare_class": "basic_economy",
+    "flight_id": "BM-ORD-DCA-1310",
+    "seats_remaining": 13
+   },
+   "BM-ORD-DCA-1310|2026-10-14|standard_economy": {
+    "departure_date": "2026-10-14",
+    "fare_class": "standard_economy",
+    "flight_id": "BM-ORD-DCA-1310",
+    "seats_remaining": 18
+   },
+   "BM-ORD-PHX-1445|2026-10-19|basic_economy": {
+    "departure_date": "2026-10-19",
+    "fare_class": "basic_economy",
+    "flight_id": "BM-ORD-PHX-1445",
+    "seats_remaining": 10
+   },
+   "BM-ORD-PHX-1445|2026-10-19|standard_economy": {
+    "departure_date": "2026-10-19",
+    "fare_class": "standard_economy",
+    "flight_id": "BM-ORD-PHX-1445",
+    "seats_remaining": 15
+   },
+   "BM-PHX-ORD-0600|2026-10-14|basic_economy": {
+    "departure_date": "2026-10-14",
+    "fare_class": "basic_economy",
+    "flight_id": "BM-PHX-ORD-0600",
+    "seats_remaining": 16
+   },
+   "BM-PHX-ORD-0600|2026-10-14|standard_economy": {
+    "departure_date": "2026-10-14",
+    "fare_class": "standard_economy",
+    "flight_id": "BM-PHX-ORD-0600",
+    "seats_remaining": 21
+   }
+  },
+  "flight_searches": {
+   "96a87cf6-ba8d-4705-995b-8805e877ab0b": {
+    "availability_checked_at": "2026-08-26T12:31:33-07:00",
+    "departure_date": "2026-10-14",
+    "destination_code": "DCA",
+    "expires_at": "quote_required_before_booking",
+    "origin_code": "PHX",
+    "return_date": "2026-10-19",
+    "search_id": "96a87cf6-ba8d-4705-995b-8805e877ab0b",
+    "stop_profile": "nonstop"
+   },
+   "b1e28687-a8fe-44c9-a18c-66b5dcc0dedb": {
+    "availability_checked_at": "2026-08-26T12:32:17-07:00",
+    "departure_date": "2026-10-14",
+    "destination_code": "DCA",
+    "expires_at": "quote_required_before_booking",
+    "origin_code": "PHX",
+    "return_date": "2026-10-19",
+    "search_id": "b1e28687-a8fe-44c9-a18c-66b5dcc0dedb",
+    "stop_profile": "one_stop"
+   }
+  },
+  "flights": {
+   "2133fbc8-ed10-42aa-baa2-12e3d15a6a05": {
+    "arrival_time": "16:30",
+    "arrives_next_day": false,
+    "carrier": "BM",
+    "departure_time": "09:10",
+    "destination_code": "DCA",
+    "duration_minutes": 260,
+    "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+    "flight_number": "BM 418",
+    "origin_code": "PHX",
+    "stops": 0
+   },
+   "3ac31d55-0dbc-4f79-892e-743257ec9f13": {
+    "arrival_time": "17:30",
+    "arrives_next_day": false,
+    "carrier": "BM",
+    "departure_time": "15:40",
+    "destination_code": "PHX",
+    "duration_minutes": 290,
+    "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+    "flight_number": "BM 419",
+    "origin_code": "DCA",
+    "stops": 0
+   },
+   "BM-DCA-PHX-0730": {
+    "arrival_time": "09:20",
+    "arrives_next_day": false,
+    "carrier": "BM",
+    "departure_time": "07:30",
+    "destination_code": "PHX",
+    "duration_minutes": 290,
+    "flight_id": "BM-DCA-PHX-0730",
+    "flight_number": "BM 423",
+    "origin_code": "DCA",
+    "stops": 0
+   },
+   "BM-PHX-DCA-1725": {
+    "arrival_time": "00:45",
+    "arrives_next_day": true,
+    "carrier": "BM",
+    "departure_time": "17:25",
+    "destination_code": "DCA",
+    "duration_minutes": 260,
+    "flight_id": "BM-PHX-DCA-1725",
+    "flight_number": "BM 422",
+    "origin_code": "PHX",
+    "stops": 0
+   },
+   "BM-DCA-ORD-1215": {
+    "arrival_time": "13:30",
+    "arrives_next_day": false,
+    "carrier": "BM",
+    "departure_time": "12:15",
+    "destination_code": "ORD",
+    "duration_minutes": 135,
+    "flight_id": "BM-DCA-ORD-1215",
+    "flight_number": "BM 612",
+    "origin_code": "DCA",
+    "stops": 0
+   },
+   "BM-ORD-DCA-1310": {
+    "arrival_time": "16:10",
+    "arrives_next_day": false,
+    "carrier": "BM",
+    "departure_time": "13:10",
+    "destination_code": "DCA",
+    "duration_minutes": 120,
+    "flight_id": "BM-ORD-DCA-1310",
+    "flight_number": "BM 611",
+    "origin_code": "ORD",
+    "stops": 0
+   },
+   "BM-ORD-PHX-1445": {
+    "arrival_time": "16:45",
+    "arrives_next_day": false,
+    "carrier": "BM",
+    "departure_time": "14:45",
+    "destination_code": "PHX",
+    "duration_minutes": 240,
+    "flight_id": "BM-ORD-PHX-1445",
+    "flight_number": "BM 613",
+    "origin_code": "ORD",
+    "stops": 0
+   },
+   "BM-PHX-ORD-0600": {
+    "arrival_time": "10:45",
+    "arrives_next_day": false,
+    "carrier": "BM",
+    "departure_time": "06:00",
+    "destination_code": "ORD",
+    "duration_minutes": 165,
+    "flight_id": "BM-PHX-ORD-0600",
+    "flight_number": "BM 610",
+    "origin_code": "PHX",
+    "stops": 0
+   }
+  },
+  "scenario": {
+   "currency": {
+    "key": "currency",
+    "value": "USD"
+   },
+   "scenario_time": {
+    "key": "scenario_time",
+    "value": "2026-08-26T12:30:00-07:00"
+   },
+   "next_identity_verification_id": {
+    "key": "next_identity_verification_id",
+    "value": "661f8b5c-f3d8-4612-8645-00f9a5ecded8"
+   },
+   "verification_expiry": {
+    "key": "verification_expiry",
+    "value": "end_of_call"
+   },
+   "next_reservation_id": {
+    "key": "next_reservation_id",
+    "value": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7"
+   },
+   "next_traveler_1_id": {
+    "key": "next_traveler_1_id",
+    "value": "1a7ef9d5-196f-456c-a780-1acafefd1fd1"
+   },
+   "next_traveler_2_id": {
+    "key": "next_traveler_2_id",
+    "value": "b0b29fec-eb5c-469e-bee0-046f8c861822"
+   }
+  },
+  "connecting_itineraries": {
+   "87ba9919-0d38-418a-868c-42185e5a9ab9": {
+    "additional_duration_display": "almost three hours",
+    "departure_date": "2026-10-14",
+    "destination_code": "DCA",
+    "itinerary_id": "87ba9919-0d38-418a-868c-42185e5a9ab9",
+    "offered": true,
+    "origin_code": "PHX",
+    "return_date": "2026-10-19",
+    "via_airport_code": "ORD"
+   }
+  },
+  "connecting_itinerary_segments": {
+   "87ba9919-0d38-418a-868c-42185e5a9ab9|outbound|1": {
+    "direction": "outbound",
+    "flight_id": "BM-PHX-ORD-0600",
+    "itinerary_id": "87ba9919-0d38-418a-868c-42185e5a9ab9",
+    "layover_after_minutes": 145,
+    "segment_index": 1
+   },
+   "87ba9919-0d38-418a-868c-42185e5a9ab9|outbound|2": {
+    "direction": "outbound",
+    "flight_id": "BM-ORD-DCA-1310",
+    "itinerary_id": "87ba9919-0d38-418a-868c-42185e5a9ab9",
+    "layover_after_minutes": 0,
+    "segment_index": 2
+   },
+   "87ba9919-0d38-418a-868c-42185e5a9ab9|return|1": {
+    "direction": "return",
+    "flight_id": "BM-DCA-ORD-1215",
+    "itinerary_id": "87ba9919-0d38-418a-868c-42185e5a9ab9",
+    "layover_after_minutes": 75,
+    "segment_index": 1
+   },
+   "87ba9919-0d38-418a-868c-42185e5a9ab9|return|2": {
+    "direction": "return",
+    "flight_id": "BM-ORD-PHX-1445",
+    "itinerary_id": "87ba9919-0d38-418a-868c-42185e5a9ab9",
+    "layover_after_minutes": 0,
+    "segment_index": 2
+   }
+  },
+  "mobility_device_rules": {
+   "folding walker|2025-06-01": {
+    "airport_notification_required": false,
+    "aliases": [
+     "walker",
+     "folding walker"
+    ],
+    "counts_as_paid_bag": false,
+    "currency": "USD",
+    "device_type": "folding walker",
+    "effective_at": "2025-06-01",
+    "fee": 0.0,
+    "is_quote_default": false,
+    "labeling_guidance": "label with customer contact information",
+    "serial_number_required": false
+   },
+   "folding walker|2026-07-01": {
+    "airport_notification_required": true,
+    "aliases": [
+     "walker",
+     "folding walker",
+     "collapsible walker"
+    ],
+    "counts_as_paid_bag": false,
+    "currency": "USD",
+    "device_type": "folding walker",
+    "effective_at": "2026-07-01",
+    "fee": 0.0,
+    "is_quote_default": false,
+    "labeling_guidance": "label with customer contact information and identify it as a mobility device at the airport",
+    "serial_number_required": false
+   },
+   "unspecified mobility device|2026-07-01": {
+    "airport_notification_required": true,
+    "aliases": [],
+    "counts_as_paid_bag": false,
+    "currency": "USD",
+    "device_type": "unspecified mobility device",
+    "effective_at": "2026-07-01",
+    "fee": 0.0,
+    "is_quote_default": true,
+    "labeling_guidance": "label with customer contact information and identify it as a mobility device at the airport",
+    "serial_number_required": false
+   }
+  },
+  "baggage_fees": {
+   "standard_economy": {
+    "currency": "USD",
+    "fare_class": "standard_economy",
+    "per_bag_amount": 35.0
+   }
+  },
+  "fare_quotes": {
+   "b28a0bbf-614c-4616-862c-fbeef88f6495": {
+    "checked_bag_count": 2,
+    "currency": "USD",
+    "departure_date": "2026-10-14",
+    "expires_at": "2026-08-27T12:33:00-07:00",
+    "fare_class": "standard_economy",
+    "fare_taxes_and_checked_bags": null,
+    "include_insurance": true,
+    "insurance_plan_id": null,
+    "last_priced_at": null,
+    "mobility_device_charge": null,
+    "mobility_device_count": 1,
+    "outbound_flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+    "quote_id": "b28a0bbf-614c-4616-862c-fbeef88f6495",
+    "return_date": "2026-10-19",
+    "return_flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+    "total_with_insurance": null,
+    "traveler_count": 2,
+    "trip_insurance": null
+   }
+  },
+  "insurance_plans": {
+   "insurance-standard-band-1": {
+    "active": true,
+    "currency": "USD",
+    "display_name": "BlueMesa Trip Protection (band-1)",
+    "document_reference": "insurance-plan-document-current",
+    "max_trip_cost": 300.0,
+    "min_trip_cost": 0.0,
+    "plan_id": "insurance-standard-band-1",
+    "price_per_traveler": 21.4,
+    "tier": "standard"
+   },
+   "insurance-standard-band-2": {
+    "active": true,
+    "currency": "USD",
+    "display_name": "BlueMesa Trip Protection (band-2)",
+    "document_reference": "insurance-plan-document-current",
+    "max_trip_cost": 500.0,
+    "min_trip_cost": 300.0,
+    "plan_id": "insurance-standard-band-2",
+    "price_per_traveler": 33.8,
+    "tier": "standard"
+   },
+   "insurance-standard-band-3": {
+    "active": true,
+    "currency": "USD",
+    "display_name": "BlueMesa Trip Protection (band-3)",
+    "document_reference": "insurance-plan-document-current",
+    "max_trip_cost": 750.0,
+    "min_trip_cost": 500.0,
+    "plan_id": "insurance-standard-band-3",
+    "price_per_traveler": 47.3,
+    "tier": "standard"
+   },
+   "insurance-standard-band-4": {
+    "active": true,
+    "currency": "USD",
+    "display_name": "BlueMesa Trip Protection (band-4)",
+    "document_reference": "insurance-plan-document-current",
+    "max_trip_cost": 1200.0,
+    "min_trip_cost": 750.0,
+    "plan_id": "insurance-standard-band-4",
+    "price_per_traveler": 62.9,
+    "tier": "standard"
+   },
+   "insurance-standard-band-5": {
+    "active": true,
+    "currency": "USD",
+    "display_name": "BlueMesa Trip Protection (band-5)",
+    "document_reference": "insurance-plan-document-current",
+    "max_trip_cost": 9999.0,
+    "min_trip_cost": 1200.0,
+    "plan_id": "insurance-standard-band-5",
+    "price_per_traveler": 84.5,
+    "tier": "standard"
+   }
+  },
+  "payment_methods": {
+   "c1200f87-9c48-41f4-a6f9-04d89f28b2b2": {
+    "active": true,
+    "added_at": "2023-11-08T16:40:00-07:00",
+    "brand": "Visa",
+    "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+    "last4": "1182",
+    "token": "c1200f87-9c48-41f4-a6f9-04d89f28b2b2"
+   }
+  },
+  "travel_certificates": {
+   "18e422e6-a2c3-4cb8-93fa-daf7a28c328b": {
+    "available_balance": 200.0,
+    "certificate_id": "18e422e6-a2c3-4cb8-93fa-daf7a28c328b",
+    "code": "CT-449108",
+    "currency": "USD",
+    "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+    "expires_at": "2026-12-31",
+    "masked_code": "CT-***108",
+    "original_amount": 200.0,
+    "status": "valid"
+   },
+   "certificate-CT-118240": {
+    "available_balance": 45.0,
+    "certificate_id": "certificate-CT-118240",
+    "code": "CT-118240",
+    "currency": "USD",
+    "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+    "expires_at": "2027-05-31",
+    "masked_code": "CT-***240",
+    "original_amount": 75.0,
+    "status": "valid"
+   },
+   "certificate-CT-990031": {
+    "available_balance": 120.0,
+    "certificate_id": "certificate-CT-990031",
+    "code": "CT-990031",
+    "currency": "USD",
+    "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+    "expires_at": "2026-04-30",
+    "masked_code": "CT-***031",
+    "original_amount": 120.0,
+    "status": "expired"
+   }
+  },
+  "confirmation_code_pool": {
+   "381": {
+    "code": "B9RT6M",
+    "issued_at": null,
+    "pool_seq": 381
+   },
+   "382": {
+    "code": "ELGJYP",
+    "issued_at": null,
+    "pool_seq": 382
+   },
+   "383": {
+    "code": "PHU3GM",
+    "issued_at": null,
+    "pool_seq": 383
+   },
+   "384": {
+    "code": "Y2P2LA",
+    "issued_at": null,
+    "pool_seq": 384
+   },
+   "385": {
+    "code": "YJ3G5T",
+    "issued_at": null,
+    "pool_seq": 385
+   },
+   "386": {
+    "code": "6Z9WF5",
+    "issued_at": null,
+    "pool_seq": 386
+   },
+   "387": {
+    "code": "92EC6V",
+    "issued_at": null,
+    "pool_seq": 387
+   },
+   "388": {
+    "code": "KFU85P",
+    "issued_at": null,
+    "pool_seq": 388
+   },
+   "389": {
+    "code": "5KFAZB",
+    "issued_at": null,
+    "pool_seq": 389
+   },
+   "390": {
+    "code": "47GJQU",
+    "issued_at": null,
+    "pool_seq": 390
+   },
+   "391": {
+    "code": "TMFAV3",
+    "issued_at": null,
+    "pool_seq": 391
+   },
+   "392": {
+    "code": "QCXJMM",
+    "issued_at": null,
+    "pool_seq": 392
+   },
+   "393": {
+    "code": "KWH77N",
+    "issued_at": null,
+    "pool_seq": 393
+   },
+   "394": {
+    "code": "BZLTSJ",
+    "issued_at": null,
+    "pool_seq": 394
+   },
+   "395": {
+    "code": "WLXKFZ",
+    "issued_at": null,
+    "pool_seq": 395
+   },
+   "396": {
+    "code": "4852ZW",
+    "issued_at": null,
+    "pool_seq": 396
+   },
+   "397": {
+    "code": "2TGD8X",
+    "issued_at": null,
+    "pool_seq": 397
+   },
+   "398": {
+    "code": "VLLMML",
+    "issued_at": null,
+    "pool_seq": 398
+   },
+   "399": {
+    "code": "6EPZV8",
+    "issued_at": null,
+    "pool_seq": 399
+   },
+   "400": {
+    "code": "C77TGQ",
+    "issued_at": null,
+    "pool_seq": 400
+   },
+   "401": {
+    "code": "275YTM",
+    "issued_at": null,
+    "pool_seq": 401
+   },
+   "402": {
+    "code": "ZY34KL",
+    "issued_at": null,
+    "pool_seq": 402
+   },
+   "403": {
+    "code": "UU4GFQ",
+    "issued_at": null,
+    "pool_seq": 403
+   },
+   "404": {
+    "code": "GXZS7A",
+    "issued_at": null,
+    "pool_seq": 404
+   },
+   "405": {
+    "code": "FC2V7D",
+    "issued_at": null,
+    "pool_seq": 405
+   },
+   "406": {
+    "code": "TZF3C5",
+    "issued_at": null,
+    "pool_seq": 406
+   },
+   "407": {
+    "code": "K3JCDH",
+    "issued_at": null,
+    "pool_seq": 407
+   },
+   "408": {
+    "code": "5AVJDU",
+    "issued_at": null,
+    "pool_seq": 408
+   },
+   "409": {
+    "code": "F7TMXX",
+    "issued_at": null,
+    "pool_seq": 409
+   },
+   "410": {
+    "code": "2F8QD6",
+    "issued_at": null,
+    "pool_seq": 410
+   },
+   "411": {
+    "code": "5HUHCJ",
+    "issued_at": null,
+    "pool_seq": 411
+   },
+   "412": {
+    "code": "JVX2XZ",
+    "issued_at": null,
+    "pool_seq": 412
+   },
+   "413": {
+    "code": "MJT3N8",
+    "issued_at": null,
+    "pool_seq": 413
+   },
+   "414": {
+    "code": "NQKPUG",
+    "issued_at": null,
+    "pool_seq": 414
+   },
+   "415": {
+    "code": "SZK7KC",
+    "issued_at": null,
+    "pool_seq": 415
+   },
+   "416": {
+    "code": "Z8U3MD",
+    "issued_at": null,
+    "pool_seq": 416
+   },
+   "417": {
+    "code": "88TWWH",
+    "issued_at": null,
+    "pool_seq": 417
+   },
+   "418": {
+    "code": "W3VW36",
+    "issued_at": null,
+    "pool_seq": 418
+   },
+   "419": {
+    "code": "2M656U",
+    "issued_at": null,
+    "pool_seq": 419
+   },
+   "420": {
+    "code": "6ZD7EM",
+    "issued_at": null,
+    "pool_seq": 420
+   },
+   "421": {
+    "code": "3S2EJV",
+    "issued_at": null,
+    "pool_seq": 421
+   },
+   "422": {
+    "code": "VLEHLS",
+    "issued_at": null,
+    "pool_seq": 422
+   },
+   "423": {
+    "code": "MNN367",
+    "issued_at": null,
+    "pool_seq": 423
+   },
+   "424": {
+    "code": "6BXXFQ",
+    "issued_at": null,
+    "pool_seq": 424
+   },
+   "425": {
+    "code": "QQB24L",
+    "issued_at": null,
+    "pool_seq": 425
+   },
+   "426": {
+    "code": "5UAAYS",
+    "issued_at": null,
+    "pool_seq": 426
+   },
+   "427": {
+    "code": "T2MHAX",
+    "issued_at": null,
+    "pool_seq": 427
+   },
+   "428": {
+    "code": "6MZW6U",
+    "issued_at": null,
+    "pool_seq": 428
+   },
+   "429": {
+    "code": "8APMRZ",
+    "issued_at": null,
+    "pool_seq": 429
+   },
+   "430": {
+    "code": "S94SKV",
+    "issued_at": null,
+    "pool_seq": 430
+   }
+  },
+  "customers": {
+   "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0": {
+    "created_at": "2019-04-22T10:15:00-07:00",
+    "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+    "date_of_birth": "1954-03-08",
+    "elevated_verification": false,
+    "email": "linda.carver9@outlook.com",
+    "full_name": "Linda Marie Carver",
+    "phone_last4": "7715",
+    "slug": "linda-carver"
+   }
+  }
+ },
+ "events": [
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Hi. Thanks for calling BlueMesa Airlines. This is Jordan. How are you doing today?",
+   "start": 1.64,
+   "end": 7.06,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Good. Um, I'm trying to— [laughs] I'm trying to book—",
+   "start": 8.38,
+   "end": 14.665,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Where are we trying to get you today, ma'am?",
+   "start": 13.762,
+   "end": 14.979,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Pardon me?",
+   "start": 16.56,
+   "end": 17.34,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Where are we trying to get you today?",
+   "start": 17.34,
+   "end": 19.66,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "I'm trying to book from Phoenix to Washington, and it's for me and my grandson. But the website shows three different airports, and I have no idea which one we actually need.",
+   "start": 19.66,
+   "end": 34.28,
+   "emotions": [
+    "confused"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Right. Yeah, that can definitely be a little confusing. I'm sorry about that. Um, so what we'll do, we're gonna go ahead and figure out the airport 1st. And I won't book anything until we've gone over the full price. Okay?",
+   "start": 34.28,
+   "end": 46.76,
+   "emotions": [
+    "reassuring"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Okay.",
+   "start": 46.84,
+   "end": 47.5,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "And where are you staying, ma'am?",
+   "start": 47.5,
+   "end": 48.7,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Um, it's near the National Mall.",
+   "start": 50.16,
+   "end": 53.339,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Okay.",
+   "start": 53.34,
+   "end": 54.48,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Um, we wanna leave October 14th and then come back home on October 19th.",
+   "start": 54.48,
+   "end": 60.2,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "af-001",
+   "name": "list_supported_airports",
+   "arguments": {
+    "destination_area": "Washington, DC National Mall"
+   },
+   "label": "calling tool to list supported airports",
+   "at": 60.4,
+   "status": 200,
+   "output": {
+    "airports": [
+     {
+      "code": "DCA",
+      "name": "Washington Reagan National"
+     },
+     {
+      "code": "IAD",
+      "name": "Washington Dulles International"
+     },
+     {
+      "code": "BWI",
+      "name": "Baltimore/Washington International"
+     }
+    ],
+    "recommended_airport_code": "DCA",
+    "recommendation_basis": "closest airport returned for the National Mall destination area and most direct city access among the supported options",
+    "retrieved_at": "2026-08-26T12:31:00-07:00"
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "airport_area_links": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "area_id": "national-mall"
+       },
+       "matched": [
+        "national-mall|1",
+        "national-mall|2",
+        "national-mall|3"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "airports": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "code": "DCA",
+        "served": true
+       },
+       "matched": [
+        "DCA"
+       ]
+      },
+      {
+       "where": {
+        "code": "IAD",
+        "served": true
+       },
+       "matched": [
+        "IAD"
+       ]
+      },
+      {
+       "where": {
+        "code": "BWI",
+        "served": true
+       },
+       "matched": [
+        "BWI"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "destination_areas": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    }
+   },
+   "writes": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Okay. So you've got Reagan, Dulles, and Baltimore. But for the National Mall, Reagan is usually the closest and easiest. It's kind of right there in town.",
+   "start": 61.28,
+   "end": 74.11,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Okay. Well, Reagan then. And I also need it to be non-stop, please. Um, I'm gonna be traveling with my 12-year-old and a, uh, my grandson [laughs], and a folding walker.",
+   "start": 75.99,
+   "end": 93.5,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "af-002",
+   "name": "search_flights",
+   "arguments": {
+    "origin_airport": "PHX",
+    "destination_airport": "DCA",
+    "departure_date": "2026-10-14",
+    "return_date": "2026-10-19",
+    "traveler_count": 2,
+    "max_stops": 0
+   },
+   "label": "calling tool to search for direct flights",
+   "at": 93.5,
+   "status": 200,
+   "output": {
+    "search_id": "96a87cf6-ba8d-4705-995b-8805e877ab0b",
+    "outbound": {
+     "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+     "origin": {
+      "code": "PHX",
+      "name": "Phoenix Sky Harbor"
+     },
+     "destination": {
+      "code": "DCA",
+      "name": "Washington Reagan National"
+     },
+     "departure_date": "2026-10-14",
+     "departure_time": "09:10",
+     "arrival_time": "16:30",
+     "duration_minutes": 260,
+     "stops": 0
+    },
+    "return": {
+     "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+     "origin": {
+      "code": "DCA",
+      "name": "Washington Reagan National"
+     },
+     "destination": {
+      "code": "PHX",
+      "name": "Phoenix Sky Harbor"
+     },
+     "departure_date": "2026-10-19",
+     "departure_time": "15:40",
+     "arrival_time": "17:30",
+     "duration_minutes": 290,
+     "stops": 0
+    },
+    "fare_options": [
+     {
+      "fare_class": "basic_economy",
+      "price_per_traveler": 512.4,
+      "currency": "USD",
+      "relative_price_rank": "lower",
+      "advance_seat_selection_allowed": false
+     },
+     {
+      "fare_class": "standard_economy",
+      "price_per_traveler": 558.2,
+      "currency": "USD",
+      "relative_price_rank": "higher",
+      "advance_seat_selection_allowed": true
+     }
+    ],
+    "availability_checked_at": "2026-08-26T12:31:33-07:00",
+    "expires_at": "quote_required_before_booking"
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "airports": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "code": "PHX",
+        "served": true
+       },
+       "matched": [
+        "PHX"
+       ]
+      },
+      {
+       "where": {
+        "code": "DCA",
+        "served": true
+       },
+       "matched": [
+        "DCA"
+       ]
+      },
+      {
+       "where": {
+        "code": "PHX",
+        "served": true
+       },
+       "matched": [
+        "PHX"
+       ]
+      },
+      {
+       "where": {
+        "code": "DCA",
+        "served": true
+       },
+       "matched": [
+        "DCA"
+       ]
+      },
+      {
+       "where": {
+        "code": "DCA",
+        "served": true
+       },
+       "matched": [
+        "DCA"
+       ]
+      },
+      {
+       "where": {
+        "code": "PHX",
+        "served": true
+       },
+       "matched": [
+        "PHX"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "fare_options": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|basic_economy",
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-PHX-DCA-1725"
+       },
+       "matched": [
+        "BM-PHX-DCA-1725|basic_economy",
+        "BM-PHX-DCA-1725|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|basic_economy",
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-DCA-PHX-0730"
+       },
+       "matched": [
+        "BM-DCA-PHX-0730|basic_economy",
+        "BM-DCA-PHX-0730|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|basic_economy",
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|basic_economy",
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|standard_economy"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "flight_availability": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "departure_date": "2026-10-14",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|2026-10-14|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "departure_date": "2026-10-14",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|2026-10-14|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-PHX-DCA-1725",
+        "departure_date": "2026-10-14",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "BM-PHX-DCA-1725|2026-10-14|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-PHX-DCA-1725",
+        "departure_date": "2026-10-14",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "BM-PHX-DCA-1725|2026-10-14|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+        "departure_date": "2026-10-19",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|2026-10-19|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+        "departure_date": "2026-10-19",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|2026-10-19|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-DCA-PHX-0730",
+        "departure_date": "2026-10-19",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "BM-DCA-PHX-0730|2026-10-19|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-DCA-PHX-0730",
+        "departure_date": "2026-10-19",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "BM-DCA-PHX-0730|2026-10-19|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "departure_date": "2026-10-14",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|2026-10-14|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "departure_date": "2026-10-14",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|2026-10-14|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+        "departure_date": "2026-10-19",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|2026-10-19|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+        "departure_date": "2026-10-19",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|2026-10-19|standard_economy"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "flight_searches": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "origin_code": "PHX",
+        "destination_code": "DCA",
+        "departure_date": "2026-10-14",
+        "return_date": "2026-10-19",
+        "stop_profile": "nonstop"
+       },
+       "matched": [
+        "96a87cf6-ba8d-4705-995b-8805e877ab0b"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "flights": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "origin_code": "PHX",
+        "destination_code": "DCA"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "BM-PHX-DCA-1725"
+       ]
+      },
+      {
+       "where": {
+        "origin_code": "DCA",
+        "destination_code": "PHX"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+        "BM-DCA-PHX-0730"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "currency"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Okay. Well, I did find a 9:10 in the morning going out and a 3:40 in the afternoon coming back. Both are nonstop. Basic is cheaper, but standard lets you pick seats ahead of time. Is that a priority for you?",
+   "start": 93.5,
+   "end": 109.53999999999999,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Yeah. Um, we definitely need standard then because we have to sit together.",
+   "start": 111.56,
+   "end": 117.08,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Mm-hmm. Okay. Well, standard economy is the safer choice for advance seats. Would you like me to compare a one-stop itinerary on price?",
+   "start": 117.08,
+   "end": 125.5,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Uh, sure. As long as it's not one of those 5-hour layovers. [laughs]",
+   "start": 127.46,
+   "end": 132.1,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Right. Right. I understand. Let me see. Um,",
+   "start": 132.1,
+   "end": 137.26,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "af-003",
+   "name": "search_flights",
+   "arguments": {
+    "origin_airport": "PHX",
+    "destination_airport": "DCA",
+    "departure_date": "2026-10-14",
+    "return_date": "2026-10-19",
+    "traveler_count": 2,
+    "max_stops": 1,
+    "max_layover_minutes": 300
+   },
+   "label": "calling tool to search for one-stop flights",
+   "at": 137.8,
+   "status": 200,
+   "output": {
+    "search_id": "b1e28687-a8fe-44c9-a18c-66b5dcc0dedb",
+    "best_connection": {
+     "itinerary_id": "87ba9919-0d38-418a-868c-42185e5a9ab9",
+     "total_savings": 62.0,
+     "currency": "USD",
+     "additional_duration_each_way": "almost three hours",
+     "additional_duration_minutes_each_way": 170
+    },
+    "availability_checked_at": "2026-08-26T12:32:17-07:00",
+    "expires_at": "quote_required_before_booking"
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "airports": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "code": "PHX",
+        "served": true
+       },
+       "matched": [
+        "PHX"
+       ]
+      },
+      {
+       "where": {
+        "code": "DCA",
+        "served": true
+       },
+       "matched": [
+        "DCA"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "connecting_itineraries": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "origin_code": "PHX",
+        "destination_code": "DCA",
+        "departure_date": "2026-10-14",
+        "return_date": "2026-10-19",
+        "offered": true
+       },
+       "matched": [
+        "87ba9919-0d38-418a-868c-42185e5a9ab9"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "connecting_itinerary_segments": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "itinerary_id": "87ba9919-0d38-418a-868c-42185e5a9ab9"
+       },
+       "matched": [
+        "87ba9919-0d38-418a-868c-42185e5a9ab9|outbound|1",
+        "87ba9919-0d38-418a-868c-42185e5a9ab9|outbound|2",
+        "87ba9919-0d38-418a-868c-42185e5a9ab9|return|1",
+        "87ba9919-0d38-418a-868c-42185e5a9ab9|return|2"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "fare_options": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|basic_economy",
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-PHX-DCA-1725"
+       },
+       "matched": [
+        "BM-PHX-DCA-1725|basic_economy",
+        "BM-PHX-DCA-1725|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|basic_economy",
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-DCA-PHX-0730"
+       },
+       "matched": [
+        "BM-DCA-PHX-0730|basic_economy",
+        "BM-DCA-PHX-0730|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|basic_economy",
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|basic_economy",
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-PHX-ORD-0600"
+       },
+       "matched": [
+        "BM-PHX-ORD-0600|basic_economy",
+        "BM-PHX-ORD-0600|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-ORD-DCA-1310"
+       },
+       "matched": [
+        "BM-ORD-DCA-1310|basic_economy",
+        "BM-ORD-DCA-1310|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-DCA-ORD-1215"
+       },
+       "matched": [
+        "BM-DCA-ORD-1215|basic_economy",
+        "BM-DCA-ORD-1215|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-ORD-PHX-1445"
+       },
+       "matched": [
+        "BM-ORD-PHX-1445|basic_economy",
+        "BM-ORD-PHX-1445|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-PHX-ORD-0600",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "BM-PHX-ORD-0600|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-ORD-DCA-1310",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "BM-ORD-DCA-1310|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-DCA-ORD-1215",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "BM-DCA-ORD-1215|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-ORD-PHX-1445",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "BM-ORD-PHX-1445|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-PHX-ORD-0600",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "BM-PHX-ORD-0600|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-ORD-DCA-1310",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "BM-ORD-DCA-1310|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-DCA-ORD-1215",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "BM-DCA-ORD-1215|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-ORD-PHX-1445",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "BM-ORD-PHX-1445|standard_economy"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "flight_availability": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "departure_date": "2026-10-14",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|2026-10-14|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "departure_date": "2026-10-14",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|2026-10-14|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-PHX-DCA-1725",
+        "departure_date": "2026-10-14",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "BM-PHX-DCA-1725|2026-10-14|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-PHX-DCA-1725",
+        "departure_date": "2026-10-14",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "BM-PHX-DCA-1725|2026-10-14|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+        "departure_date": "2026-10-19",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|2026-10-19|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+        "departure_date": "2026-10-19",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|2026-10-19|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-DCA-PHX-0730",
+        "departure_date": "2026-10-19",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "BM-DCA-PHX-0730|2026-10-19|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-DCA-PHX-0730",
+        "departure_date": "2026-10-19",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "BM-DCA-PHX-0730|2026-10-19|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "departure_date": "2026-10-14",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|2026-10-14|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "departure_date": "2026-10-14",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|2026-10-14|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+        "departure_date": "2026-10-19",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|2026-10-19|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+        "departure_date": "2026-10-19",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|2026-10-19|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-PHX-ORD-0600",
+        "departure_date": "2026-10-14",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "BM-PHX-ORD-0600|2026-10-14|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-PHX-ORD-0600",
+        "departure_date": "2026-10-14",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "BM-PHX-ORD-0600|2026-10-14|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-ORD-DCA-1310",
+        "departure_date": "2026-10-14",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "BM-ORD-DCA-1310|2026-10-14|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-ORD-DCA-1310",
+        "departure_date": "2026-10-14",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "BM-ORD-DCA-1310|2026-10-14|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-DCA-ORD-1215",
+        "departure_date": "2026-10-19",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "BM-DCA-ORD-1215|2026-10-19|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-DCA-ORD-1215",
+        "departure_date": "2026-10-19",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "BM-DCA-ORD-1215|2026-10-19|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-ORD-PHX-1445",
+        "departure_date": "2026-10-19",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "BM-ORD-PHX-1445|2026-10-19|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-ORD-PHX-1445",
+        "departure_date": "2026-10-19",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "BM-ORD-PHX-1445|2026-10-19|standard_economy"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "flight_searches": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "origin_code": "PHX",
+        "destination_code": "DCA",
+        "departure_date": "2026-10-14",
+        "return_date": "2026-10-19",
+        "stop_profile": "one_stop"
+       },
+       "matched": [
+        "b1e28687-a8fe-44c9-a18c-66b5dcc0dedb"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "flights": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "origin_code": "PHX",
+        "destination_code": "DCA"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "BM-PHX-DCA-1725"
+       ]
+      },
+      {
+       "where": {
+        "origin_code": "DCA",
+        "destination_code": "PHX"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+        "BM-DCA-PHX-0730"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-PHX-ORD-0600"
+       },
+       "matched": [
+        "BM-PHX-ORD-0600"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-ORD-DCA-1310"
+       },
+       "matched": [
+        "BM-ORD-DCA-1310"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-DCA-ORD-1215"
+       },
+       "matched": [
+        "BM-DCA-ORD-1215"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-ORD-PHX-1445"
+       },
+       "matched": [
+        "BM-ORD-PHX-1445"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "currency"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Well, ma'am, it does look like the best connection only saves $62 total, and it adds almost three hours each way.",
+   "start": 139.38,
+   "end": 146.98,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Oh, no. That is not worth it. Let's go ahead and do nonstop. And we'll each check one suitcase, and I have the folding walker I mentioned.",
+   "start": 148.82,
+   "end": 161.42000000000002,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "af-003b",
+   "name": "check_mobility_device_requirements",
+   "arguments": {
+    "device_type": "folding walker"
+   },
+   "label": "check folding-walker requirements before quoting baggage treatment",
+   "at": 161.42,
+   "status": 200,
+   "output": {
+    "device_type": "folding walker",
+    "counts_as_paid_bag": false,
+    "fee": 0.0,
+    "currency": "USD",
+    "serial_number_required": false,
+    "labeling_guidance": "label with customer contact information and identify it as a mobility device at the airport",
+    "airport_notification_required": true,
+    "effective_at": "2026-07-01"
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "mobility_device_rules": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "device_type": "folding walker"
+       },
+       "matched": [
+        "folding walker|2025-06-01",
+        "folding walker|2026-07-01"
+       ]
+      }
+     ],
+     "scanned": true
+    },
+    "scenario": {
+     "keys": [
+      "scenario_time"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Okay. Well, the walker doesn't count as paid baggage, so that's good.",
+   "start": 161.42000000000002,
+   "end": 166.64,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Oh. Mm-hmm. Yeah.",
+   "start": 166.64,
+   "end": 168.42000000000002,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Yeah. And I'm pricing two standard tickets, two checked bags, and optional trip insurance. Just give me a moment. I'm going to crunch these numbers and get the best possible itinerary.",
+   "start": 168.42000000000002,
+   "end": 181.7,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "af-004",
+   "name": "calculate_itinerary_price",
+   "arguments": {
+    "outbound_flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+    "return_flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+    "traveler_count": 2,
+    "fare_class": "standard_economy",
+    "checked_bag_count": 2,
+    "mobility_device_count": 1,
+    "include_insurance_quote": true
+   },
+   "label": "calculate the selected itinerary before stating mobility-device fee and final price",
+   "at": 181.7,
+   "status": 200,
+   "output": {
+    "quote_id": "b28a0bbf-614c-4616-862c-fbeef88f6495",
+    "fare_taxes_and_checked_bags": 1186.4,
+    "mobility_device_charge": 0.0,
+    "trip_insurance": 94.6,
+    "insurance_plan_document": "insurance-plan-document-current",
+    "total_with_insurance": 1281.0,
+    "currency": "USD",
+    "expires_at": "2026-08-27T12:33:00-07:00"
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "baggage_fees": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "standard_economy"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "fare_options": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|standard_economy"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "fare_quotes": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "outbound_flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "return_flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+        "fare_class": "standard_economy",
+        "traveler_count": 2,
+        "checked_bag_count": 2,
+        "mobility_device_count": 1,
+        "include_insurance": true
+       },
+       "matched": [
+        "b28a0bbf-614c-4616-862c-fbeef88f6495"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "flights": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "insurance_plans": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "active": true,
+        "tier": "standard"
+       },
+       "matched": [
+        "insurance-standard-band-1",
+        "insurance-standard-band-2",
+        "insurance-standard-band-3",
+        "insurance-standard-band-4",
+        "insurance-standard-band-5"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "mobility_device_rules": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "is_quote_default": true
+       },
+       "matched": [
+        "unspecified mobility device|2026-07-01"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "currency",
+      "scenario_time"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "fare_quotes",
+     "key": "b28a0bbf-614c-4616-862c-fbeef88f6495",
+     "kind": "updated",
+     "columns": [
+      "fare_taxes_and_checked_bags",
+      "insurance_plan_id",
+      "last_priced_at",
+      "mobility_device_charge",
+      "total_with_insurance",
+      "trip_insurance"
+     ],
+     "before": {
+      "checked_bag_count": 2,
+      "currency": "USD",
+      "departure_date": "2026-10-14",
+      "expires_at": "2026-08-27T12:33:00-07:00",
+      "fare_class": "standard_economy",
+      "fare_taxes_and_checked_bags": null,
+      "include_insurance": true,
+      "insurance_plan_id": null,
+      "last_priced_at": null,
+      "mobility_device_charge": null,
+      "mobility_device_count": 1,
+      "outbound_flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+      "quote_id": "b28a0bbf-614c-4616-862c-fbeef88f6495",
+      "return_date": "2026-10-19",
+      "return_flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+      "total_with_insurance": null,
+      "traveler_count": 2,
+      "trip_insurance": null
+     },
+     "after": {
+      "checked_bag_count": 2,
+      "currency": "USD",
+      "departure_date": "2026-10-14",
+      "expires_at": "2026-08-27T12:33:00-07:00",
+      "fare_class": "standard_economy",
+      "fare_taxes_and_checked_bags": 1186.4,
+      "include_insurance": true,
+      "insurance_plan_id": "insurance-standard-band-3",
+      "last_priced_at": "2026-08-26T12:30:00-07:00",
+      "mobility_device_charge": 0.0,
+      "mobility_device_count": 1,
+      "outbound_flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+      "quote_id": "b28a0bbf-614c-4616-862c-fbeef88f6495",
+      "return_date": "2026-10-19",
+      "return_flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+      "total_with_insurance": 1281.0,
+      "traveler_count": 2,
+      "trip_insurance": 94.6
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Okay. Just bear with me, ma'am, one moment.",
+   "start": 193.58,
+   "end": 195.5,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Okay. So the total without insurance is $1,186.40, and that does include the two checked bags. Insurance adds $94.60, and the coverage does have exclusions, so review the plan document before purchase. Okay? Do you want me to add that insurance?",
+   "start": 204.32,
+   "end": 228.84,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Yeah. Go ahead. Add the insurance.",
+   "start": 229.86,
+   "end": 233.24,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Got it. Okay. And can you please give your name and date of birth? I'll need that for both travelers.",
+   "start": 233.24,
+   "end": 239.94,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Okay. I'm Linda Marie Carver.",
+   "start": 240.98,
+   "end": 244.62,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Okay.",
+   "start": 245.64,
+   "end": 245.859,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "C-A-R-V-E-R.",
+   "start": 245.86,
+   "end": 247.4,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Yes, ma'am.",
+   "start": 247.4,
+   "end": 248.1,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Birthday: March 8th, 1954.",
+   "start": 249.9,
+   "end": 253.82,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Okay. And your grandson, please?",
+   "start": 255.34,
+   "end": 257.19,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "And then my grandson—yes, Evan James Carver, born July 21st of 2014.",
+   "start": 258.31,
+   "end": 267.98,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Okay. And ma'am, can you please confirm the contact email?",
+   "start": 270.32,
+   "end": 274.06,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Yes. It's linda.carver9@outlook.com.",
+   "start": 275.76,
+   "end": 284.42,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Okay. Dot com, got that. And how would you like to pay, ma'am?",
+   "start": 284.42,
+   "end": 290.0,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "I should have a card attached to our account already. It's the Visa ending in 1182. I also have a travel certificate for $200.",
+   "start": 292.02,
+   "end": 305.38,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Okay.",
+   "start": 305.38,
+   "end": 305.94,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "af-004b",
+   "name": "verify_customer_identity",
+   "arguments": {
+    "full_name": "Linda Marie Carver",
+    "date_of_birth": "1954-03-08",
+    "email": "linda.carver9@outlook.com"
+   },
+   "label": "validate collected identity factors before stored profile and payment access",
+   "at": 305.8,
+   "status": 200,
+   "output": {
+    "verification_id": "661f8b5c-f3d8-4612-8645-00f9a5ecded8",
+    "status": "verified",
+    "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+    "matched_factors": [
+     "full_name",
+     "date_of_birth",
+     "email"
+    ],
+    "expires_at": "end_of_call"
+   },
+   "matches_recording": true,
+   "write_tool": true,
+   "reads": {
+    "customers": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "identity_verifications": {
+     "keys": [
+      "661f8b5c-f3d8-4612-8645-00f9a5ecded8"
+     ],
+     "queries": [
+      {
+       "where": {
+        "verification_id": "661f8b5c-f3d8-4612-8645-00f9a5ecded8"
+       },
+       "matched": []
+      },
+      {
+       "where": {
+        "verification_id": "661f8b5c-f3d8-4612-8645-00f9a5ecded8"
+       },
+       "matched": []
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "next_identity_verification_id",
+      "scenario_time",
+      "verification_expiry"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "identity_verifications",
+     "key": "661f8b5c-f3d8-4612-8645-00f9a5ecded8",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "verification_id": "661f8b5c-f3d8-4612-8645-00f9a5ecded8",
+      "purpose": "booking",
+      "expires_at": "end_of_call",
+      "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+      "status": "verified",
+      "matched_factors": [
+       "full_name",
+       "date_of_birth",
+       "email"
+      ],
+      "created_at": "2026-08-26T12:30:00-07:00"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "tool",
+   "call_id": "af-005",
+   "name": "get_customer_profile",
+   "arguments": {
+    "email": "linda.carver9@outlook.com",
+    "verification_id": "661f8b5c-f3d8-4612-8645-00f9a5ecded8",
+    "include": [
+     "reservations",
+     "payment_methods",
+     "travel_certificates"
+    ]
+   },
+   "label": "calling tool to retrieve the customer profile and reservations",
+   "at": 306.0,
+   "status": 200,
+   "output": {
+    "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+    "verification_id": "661f8b5c-f3d8-4612-8645-00f9a5ecded8",
+    "duplicate_reservation": false,
+    "payment_methods": [
+     {
+      "token": "c1200f87-9c48-41f4-a6f9-04d89f28b2b2",
+      "brand": "Visa",
+      "last4": "1182"
+     }
+    ],
+    "travel_certificate_input_required": true
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "customers": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "fare_quotes": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "identity_verifications": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "verification_id": "661f8b5c-f3d8-4612-8645-00f9a5ecded8"
+       },
+       "matched": [
+        "661f8b5c-f3d8-4612-8645-00f9a5ecded8"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "payment_methods": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+        "active": true
+       },
+       "matched": [
+        "c1200f87-9c48-41f4-a6f9-04d89f28b2b2"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "reservations": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+        "outbound_flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "return_flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+        "departure_date": "2026-10-14",
+        "return_date": "2026-10-19"
+       },
+       "matched": []
+      }
+     ],
+     "scanned": false
+    },
+    "travel_certificates": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+        "status": "valid"
+       },
+       "matched": [
+        "18e422e6-a2c3-4cb8-93fa-daf7a28c328b",
+        "certificate-CT-118240"
+       ]
+      }
+     ],
+     "scanned": false
+    }
+   },
+   "writes": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Um, okay. I found your profile, and [sighs] no duplicate reservation. All good.",
+   "start": 307.72,
+   "end": 314.82,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "And what is the travel certificate code?",
+   "start": 316.18,
+   "end": 318.14,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "The code number is C-T-449108.",
+   "start": 319.98,
+   "end": 331.06,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Okay. I'm just going to read that back. It's C-T-449108.",
+   "start": 331.56,
+   "end": 341.76,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Yes. Okay.",
+   "start": 342.52,
+   "end": 343.76,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Thanks. Got it.",
+   "start": 344.2,
+   "end": 345.32,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "af-005b",
+   "name": "validate_travel_certificate",
+   "arguments": {
+    "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+    "verification_id": "661f8b5c-f3d8-4612-8645-00f9a5ecded8",
+    "certificate_code": "CT-449108"
+   },
+   "label": "validate the supplied certificate before applying it",
+   "at": 345.5,
+   "status": 200,
+   "output": {
+    "certificate_id": "18e422e6-a2c3-4cb8-93fa-daf7a28c328b",
+    "masked_code": "CT-***108",
+    "status": "valid",
+    "available_balance": 200.0,
+    "applicable_amount": 200.0,
+    "currency": "USD",
+    "expires_at": "2026-12-31"
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "fare_quotes": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "identity_verifications": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "verification_id": "661f8b5c-f3d8-4612-8645-00f9a5ecded8"
+       },
+       "matched": [
+        "661f8b5c-f3d8-4612-8645-00f9a5ecded8"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "scenario_time"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "travel_certificates": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0"
+       },
+       "matched": [
+        "18e422e6-a2c3-4cb8-93fa-daf7a28c328b",
+        "certificate-CT-118240",
+        "certificate-CT-990031"
+       ]
+      }
+     ],
+     "scanned": false
+    }
+   },
+   "writes": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "af-006",
+   "name": "book_reservation",
+   "arguments": {
+    "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+    "verification_id": "661f8b5c-f3d8-4612-8645-00f9a5ecded8",
+    "quote_id": "b28a0bbf-614c-4616-862c-fbeef88f6495",
+    "certificate_id": "18e422e6-a2c3-4cb8-93fa-daf7a28c328b",
+    "outbound_flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+    "return_flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+    "travelers": [
+     {
+      "full_name": "Linda Marie Carver",
+      "date_of_birth": "1954-03-08"
+     },
+     {
+      "full_name": "Evan James Carver",
+      "date_of_birth": "2014-07-21"
+     }
+    ],
+    "contact_email": "linda.carver9@outlook.com",
+    "fare_class": "standard_economy",
+    "checked_bag_count": 2,
+    "mobility_devices": [
+     "folding walker"
+    ],
+    "include_trip_insurance": true,
+    "payment_method_token": "c1200f87-9c48-41f4-a6f9-04d89f28b2b2",
+    "confirmed_total": 1281.0,
+    "customer_authorized": true
+   },
+   "label": "calling tool to book the new reservation",
+   "at": 345.6,
+   "status": 200,
+   "output": {
+    "reservation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7",
+    "confirmation_code": "B9RT6M",
+    "status": "confirmed",
+    "ticketing_status": "ticketed",
+    "itinerary": {
+     "origin": {
+      "code": "PHX",
+      "name": "Phoenix Sky Harbor"
+     },
+     "destination": {
+      "code": "DCA",
+      "name": "Washington Reagan National"
+     },
+     "departure_date": "2026-10-14",
+     "return_date": "2026-10-19"
+    },
+    "travelers": [
+     {
+      "traveler_id": "1a7ef9d5-196f-456c-a780-1acafefd1fd1",
+      "full_name": "Linda Marie Carver",
+      "date_of_birth": "1954-03-08"
+     },
+     {
+      "traveler_id": "b0b29fec-eb5c-469e-bee0-046f8c861822",
+      "full_name": "Evan James Carver",
+      "date_of_birth": "2014-07-21"
+     }
+    ],
+    "fare_class": "standard_economy",
+    "seat_selection": {
+     "available": true,
+     "confirmed_seats": []
+    },
+    "checked_bag_count": 2,
+    "mobility_devices": [
+     {
+      "device_type": "folding walker",
+      "fee": 0.0,
+      "serial_number_required": false
+     }
+    ],
+    "trip_insurance": {
+     "included": true,
+     "price": 94.6,
+     "covered_traveler_ids": [
+      "1a7ef9d5-196f-456c-a780-1acafefd1fd1",
+      "b0b29fec-eb5c-469e-bee0-046f8c861822"
+     ]
+    },
+    "payment_allocation": [
+     {
+      "tender": "travel_certificate_CT-449108",
+      "amount": 200.0
+     },
+     {
+      "tender": "visa_ending_1182",
+      "amount": 1081.0
+     }
+    ],
+    "payment_status": "captured",
+    "currency": "USD"
+   },
+   "matches_recording": true,
+   "write_tool": true,
+   "reads": {
+    "airports": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "code": "PHX",
+        "served": true
+       },
+       "matched": [
+        "PHX"
+       ]
+      },
+      {
+       "where": {
+        "code": "DCA",
+        "served": true
+       },
+       "matched": [
+        "DCA"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "baggage_fees": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "standard_economy"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "certificate_redemptions": {
+     "keys": [
+      "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7-redemption-1"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "confirmation_code_pool": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "issued_at": null
+       },
+       "matched": [
+        "381",
+        "382",
+        "383",
+        "384",
+        "385",
+        "386",
+        "387",
+        "388",
+        "389",
+        "390",
+        "391",
+        "392",
+        "393",
+        "394",
+        "395",
+        "396",
+        "397",
+        "398",
+        "399",
+        "400",
+        "401",
+        "402",
+        "403",
+        "404",
+        "405",
+        "406",
+        "407",
+        "408",
+        "409",
+        "410",
+        "411",
+        "412",
+        "413",
+        "414",
+        "415",
+        "416",
+        "417",
+        "418",
+        "419",
+        "420",
+        "421",
+        "422",
+        "423",
+        "424",
+        "425",
+        "426",
+        "427",
+        "428",
+        "429",
+        "430"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "customers": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0"
+       },
+       "matched": [
+        "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "fare_options": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|standard_economy"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "fare_quotes": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "quote_id": "b28a0bbf-614c-4616-862c-fbeef88f6495"
+       },
+       "matched": [
+        "b28a0bbf-614c-4616-862c-fbeef88f6495"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "flight_availability": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "departure_date": "2026-10-14",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|2026-10-14|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+        "departure_date": "2026-10-19",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13|2026-10-19|standard_economy"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "flights": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05"
+       },
+       "matched": [
+        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13"
+       },
+       "matched": [
+        "3ac31d55-0dbc-4f79-892e-743257ec9f13"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "identity_verifications": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "verification_id": "661f8b5c-f3d8-4612-8645-00f9a5ecded8"
+       },
+       "matched": [
+        "661f8b5c-f3d8-4612-8645-00f9a5ecded8"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "insurance_plans": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "active": true,
+        "tier": "standard"
+       },
+       "matched": [
+        "insurance-standard-band-1",
+        "insurance-standard-band-2",
+        "insurance-standard-band-3",
+        "insurance-standard-band-4",
+        "insurance-standard-band-5"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "mobility_device_rules": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "device_type": "folding walker"
+       },
+       "matched": [
+        "folding walker|2025-06-01",
+        "folding walker|2026-07-01"
+       ]
+      }
+     ],
+     "scanned": true
+    },
+    "payment_allocations": {
+     "keys": [
+      "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7-tender-1",
+      "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7-tender-2"
+     ],
+     "queries": [
+      {
+       "where": {
+        "reservation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7"
+       },
+       "matched": [
+        "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7-tender-1",
+        "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7-tender-2"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "payment_methods": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "token": "c1200f87-9c48-41f4-a6f9-04d89f28b2b2",
+        "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+        "active": true
+       },
+       "matched": [
+        "c1200f87-9c48-41f4-a6f9-04d89f28b2b2"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "reservation_mobility_devices": {
+     "keys": [
+      "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7-device-1"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "reservations": {
+     "keys": [
+      "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7"
+     ],
+     "queries": [
+      {
+       "where": {
+        "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+        "outbound_flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "return_flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+        "departure_date": "2026-10-14",
+        "return_date": "2026-10-19"
+       },
+       "matched": []
+      },
+      {
+       "where": {
+        "reservation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7"
+       },
+       "matched": []
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "currency",
+      "next_reservation_id",
+      "next_traveler_1_id",
+      "next_traveler_2_id",
+      "scenario_time"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "travel_certificates": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "certificate_id": "18e422e6-a2c3-4cb8-93fa-daf7a28c328b",
+        "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0"
+       },
+       "matched": [
+        "18e422e6-a2c3-4cb8-93fa-daf7a28c328b"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "travelers": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    }
+   },
+   "writes": [
+    {
+     "table": "certificate_redemptions",
+     "key": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7-redemption-1",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "redemption_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7-redemption-1",
+      "certificate_id": "18e422e6-a2c3-4cb8-93fa-daf7a28c328b",
+      "reservation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7",
+      "amount": 200.0,
+      "currency": "USD",
+      "redeemed_at": "2026-08-26T12:30:00-07:00"
+     }
+    },
+    {
+     "table": "confirmation_code_pool",
+     "key": "381",
+     "kind": "updated",
+     "columns": [
+      "issued_at"
+     ],
+     "before": {
+      "code": "B9RT6M",
+      "issued_at": null,
+      "pool_seq": 381
+     },
+     "after": {
+      "code": "B9RT6M",
+      "issued_at": "2026-08-26T12:30:00-07:00",
+      "pool_seq": 381
+     }
+    },
+    {
+     "table": "flight_availability",
+     "key": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|2026-10-14|standard_economy",
+     "kind": "updated",
+     "columns": [
+      "seats_remaining"
+     ],
+     "before": {
+      "departure_date": "2026-10-14",
+      "fare_class": "standard_economy",
+      "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+      "seats_remaining": 14
+     },
+     "after": {
+      "departure_date": "2026-10-14",
+      "fare_class": "standard_economy",
+      "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+      "seats_remaining": 12
+     }
+    },
+    {
+     "table": "flight_availability",
+     "key": "3ac31d55-0dbc-4f79-892e-743257ec9f13|2026-10-19|standard_economy",
+     "kind": "updated",
+     "columns": [
+      "seats_remaining"
+     ],
+     "before": {
+      "departure_date": "2026-10-19",
+      "fare_class": "standard_economy",
+      "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+      "seats_remaining": 12
+     },
+     "after": {
+      "departure_date": "2026-10-19",
+      "fare_class": "standard_economy",
+      "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+      "seats_remaining": 10
+     }
+    },
+    {
+     "table": "payment_allocations",
+     "key": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7-tender-1",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "allocation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7-tender-1",
+      "reservation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7",
+      "allocation_index": 1,
+      "tender": "travel_certificate_CT-449108",
+      "tender_kind": "travel_certificate",
+      "amount": 200.0,
+      "currency": "USD"
+     }
+    },
+    {
+     "table": "payment_allocations",
+     "key": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7-tender-2",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "allocation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7-tender-2",
+      "reservation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7",
+      "allocation_index": 2,
+      "tender": "visa_ending_1182",
+      "tender_kind": "card",
+      "amount": 1081.0,
+      "currency": "USD"
+     }
+    },
+    {
+     "table": "reservation_mobility_devices",
+     "key": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7-device-1",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "device_entry_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7-device-1",
+      "reservation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7",
+      "device_index": 1,
+      "device_type": "folding walker",
+      "fee": 0.0,
+      "counts_as_paid_bag": false,
+      "serial_number_required": false,
+      "rule_effective_at": "2026-07-01"
+     }
+    },
+    {
+     "table": "reservations",
+     "key": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "reservation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7",
+      "confirmation_code": "B9RT6M",
+      "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+      "quote_id": "b28a0bbf-614c-4616-862c-fbeef88f6495",
+      "outbound_flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+      "return_flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+      "departure_date": "2026-10-14",
+      "return_date": "2026-10-19",
+      "contact_email": "linda.carver9@outlook.com",
+      "fare_class": "standard_economy",
+      "checked_bag_count": 2,
+      "status": "confirmed",
+      "ticketing_status": "ticketed",
+      "payment_status": "captured",
+      "seat_selection_available": true,
+      "insurance_included": true,
+      "insurance_plan_id": "insurance-standard-band-3",
+      "insurance_price": 94.6,
+      "charged_total": 1281.0,
+      "currency": "USD",
+      "created_at": "2026-08-26T12:30:00-07:00"
+     }
+    },
+    {
+     "table": "travel_certificates",
+     "key": "18e422e6-a2c3-4cb8-93fa-daf7a28c328b",
+     "kind": "updated",
+     "columns": [
+      "available_balance",
+      "status"
+     ],
+     "before": {
+      "available_balance": 200.0,
+      "certificate_id": "18e422e6-a2c3-4cb8-93fa-daf7a28c328b",
+      "code": "CT-449108",
+      "currency": "USD",
+      "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+      "expires_at": "2026-12-31",
+      "masked_code": "CT-***108",
+      "original_amount": 200.0,
+      "status": "valid"
+     },
+     "after": {
+      "available_balance": 0.0,
+      "certificate_id": "18e422e6-a2c3-4cb8-93fa-daf7a28c328b",
+      "code": "CT-449108",
+      "currency": "USD",
+      "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+      "expires_at": "2026-12-31",
+      "masked_code": "CT-***108",
+      "original_amount": 200.0,
+      "status": "redeemed"
+     }
+    },
+    {
+     "table": "travelers",
+     "key": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7|1",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "traveler_seq": 703,
+      "reservation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7",
+      "traveler_id": "1a7ef9d5-196f-456c-a780-1acafefd1fd1",
+      "full_name": "Linda Marie Carver",
+      "date_of_birth": "1954-03-08",
+      "traveler_index": 1
+     }
+    },
+    {
+     "table": "travelers",
+     "key": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7|2",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "traveler_seq": 704,
+      "reservation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7",
+      "traveler_id": "b0b29fec-eb5c-469e-bee0-046f8c861822",
+      "full_name": "Evan James Carver",
+      "date_of_birth": "2014-07-21",
+      "traveler_index": 2
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Um, all right. Well, the booking is confirmed. Let me give you your confirmation code. The code is B as in Bravo, 9, R as in Romeo, T as in Tango, 6, M as in Mike.",
+   "start": 346.7,
+   "end": 367.36,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Okay. Can I- Is it B9RT6M?",
+   "start": 370.21,
+   "end": 376.11,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Yes.",
+   "start": 377.39,
+   "end": 378.63,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "And did the certificate apply?",
+   "start": 378.63,
+   "end": 381.43,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Yes, ma'am. $200 came from the certificate. The remaining authorized amount went to the Visa we had on file ending in 1182.",
+   "start": 381.43,
+   "end": 390.13,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "And 2 checked bags, right?",
+   "start": 391.43,
+   "end": 393.43,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Yep, that's right. Two paid checked bags total, plus the folding walker as a mobility device. And again, no charge for that. And insurance is included for both travelers.",
+   "start": 393.43,
+   "end": 405.11,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Okay. And can you just please report- repeat rather the airports?",
+   "start": 406.77,
+   "end": 412.51,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Yes. Phoenix Sky Harbor to Washington Reagan National. That is round trip, October 14th through October 19th.",
+   "start": 413.61,
+   "end": 424.29,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Great. Oh—wait, I do have one more question. My grandson's last name matches mine, but his mother isn't traveling. Do I need a letter from her?",
+   "start": 425.71,
+   "end": 439.73,
+   "emotions": [
+    "concerned"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Oh, no. Um, airline booking does not require me to collect a consent letter for this domestic itinerary, but identification and custody document expectations can vary. Um, I would just review current government guidance and carry any documents his parent considers appropriate.",
+   "start": 439.73,
+   "end": 457.90999999999997,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Okay. He doesn't have a driver's license.",
+   "start": 459.97,
+   "end": 463.17,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "For domestic security screening, minors traveling with an adult are treated under the applicable government rules. I don't wanna paraphrase a changing rule incorrectly, um, so I would use the official guidance before departure.",
+   "start": 463.17,
+   "end": 476.53,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Okay, fine. Um, what did you enter for his birth date?",
+   "start": 479.35,
+   "end": 484.33,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "July 21st, 2014.",
+   "start": 484.33,
+   "end": 487.05,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Correct. Okay. And mine is March 8th, 1954.",
+   "start": 488.49,
+   "end": 494.83,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Yep, that's right. I have that right there, ma'am.",
+   "start": 494.83,
+   "end": 497.09,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "The certificate number had a zero or the letter 'O'?",
+   "start": 498.829,
+   "end": 502.25,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "It was recorded as C-T-449108, with the digit zero between one and eight.",
+   "start": 503.57,
+   "end": 515.75,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Good. I always mix those 2 up over the phone.",
+   "start": 517.15,
+   "end": 520.97,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Yes, I understand. The certificate applied successfully, so the identifier was accepted.",
+   "start": 520.97,
+   "end": 527.85,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Can we choose the seats now?",
+   "start": 529.87,
+   "end": 531.71,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "The reservation is confirmed in standard economy. Seat selection can be completed from the reservation screen, so just choose two adjacent available seats and verify both directions for that, okay?",
+   "start": 533.47,
+   "end": 546.35,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Okay.",
+   "start": 548.73,
+   "end": 549.35,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "So I see 16A and 16B outbound, and then 14D and 14E to return.",
+   "start": 551.01,
+   "end": 563.85,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Yes, those are adjacent pairs. Just review the aircraft map before confirming because layouts can differ.",
+   "start": 563.85,
+   "end": 570.07,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Okay, confirmed. Does the walker need a serial number?",
+   "start": 572.35,
+   "end": 577.41,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "No, ma'am, not for this reservation entry. I would label it with contact information and identify it as a mobility device at the airport, just so they're aware.",
+   "start": 577.41,
+   "end": 586.25,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Okay. Uh, please, uh, give me the total one more time.",
+   "start": 587.87,
+   "end": 592.49,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "No problem. That was $1,186.40 for fare, taxes, and two checked bags, plus $94.60 for that insurance. And a $200 credit was applied; the remainder was charged to the Visa on file. And that's the card I have ending in 1182.",
+   "start": 592.49,
+   "end": 615.77,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Okay, that matches my screen.",
+   "start": 617.85,
+   "end": 620.75,
+   "emotions": [
+    "relieved"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Great. Okay, ma'am, and I do suggest you save the confirmation B9RT6M and review the insurance document for exclusions.",
+   "start": 620.75,
+   "end": 634.99,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "I will. I, okay, I've written down the confirmation and the total.",
+   "start": 636.55,
+   "end": 641.59,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Good. Perfect. Is there anything else I can help you with today, ma'am?",
+   "start": 641.59,
+   "end": 644.69,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "No, that covers it. Thank you for being patient with me.",
+   "start": 645.84,
+   "end": 650.01,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Jordan",
+   "text": "Oh, you're very welcome, ma'am. It's my pleasure. And thank you for choosing BlueMesa Airlines, and have a wonderful trip with your grandson.",
+   "start": 650.01,
+   "end": 658.71,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Linda",
+   "text": "Thank you.",
+   "start": 658.71,
+   "end": 659.19,
+   "emotions": []
+  }
+ ],
+ "evaluation": {
+  "reward": 1.0,
+  "reward_breakdown": {
+   "DB": 1.0,
+   "COMMUNICATE": 1.0
+  },
+  "db": {
+   "target_hash": "658ffe4689f808ad15047ad5801a7d5a803edd30dd815325f160337b8280b6b5",
+   "predicted_hash": "658ffe4689f808ad15047ad5801a7d5a803edd30dd815325f160337b8280b6b5"
+  },
+  "communicate_checks": [
+   {
+    "info": "Washington Reagan National",
+    "met": true
+   },
+   {
+    "info": "$62 total",
+    "met": true
+   },
+   {
+    "info": "$1186.40",
+    "met": true
+   },
+   {
+    "info": "$94.60",
+    "met": true
+   },
+   {
+    "info": "$200",
+    "met": true
+   },
+   {
+    "info": "B9RT6M",
+    "met": true
+   }
+  ],
+  "tool_calls": 9,
+  "failed_calls": 0
+ },
+ "variations": [
+  {
+   "name": "Every read issued twice",
+   "expect": "still passes: looking is free",
+   "result": {
+    "reward": 1.0,
+    "reward_breakdown": {
+     "DB": 1.0,
+     "COMMUNICATE": 1.0
+    }
+   }
+  },
+  {
+   "name": "Skip the last write (book_reservation)",
+   "expect": "DB fails: the end state no longer matches",
+   "result": {
+    "reward": 0.0,
+    "reward_breakdown": {
+     "DB": 0.0,
+     "COMMUNICATE": 1.0
+    }
+   }
+  },
+  {
+   "name": "Agent never says “Washington Reagan National”",
+   "expect": "COMMUNICATE fails: a required fact went unsaid",
+   "result": {
+    "reward": 0.0,
+    "reward_breakdown": {
+     "DB": 1.0,
+     "COMMUNICATE": 0.0
+    }
+   }
+  }
+ ]
+}

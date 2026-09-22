@@ -1,0 +1,52 @@
+[
+ {
+  "id": "airline-family-reservation",
+  "domain": "airline",
+  "title": "Airline: family reservation"
+ },
+ {
+  "id": "banking-account-email-card-application",
+  "domain": "banking",
+  "title": "Banking: account email card application"
+ },
+ {
+  "id": "banking-declined-card-travel",
+  "domain": "banking",
+  "title": "Banking: declined card travel"
+ },
+ {
+  "id": "banking-referral-missing-reward",
+  "domain": "banking",
+  "title": "Banking: referral missing reward"
+ },
+ {
+  "id": "banking-transaction-dispute-session",
+  "domain": "banking",
+  "title": "Banking: transaction dispute session"
+ },
+ {
+  "id": "pharmacy-travel-refill",
+  "domain": "pharmacy",
+  "title": "Pharmacy: travel refill"
+ },
+ {
+  "id": "retail-damaged-item-replacement",
+  "domain": "retail",
+  "title": "Retail: damaged item replacement"
+ },
+ {
+  "id": "retail-missing-package",
+  "domain": "retail",
+  "title": "Retail: missing package"
+ },
+ {
+  "id": "retail-refund-bank-fee",
+  "domain": "retail",
+  "title": "Retail: refund bank fee"
+ },
+ {
+  "id": "telecom-data-usage-cleanup",
+  "domain": "telecom",
+  "title": "Telecom: data usage cleanup"
+ }
+]

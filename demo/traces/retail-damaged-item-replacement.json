@@ -1,0 +1,1932 @@
+{
+ "conversation_id": "retail-damaged-item-replacement",
+ "domain": "retail",
+ "task": {
+  "description": {
+   "purpose": "Find the damaged coffee maker order, read its eligible resolutions and stock, create a zero-balance replacement at the original price shipped to the home address on the order with the return waived, confirm the confirmation email went out, and report the still-open headphones trace without changing it.",
+   "relevant_policies": "domains/retail/policy.md",
+   "notes": "The caller has an open missing-headphones case from yesterday with a pickup preference and a 6 PM carrier deadline. The replacement must not inherit that pickup preference, the open case must not be touched, and the Thursday delivery is only an estimate."
+  },
+  "user_scenario": {
+   "persona": "A friendly, slightly anxious returning customer who says 'okay, okay' often and stammers a little. He worries the two orders will get mixed up and is relieved and appreciative by the end.",
+   "instructions": {
+    "domain": "retail",
+    "reason_for_call": "A coffee maker you ordered from Westline arrived damaged and you want it replaced. You also spoke to Westline yesterday about missing headphones on a different order.",
+    "known_info": "You are Ethan Patel (Patel spelled P-A-T-E-L).\nThe coffee maker order number ends in 4086.\nYour email is ethan.patel@northmail.com (northmail spelled N-O-R-T-H-M-A-I-L).\nThe water tank is cracked at the bottom and the base was damp inside the plastic. The outside of the box was not beaten up.\nYou have not turned it on.\nYou saw the price has gone up since you ordered it.\nYou already took some photos of the damage.\nYesterday you called about missing headphones on another order and asked for a pickup option on that case. The headphones have not turned up.",
+    "unknown_info": "You do not know the replacement order number, where it will ship from, or the current status of the headphones case.",
+    "task_instructions": "Introduce yourself and say you think you spoke to them yesterday about missing headphones. If asked, say the headphones have not turned up yet, but you are calling about a different order: a coffee maker arrived damaged. Give the order ending and email when asked, spelling northmail and Patel. Describe the damage. Say you have not turned it on because you saw the water and thought you should call first. When asked, say you want a replacement for sure, as long as you do not pay the current price, which went up since you ordered.\n\nAsk whether they need pictures before sending the replacement; if told they are optional, say you already took some and will probably add them. After it is submitted, ask where it is shipping to, because you do not want it tied to the pickup request from the headphones case. Say you were worried the two orders would get mixed up. Ask whether Thursday is just an estimate and not a guaranteed time window. Ask if it is coming from the same warehouse as the damaged one, explaining you want to make sure the same issue is not being resent. Ask what to do with the damaged one since you do not need to return it, and mention you could put it in your building's electronics bin. Say you do not see the confirmation email yet; once the agent says it was sent, say you see it (order 8821, zero balance) and will upload photos. Then ask whether there are any updates on the headphones order. Accept that it stays as is and say you will use the link tonight if nothing changes. Thank the agent for handling two issues and end the call."
+   }
+  },
+  "communicate_info": [
+   "12-cup coffee maker",
+   "your home address",
+   "Thursday by end of day",
+   "end in 8821",
+   "6:00 this evening"
+  ],
+  "nl_assertions": [
+   "Agent tells the caller that the replacement stays at the price he already paid.",
+   "Agent tells the caller that the return is waived so there is no label or drop-off, and that photos are optional and will not hold up the order.",
+   "Agent tells the caller not to plug in the damaged coffee maker because there is moisture in the base.",
+   "Agent confirms that Thursday is an estimate rather than a guaranteed delivery window and that the assigned distribution center can still change before shipping.",
+   "Agent tells the caller that the pickup preference stays only on yesterday's missing-package case and keeps the two orders separate.",
+   "Agent tells the caller that the headphones trace is still open with no carrier response and does not change it before its deadline."
+  ],
+  "reward_basis": [
+   "DB",
+   "COMMUNICATE"
+  ]
+ },
+ "tables": {
+  "carrier_scans": 544,
+  "case_items": 61,
+  "case_notes": 30,
+  "case_preferences": 1,
+  "case_type_policy": 2,
+  "cases": 61,
+  "customers": 102,
+  "distribution_centers": 8,
+  "eligible_resolutions": 26,
+  "id_allocator": 3,
+  "note_topics": 5,
+  "notification_templates": 4,
+  "notifications": 1,
+  "order_items": 711,
+  "orders": 359,
+  "payments": 439,
+  "pickup_site_suffixes": 7,
+  "product_variants": 107,
+  "products": 81,
+  "refunds": 445,
+  "replacement_orders": 0,
+  "returns": 170,
+  "scenario": 9,
+  "section_read_cursor": 1,
+  "section_view": 2,
+  "specialist_transfers": 0
+ },
+ "rows": {
+  "case_preferences": {
+   "8cf648a4-ca60-4387-bc11-ec38f426123a": {
+    "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+    "pickup_location": "West 23rd Street pickup counter",
+    "pickup_site": "West 23rd Street",
+    "recorded_at": "2026-08-25T19:52:00+00:00",
+    "review_instruction": "Check West 23rd Street pickup availability first after replacement eligibility.",
+    "visible_to_next_reviewer": true
+   }
+  },
+  "case_type_policy": {
+   "delivery_trace": {
+    "approval_channel": "trace_notification",
+    "approval_required": true,
+    "carrier_may_contact_customer": true,
+    "case_type": "delivery_trace",
+    "deadline_local_time": "18:00",
+    "deadline_offset_days": 1,
+    "duplicate_refund_blocked": null,
+    "eligibility_triggers": [
+     "carrier_confirms_missing",
+     "carrier_response_deadline_expires"
+    ],
+    "initial_status": "open",
+    "next_action": "review requested resolution and fulfillment after an eligibility trigger",
+    "order_view_fields": [
+     "case_number",
+     "type",
+     "status",
+     "carrier_response",
+     "deadline"
+    ],
+    "pickup_guaranteed": false,
+    "preference_instruction_template": "Check {site} pickup availability first after replacement eligibility.",
+    "related_view_fields": [
+     "case_number",
+     "order_reference",
+     "item",
+     "status",
+     "preferences"
+    ],
+    "review_window_max_days": null,
+    "review_window_min_days": null
+   }
+  },
+  "cases": {
+   "8cf648a4-ca60-4387-bc11-ec38f426123a": {
+    "amount_under_review": null,
+    "approval_channel": "trace_notification",
+    "approval_required": true,
+    "carrier_may_contact_customer": true,
+    "carrier_response": "none",
+    "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+    "case_type": "delivery_trace",
+    "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+    "deadline_at": "2026-08-26T22:00:00+00:00",
+    "deadline_display": "18:00 today",
+    "duplicate_refund_blocked": null,
+    "eligibility_triggers": [
+     "carrier_confirms_missing",
+     "carrier_response_deadline_expires"
+    ],
+    "fee_reimbursement_approved": false,
+    "item_description": "blue noise-canceling headphones",
+    "needed_by": "2026-08-27",
+    "next_action": "review requested resolution and fulfillment after an eligibility trigger",
+    "opened_at": "2026-08-25T19:52:00+00:00",
+    "order_reference": "5820447319",
+    "payment_reference": null,
+    "pickup_guaranteed": false,
+    "reason": "delivered_not_received",
+    "replacement_created": false,
+    "requested_resolution": "replacement",
+    "return_evidence_attached": null,
+    "return_reference": null,
+    "review_window_max_days": null,
+    "review_window_min_days": null,
+    "status": "open"
+   }
+  },
+  "order_items": {
+   "coffee-maker-matte-black-12-cup": {
+    "color": null,
+    "currency": "USD",
+    "item_reference": "coffee-maker-matte-black-12-cup",
+    "line_no": 1,
+    "name": "12-cup coffee maker",
+    "order_reference": "5820454086",
+    "product_reference": "12-cup-coffee-maker",
+    "total_after_tax": 118.4,
+    "variant_label": "matte black",
+    "variant_reference": "coffee-maker-matte-black-12-cup"
+   }
+  },
+  "orders": {
+   "5820447319": {
+    "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+    "destination_label": "home_address_on_order",
+    "fulfillment_status": "delivered",
+    "order_reference": "5820447319",
+    "placed_on": "2026-08-21",
+    "replaces_order_reference": null,
+    "representative_item": "blue noise-canceling headphones"
+   },
+   "5820451086": {
+    "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+    "destination_label": "home_address_on_order",
+    "fulfillment_status": "delivered",
+    "order_reference": "5820451086",
+    "placed_on": "2026-08-10",
+    "replaces_order_reference": null,
+    "representative_item": "desk lamp"
+   },
+   "5820454086": {
+    "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+    "destination_label": "home_address_on_order",
+    "fulfillment_status": "delivered",
+    "order_reference": "5820454086",
+    "placed_on": "2026-08-22",
+    "replaces_order_reference": null,
+    "representative_item": "12-cup coffee maker"
+   },
+   "5820459086": {
+    "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+    "destination_label": "home_address_on_order",
+    "fulfillment_status": "delivered",
+    "order_reference": "5820459086",
+    "placed_on": "2026-07-28",
+    "replaces_order_reference": null,
+    "representative_item": "wool socks"
+   }
+  },
+  "scenario": {
+   "min_reference_suffix_digits": {
+    "key": "min_reference_suffix_digits",
+    "value": "4"
+   },
+   "order_customer_fields": {
+    "key": "order_customer_fields",
+    "value": "customer_id,display_name,verified_email"
+   },
+   "order_reference_mask": {
+    "key": "order_reference_mask",
+    "value": "ending-{last4}"
+   },
+   "target_case_id": {
+    "key": "target_case_id",
+    "value": "8cf648a4-ca60-4387-bc11-ec38f426123a"
+   },
+   "target_case_number": {
+    "key": "target_case_number",
+    "value": "WST481662"
+   },
+   "scenario_time": {
+    "key": "scenario_time",
+    "value": "2026-08-26T11:20:00-04:00"
+   }
+  },
+  "section_read_cursor": {
+   "5820454086|eligible_resolutions": {
+    "order_reference": "5820454086",
+    "reads_served": 1,
+    "section": "eligible_resolutions"
+   }
+  },
+  "section_view": {
+   "5820454086|eligible_resolutions|0": {
+    "note": "First look: the returns service has not priced the options yet, so the section is omitted entirely rather than returned empty.",
+    "order_reference": "5820454086",
+    "payload": null,
+    "section": "eligible_resolutions",
+    "view_index": 0
+   },
+   "5820454086|eligible_resolutions|1": {
+    "note": "Second and later looks disclose the priced panel: what each resolution preserves, what it requires, and what it estimates.",
+    "order_reference": "5820454086",
+    "payload": [
+     {
+      "default_fulfillment": "home_address_on_order",
+      "estimated_delivery": "Thursday end of day",
+      "optional_photo_upload_available": true,
+      "photo_required": false,
+      "photo_upload_blocks_fulfillment": false,
+      "preserves_original_price": true,
+      "return_required": false,
+      "type": "replacement"
+     },
+     {
+      "type": "refund"
+     }
+    ],
+    "section": "eligible_resolutions",
+    "view_index": 1
+   }
+  },
+  "product_variants": {
+   "coffee-maker-matte-black-12-cup": {
+    "color": "matte black",
+    "currency": "USD",
+    "current_price": 118.4,
+    "display_name": "12-cup coffee maker",
+    "in_stock": true,
+    "product_reference": "12-cup-coffee-maker",
+    "same_variant_in_stock": null,
+    "variant_reference": "coffee-maker-matte-black-12-cup"
+   }
+  },
+  "customers": {
+   "c51d2171-c10b-489b-9186-a93ebd98613d": {
+    "address_label": "home_address_on_order",
+    "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+    "display_name": "Ethan Patel",
+    "email": "ethan.patel@northmail.com",
+    "fulfillment_region": "nj-metro",
+    "masked_email": "e***@northmail.com",
+    "masked_phone": "***-***-4471"
+   }
+  },
+  "distribution_centers": {
+   "edison": {
+    "dc_id": "edison",
+    "display_name": "Edison",
+    "region": "nj-metro"
+   },
+   "secaucus": {
+    "dc_id": "secaucus",
+    "display_name": "Secaucus",
+    "region": "nj-metro"
+   }
+  },
+  "eligible_resolutions": {
+   "5820454086|1": {
+    "default_fulfillment": "home_address_on_order",
+    "estimated_delivery_display": "Thursday end of day",
+    "estimated_delivery_on": "2026-08-27",
+    "optional_photo_upload_available": true,
+    "order_reference": "5820454086",
+    "photo_required": false,
+    "photo_upload_blocks_fulfillment": false,
+    "position": 1,
+    "preserves_original_price": true,
+    "resolution_type": "replacement",
+    "return_required": false
+   }
+  },
+  "id_allocator": {
+   "order|replacement": {
+    "entity_type": "order",
+    "next_value": 5820458821,
+    "scope": "replacement",
+    "template": "{n}"
+   }
+  },
+  "notification_templates": {
+   "replacement_confirmation": {
+    "delivery_progression": [
+     "queued",
+     "sent",
+     "delivered"
+    ],
+    "included_fields": [
+     "replacement_order_reference",
+     "balance_due",
+     "estimated_delivery",
+     "return_disposition"
+    ],
+    "initial_status": "queued",
+    "message_type": "replacement_confirmation",
+    "optional_photo_link": true,
+    "order_view_fields": [
+     "type",
+     "status",
+     "subject_prefix",
+     "optional_photo_link",
+     "photo_link_section"
+    ],
+    "photo_link_section": "later_in_email",
+    "subject_prefix": "Your Westline replacement",
+    "template": "replacement_confirmation"
+   }
+  },
+  "products": {
+   "12-cup-coffee-maker": {
+    "category": "small_appliance",
+    "display_name": "12-cup coffee maker",
+    "disposal_disposition": "discard_or_recycle",
+    "hazard_class": "electrical",
+    "product_reference": "12-cup-coffee-maker",
+    "safety_instruction": "do_not_power_on"
+   }
+  },
+  "notifications": {
+   "notification-5820458821": {
+    "notification_id": "notification-5820458821",
+    "case_number": null,
+    "order_reference": "5820458821",
+    "channel": "email",
+    "template": "replacement_confirmation",
+    "message_type": "replacement_confirmation",
+    "masked_destination": "e***@northmail.com",
+    "status": "queued",
+    "status_index": 0,
+    "status_progression": [
+     "queued",
+     "sent",
+     "delivered"
+    ],
+    "subject_prefix": "Your Westline replacement",
+    "optional_photo_link": true,
+    "photo_link_section": "later_in_email",
+    "included_fields": [
+     "replacement_order_reference",
+     "balance_due",
+     "estimated_delivery",
+     "return_disposition"
+    ],
+    "sent_at": "2026-08-26T15:20:00+00:00",
+    "sent_at_display": null,
+    "created_at": "2026-08-26T15:20:00+00:00"
+   }
+  }
+ },
+ "events": [
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Thanks for calling Westline Customer Care. This is Daniel. How can I help you?",
+   "start": 0.94,
+   "end": 4.32,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Hey, Daniel. This is Ethan Patel. Um, I think I actually spoke with you yesterday about some missing headphones.",
+   "start": 6.08,
+   "end": 12.44,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Oh, okay. That's awesome, yeah. Um, I remember that case. Uh, did the package turn up?",
+   "start": 14.3,
+   "end": 19.46,
+   "emotions": [
+    "curious"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Uh, no, not yet. Uh, but I'm actually calling about a different order today. Um, yeah, I ordered like a coffee maker, and it came in damaged, so just wanted to give you a heads-up.",
+   "start": 20.62,
+   "end": 30.52,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay, got it. Yeah, we'll, we'll keep that separate. Uh, do you have the order number for the coffee maker?",
+   "start": 31.66,
+   "end": 37.87,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Yeah. Uh, this one ends in 4086.",
+   "start": 39.0,
+   "end": 43.14,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "All right. Um, what's your email?",
+   "start": 45.44,
+   "end": 47.04,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Yeah. It's ethan.patel@northmail.com, N-O-R-T-H-M-A-I-L.com. And Patel, that's P-A-T-E-L.",
+   "start": 48.26,
+   "end": 61.08,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay, perfect. Give me one sec to check that out.",
+   "start": 62.28,
+   "end": 66.52,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "rd-001",
+   "name": "get_order",
+   "arguments": {
+    "order_reference": "ending-4086",
+    "customer_email": "ethan.patel@northmail.com",
+    "include": [
+     "items",
+     "eligible_resolutions",
+     "cases"
+    ]
+   },
+   "label": "open the order record",
+   "at": 68.0,
+   "status": 200,
+   "output": {
+    "order_reference": "ending-4086",
+    "customer": {
+     "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+     "display_name": "Ethan Patel",
+     "verified_email": "e***@northmail.com"
+    },
+    "items": [
+     {
+      "item_reference": "coffee-maker-matte-black-12-cup",
+      "name": "12-cup coffee maker",
+      "variant": "matte black"
+     }
+    ],
+    "cases": [
+     {
+      "order_reference": "ending-7319",
+      "item": "blue noise-canceling headphones",
+      "status": "open",
+      "preferences": {
+       "pickup": "West 23rd Street pickup counter"
+      },
+      "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "case_number": "WST481662"
+     }
+    ]
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "case_preferences": {
+     "keys": [
+      "8cf648a4-ca60-4387-bc11-ec38f426123a"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "case_type_policy": {
+     "keys": [
+      "delivery_trace"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "cases": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d"
+       },
+       "matched": [
+        "8cf648a4-ca60-4387-bc11-ec38f426123a"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "customers": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "order_items": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820454086"
+       },
+       "matched": [
+        "coffee-maker-matte-black-12-cup"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "orders": {
+     "keys": [
+      "5820454086"
+     ],
+     "queries": [
+      {
+       "where": {
+        "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d"
+       },
+       "matched": [
+        "5820447319",
+        "5820451086",
+        "5820454086",
+        "5820459086"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "min_reference_suffix_digits",
+      "order_customer_fields",
+      "order_reference_mask",
+      "target_case_id",
+      "target_case_number"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "section_read_cursor": {
+     "keys": [
+      "5820454086|eligible_resolutions"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "section_view": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820454086",
+        "section": "eligible_resolutions"
+       },
+       "matched": [
+        "5820454086|eligible_resolutions|0",
+        "5820454086|eligible_resolutions|1"
+       ]
+      }
+     ],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "section_read_cursor",
+     "key": "5820454086|eligible_resolutions",
+     "kind": "updated",
+     "columns": [
+      "reads_served"
+     ],
+     "before": {
+      "order_reference": "5820454086",
+      "reads_served": 0,
+      "section": "eligible_resolutions"
+     },
+     "after": {
+      "order_reference": "5820454086",
+      "reads_served": 2,
+      "section": "eligible_resolutions"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay. So I found a 12-cup coffee maker, matte black.",
+   "start": 72.64,
+   "end": 77.56,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "What was wrong with it when you opened the box?",
+   "start": 79.12,
+   "end": 81.62,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Uh, the water tank is cracked at the bottom, and the base was damp inside the plastic. Um, the outside wasn't beat up or anything, so yeah.",
+   "start": 82.82,
+   "end": 92.32,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay. Got it. Have you tried turning it on or have you not?",
+   "start": 93.75999999999999,
+   "end": 99.18,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Uh, no, I haven't. Um, I stopped 'cause I saw the water and I thought I probably should, uh, call first.",
+   "start": 100.32,
+   "end": 106.06,
+   "emotions": [
+    "confused"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Yes, that's good. Um, let me check the return options on that item. So sorry again for your trouble. Would you rather replace it or get your money back? (apologetic)",
+   "start": 107.58,
+   "end": 117.12,
+   "emotions": [
+    "apologetic"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Uh, replace it, for sure, as long as I don't have to pay the current price. I saw it went up since I ordered it.",
+   "start": 117.24000000000001,
+   "end": 123.3,
+   "emotions": [
+    "concerned"
+   ]
+  },
+  {
+   "kind": "tool",
+   "call_id": "rd-002",
+   "name": "get_order",
+   "arguments": {
+    "order_reference": "ending-4086",
+    "customer_email": "ethan.patel@northmail.com",
+    "include": [
+     "eligible_resolutions"
+    ]
+   },
+   "label": "review return and replacement options",
+   "at": 123.5,
+   "status": 200,
+   "output": {
+    "order_reference": "ending-4086",
+    "eligible_resolutions": [
+     {
+      "default_fulfillment": "home_address_on_order",
+      "estimated_delivery": "Thursday end of day",
+      "optional_photo_upload_available": true,
+      "photo_required": false,
+      "photo_upload_blocks_fulfillment": false,
+      "preserves_original_price": true,
+      "return_required": false,
+      "type": "replacement"
+     },
+     {
+      "type": "refund"
+     }
+    ]
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "customers": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "orders": {
+     "keys": [
+      "5820454086"
+     ],
+     "queries": [
+      {
+       "where": {
+        "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d"
+       },
+       "matched": [
+        "5820447319",
+        "5820451086",
+        "5820454086",
+        "5820459086"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "min_reference_suffix_digits",
+      "order_reference_mask"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "section_read_cursor": {
+     "keys": [
+      "5820454086|eligible_resolutions"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "section_view": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820454086",
+        "section": "eligible_resolutions"
+       },
+       "matched": [
+        "5820454086|eligible_resolutions|0",
+        "5820454086|eligible_resolutions|1"
+       ]
+      }
+     ],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "section_read_cursor",
+     "key": "5820454086|eligible_resolutions",
+     "kind": "updated",
+     "columns": [
+      "reads_served"
+     ],
+     "before": {
+      "order_reference": "5820454086",
+      "reads_served": 1,
+      "section": "eligible_resolutions"
+     },
+     "after": {
+      "order_reference": "5820454086",
+      "reads_served": 2,
+      "section": "eligible_resolutions"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay. A replacement would stay at the price you already paid. Um, just give me a minute to see whether it's in stock and whether the system wants it, uh, returned.",
+   "start": 125.32,
+   "end": 136.3,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Okay, yeah.",
+   "start": 136.4,
+   "end": 136.84,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Should just be about 20, 30 seconds now.",
+   "start": 139.14,
+   "end": 140.74,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "rd-003",
+   "name": "get_product",
+   "arguments": {
+    "product_reference": "coffee-maker-matte-black-12-cup",
+    "include_inventory": true
+   },
+   "label": "check replacement inventory",
+   "at": 141.0,
+   "status": 200,
+   "output": {
+    "product_reference": "coffee-maker-matte-black-12-cup",
+    "variant": {
+     "name": "12-cup coffee maker",
+     "color": "matte black"
+    },
+    "inventory": {
+     "in_stock": true
+    }
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "product_variants": {
+     "keys": [
+      "coffee-maker-matte-black-12-cup"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay. So I just got back. The same model is available, and the estimated delivery is gonna be Thursday for this one.",
+   "start": 153.74,
+   "end": 161.82,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "The system is also waiving the return, so there's no label or any sort of drop-off.",
+   "start": 163.549,
+   "end": 169.04,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Oh, okay. Nice. Uh, yeah, that sounds good. Do you need pictures before you can send the replacement?",
+   "start": 170.9,
+   "end": 176.3,
+   "emotions": [
+    "relieved"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "No. Um, not to process it. I could send you an optional photo link on the confirmation if you wanna document the condition, but it won't hold up your order in any way.",
+   "start": 178.14,
+   "end": 188.48,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Okay. Okay, yeah, I took, uh, some photos already just so, uh, just in case we needed it, so I'll probably just add them.",
+   "start": 190.06,
+   "end": 196.44,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "That's fine. Um, let me submit that replacement for you, and I will let you know in about 15 seconds as it's going through.",
+   "start": 198.04,
+   "end": 209.0,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "rd-004",
+   "name": "create_replacement_order",
+   "arguments": {
+    "order_reference": "ending-4086",
+    "item_references": [
+     "coffee-maker-matte-black-12-cup"
+    ],
+    "reason": "damaged",
+    "fulfillment_method": "ship_to_address",
+    "fulfillment_location": "home_address_on_order",
+    "customer_authorized": true
+   },
+   "label": "create the replacement order",
+   "at": 209.5,
+   "status": 200,
+   "output": {
+    "replacement_order_reference": "ending-8821",
+    "status": "created",
+    "balance_due": 0,
+    "currency": "USD",
+    "fulfillment": {
+     "method": "ship_to_address",
+     "location": "home_address_on_order",
+     "estimated_delivery": "Thursday end of day",
+     "estimate_guaranteed": false,
+     "distribution_center": "Edison",
+     "distribution_center_status": "provisional_until_shipped",
+     "tracking_notifications": true
+    },
+    "return_disposition": {
+     "return_required": false,
+     "disposition": "discard_or_recycle",
+     "safety": "do_not_power_on"
+    },
+    "notification": {
+     "status": "queued",
+     "optional_photo_link": true,
+     "photo_link_section": "later_in_email"
+    }
+   },
+   "matches_recording": true,
+   "write_tool": true,
+   "reads": {
+    "cases": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820454086"
+       },
+       "matched": []
+      }
+     ],
+     "scanned": false
+    },
+    "customers": {
+     "keys": [
+      "c51d2171-c10b-489b-9186-a93ebd98613d"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "distribution_centers": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "region": "nj-metro"
+       },
+       "matched": [
+        "edison",
+        "secaucus"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "eligible_resolutions": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820454086",
+        "resolution_type": "replacement"
+       },
+       "matched": [
+        "5820454086|1"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "id_allocator": {
+     "keys": [
+      "order|replacement"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "notification_templates": {
+     "keys": [
+      "replacement_confirmation"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "notifications": {
+     "keys": [
+      "notification-5820458821"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "order_items": {
+     "keys": [
+      "5820458821-coffee-maker-matte-black-12-cup"
+     ],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820454086"
+       },
+       "matched": [
+        "coffee-maker-matte-black-12-cup"
+       ]
+      },
+      {
+       "where": {
+        "order_reference": "5820454086"
+       },
+       "matched": [
+        "coffee-maker-matte-black-12-cup"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "orders": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "product_variants": {
+     "keys": [
+      "coffee-maker-matte-black-12-cup"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "products": {
+     "keys": [
+      "12-cup-coffee-maker"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "replacement_orders": {
+     "keys": [
+      "5820458821"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "min_reference_suffix_digits",
+      "order_reference_mask",
+      "scenario_time"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "id_allocator",
+     "key": "order|replacement",
+     "kind": "updated",
+     "columns": [
+      "next_value"
+     ],
+     "before": {
+      "entity_type": "order",
+      "next_value": 5820458821,
+      "scope": "replacement",
+      "template": "{n}"
+     },
+     "after": {
+      "entity_type": "order",
+      "next_value": 5820458822,
+      "scope": "replacement",
+      "template": "{n}"
+     }
+    },
+    {
+     "table": "notifications",
+     "key": "notification-5820458821",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "notification_id": "notification-5820458821",
+      "case_number": null,
+      "order_reference": "5820458821",
+      "channel": "email",
+      "template": "replacement_confirmation",
+      "message_type": "replacement_confirmation",
+      "masked_destination": "e***@northmail.com",
+      "status": "sent",
+      "status_index": 1,
+      "status_progression": [
+       "queued",
+       "sent",
+       "delivered"
+      ],
+      "subject_prefix": "Your Westline replacement",
+      "optional_photo_link": true,
+      "photo_link_section": "later_in_email",
+      "included_fields": [
+       "replacement_order_reference",
+       "balance_due",
+       "estimated_delivery",
+       "return_disposition"
+      ],
+      "sent_at": "2026-08-26T15:20:00+00:00",
+      "sent_at_display": null,
+      "created_at": "2026-08-26T15:20:00+00:00"
+     }
+    },
+    {
+     "table": "order_items",
+     "key": "5820458821-coffee-maker-matte-black-12-cup",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "item_reference": "5820458821-coffee-maker-matte-black-12-cup",
+      "order_reference": "5820458821",
+      "line_no": 1,
+      "variant_reference": "coffee-maker-matte-black-12-cup",
+      "product_reference": "12-cup-coffee-maker",
+      "name": "12-cup coffee maker",
+      "variant_label": "matte black",
+      "color": null,
+      "total_after_tax": 118.4,
+      "currency": "USD"
+     }
+    },
+    {
+     "table": "orders",
+     "key": "5820458821",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "order_reference": "5820458821",
+      "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+      "placed_on": "2026-08-26",
+      "fulfillment_status": "processing",
+      "destination_label": "home_address_on_order",
+      "replaces_order_reference": "5820454086",
+      "representative_item": "12-cup coffee maker"
+     }
+    },
+    {
+     "table": "replacement_orders",
+     "key": "5820458821",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "replacement_order_reference": "5820458821",
+      "original_order_reference": "5820454086",
+      "reason": "damaged",
+      "status": "created",
+      "balance_due": 0.0,
+      "currency": "USD",
+      "fulfillment_method": "ship_to_address",
+      "fulfillment_location": "home_address_on_order",
+      "estimated_delivery_on": "2026-08-27",
+      "estimated_delivery_display": "Thursday end of day",
+      "estimate_guaranteed": false,
+      "distribution_center": "Edison",
+      "distribution_center_status": "provisional_until_shipped",
+      "tracking_notifications": true,
+      "return_required": false,
+      "disposition": "discard_or_recycle",
+      "safety": "do_not_power_on",
+      "created_at": "2026-08-26T15:20:00+00:00"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay, it looks like it just went through.",
+   "start": 211.2,
+   "end": 212.94,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Okay. Okay. Oh, can you check where it's shipping to? Just because I don't want this to be tied to the pickup request from the headphone case, um, just 'cause there were some issues with that too.",
+   "start": 214.34,
+   "end": 225.22,
+   "emotions": [
+    "concerned"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Yes, that's a great question. So this one is going to your home address. Um, the pickup preference is only noted on yesterday's missing package case.",
+   "start": 226.38,
+   "end": 235.76,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Okay. Okay, yeah, th-that's perfect. I was worried the two orders would get m-mixed up together. Um, yeah. (worried)",
+   "start": 236.78,
+   "end": 243.16,
+   "emotions": [
+    "relieved"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Yeah, no, um, in this case, they're completely separate. So I can see yesterday's case on the account, but I'm working only on the order which is 4086 right now.",
+   "start": 244.78,
+   "end": 256.579,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Okay, okay. And Thursday is the estimate. It's not like a guaranteed time window. Is that correct?",
+   "start": 259.3,
+   "end": 264.78,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Yes, that's correct. Um, it says right now Thursday by end of day. Um, once the carrier has it, you'll get the regular tracking updates.",
+   "start": 265.94,
+   "end": 274.22,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "I see, okay. Um, is it coming from the same warehouse as the damaged one?",
+   "start": 275.68,
+   "end": 281.72,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Unfortunately, I can't see where the first one was packaged. The replacement assigned to the Edison distribution center, but that can still change before it actually ships.",
+   "start": 283.36,
+   "end": 295.28,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Oh, okay. Okay. Yeah, no, I just mainly wanted to check you weren't, you know, resending the same kind of issue somehow.",
+   "start": 297.28,
+   "end": 303.44,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "No, um, it'll be a brand-new shipment with a new order number. Um, this one will end in 8821.",
+   "start": 305.96,
+   "end": 314.06,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Okay. Okay, nice. Um, yeah, and what do I do with the damaged one since I don't need to like return it, I guess?",
+   "start": 315.94,
+   "end": 322.18,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Yeah. So for the damaged one, uh, you can go ahead and discard that. Since there's moisture on the base, I definitely wouldn't plug it in. Other than that, um, Westline doesn't need it back.",
+   "start": 323.64,
+   "end": 335.5,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Oh, okay. Okay, and, uh, I can put it in like the electronics section? I'll check if my building has a electronic bin.",
+   "start": 337.18,
+   "end": 345.68,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Yeah, that works. Um, I think that the city you're in may also have small appliance recycling, but the confirmation will simply show that the return was just waived.",
+   "start": 347.18,
+   "end": 357.44,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Oh, okay. Nice. Uh, okay, yeah. Has the confirmation email gone out? I don't see it yet.",
+   "start": 359.18,
+   "end": 365.12,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Um, let me refresh that actually.",
+   "start": 365.22,
+   "end": 366.86,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "One second.",
+   "start": 368.74,
+   "end": 369.36,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "rd-005",
+   "name": "get_order",
+   "arguments": {
+    "order_reference": "ending-8821",
+    "customer_email": "ethan.patel@northmail.com",
+    "include": [
+     "notifications"
+    ]
+   },
+   "label": "refresh replacement-email delivery status",
+   "at": 370.0,
+   "status": 200,
+   "output": {
+    "order_reference": "ending-8821",
+    "notifications": [
+     {
+      "type": "replacement_confirmation",
+      "status": "sent",
+      "subject_prefix": "Your Westline replacement",
+      "optional_photo_link": true,
+      "photo_link_section": "later_in_email"
+     }
+    ]
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "cases": {
+     "keys": [
+      "8cf648a4-ca60-4387-bc11-ec38f426123a"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "customers": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "notification_templates": {
+     "keys": [
+      "replacement_confirmation"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "notifications": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "orders": {
+     "keys": [
+      "5820458821"
+     ],
+     "queries": [
+      {
+       "where": {
+        "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d"
+       },
+       "matched": [
+        "5820447319",
+        "5820451086",
+        "5820454086",
+        "5820458821",
+        "5820459086"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "min_reference_suffix_digits",
+      "order_reference_mask"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "notifications",
+     "key": "notification-5820458821",
+     "kind": "updated",
+     "columns": [
+      "status",
+      "status_index"
+     ],
+     "before": {
+      "notification_id": "notification-5820458821",
+      "case_number": null,
+      "order_reference": "5820458821",
+      "channel": "email",
+      "template": "replacement_confirmation",
+      "message_type": "replacement_confirmation",
+      "masked_destination": "e***@northmail.com",
+      "status": "queued",
+      "status_index": 0,
+      "status_progression": [
+       "queued",
+       "sent",
+       "delivered"
+      ],
+      "subject_prefix": "Your Westline replacement",
+      "optional_photo_link": true,
+      "photo_link_section": "later_in_email",
+      "included_fields": [
+       "replacement_order_reference",
+       "balance_due",
+       "estimated_delivery",
+       "return_disposition"
+      ],
+      "sent_at": "2026-08-26T15:20:00+00:00",
+      "sent_at_display": null,
+      "created_at": "2026-08-26T15:20:00+00:00"
+     },
+     "after": {
+      "notification_id": "notification-5820458821",
+      "case_number": null,
+      "order_reference": "5820458821",
+      "channel": "email",
+      "template": "replacement_confirmation",
+      "message_type": "replacement_confirmation",
+      "masked_destination": "e***@northmail.com",
+      "status": "sent",
+      "status_index": 1,
+      "status_progression": [
+       "queued",
+       "sent",
+       "delivered"
+      ],
+      "subject_prefix": "Your Westline replacement",
+      "optional_photo_link": true,
+      "photo_link_section": "later_in_email",
+      "included_fields": [
+       "replacement_order_reference",
+       "balance_due",
+       "estimated_delivery",
+       "return_disposition"
+      ],
+      "sent_at": "2026-08-26T15:20:00+00:00",
+      "sent_at_display": null,
+      "created_at": "2026-08-26T15:20:00+00:00"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay, yeah. Um, it says it was just sent, and the subject line for this will start with your Westline replacement.",
+   "start": 372.3,
+   "end": 379.74,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Oh, okay. Yeah. No, I see it. Your order 8821 delivery, zero balance. Okay. Yeah. No, I see that.",
+   "start": 379.92,
+   "end": 388.24,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Perfect. Yeah, that's the one, and, uh, you'll see the optional photo link, uh, farther down in the email.",
+   "start": 389.42,
+   "end": 395.5,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Okay. Okay, yeah. I'll, I'll definitely upload something. Um, no, this is great. Thank you. While I have you on the call, is there any updates on the, the headphones, um, the other order that we had issues with?",
+   "start": 397.14,
+   "end": 410.28,
+   "emotions": [
+    "curious"
+   ]
+  },
+  {
+   "kind": "tool",
+   "call_id": "rd-006",
+   "name": "lookup_customer",
+   "arguments": {
+    "email": "ethan.patel@northmail.com"
+   },
+   "label": "resolve the separate headphones order before reading its case",
+   "at": 410.8,
+   "status": 200,
+   "output": {
+    "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+    "match": "unique",
+    "display_name": "Ethan Patel",
+    "recent_orders": [
+     {
+      "order_reference": "ending-7319",
+      "item": "blue noise-canceling headphones",
+      "open_case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "open_case_number": "WST481662"
+     }
+    ]
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "cases": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820447319"
+       },
+       "matched": [
+        "8cf648a4-ca60-4387-bc11-ec38f426123a"
+       ]
+      },
+      {
+       "where": {
+        "order_reference": "5820451086"
+       },
+       "matched": []
+      },
+      {
+       "where": {
+        "order_reference": "5820454086"
+       },
+       "matched": []
+      },
+      {
+       "where": {
+        "order_reference": "5820458821"
+       },
+       "matched": []
+      },
+      {
+       "where": {
+        "order_reference": "5820459086"
+       },
+       "matched": []
+      }
+     ],
+     "scanned": false
+    },
+    "customers": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "orders": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d"
+       },
+       "matched": [
+        "5820447319",
+        "5820451086",
+        "5820454086",
+        "5820458821",
+        "5820459086"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "order_reference_mask",
+      "target_case_id",
+      "target_case_number"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "rd-007",
+   "name": "get_order",
+   "arguments": {
+    "order_reference": "ending-7319",
+    "customer_email": "ethan.patel@northmail.com",
+    "include": [
+     "cases"
+    ]
+   },
+   "label": "review the existing missing-package trace",
+   "at": 411.0,
+   "status": 200,
+   "output": {
+    "order_reference": "ending-7319",
+    "cases": [
+     {
+      "type": "delivery_trace",
+      "status": "open",
+      "carrier_response": "none",
+      "deadline": "18:00 today",
+      "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "case_number": "WST481662"
+     }
+    ]
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "case_preferences": {
+     "keys": [
+      "8cf648a4-ca60-4387-bc11-ec38f426123a"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "case_type_policy": {
+     "keys": [
+      "delivery_trace"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "cases": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d"
+       },
+       "matched": [
+        "8cf648a4-ca60-4387-bc11-ec38f426123a"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "customers": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "orders": {
+     "keys": [
+      "5820447319"
+     ],
+     "queries": [
+      {
+       "where": {
+        "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d"
+       },
+       "matched": [
+        "5820447319",
+        "5820451086",
+        "5820454086",
+        "5820458821",
+        "5820459086"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "min_reference_suffix_digits",
+      "order_reference_mask",
+      "target_case_id",
+      "target_case_number"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "The trace on the last order you did is still open. There is no carrier response as of yet, and the deadline is still 6:00 this evening. I don't wanna change anything before that window kind of closes though.",
+   "start": 411.78,
+   "end": 425.88,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Okay. Okay. Uh, that, yeah, that's fine. I'll use the link tonight if nothing changes. That works.",
+   "start": 427.66,
+   "end": 432.34,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay, sounds good. So the coffee maker replacement is done, and the headphones case stays as is for now.",
+   "start": 433.74,
+   "end": 441.08,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Okay. Okay, yeah, no, that, that sounds good for, for both. Uh, yeah, no, thank you so much again. I know two different issues, [laughs] uh, but I appreciate the support. (relieved)",
+   "start": 442.86,
+   "end": 454.38,
+   "emotions": [
+    "relieved"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "You're so welcome, Ethan. Um, once again, so sorry for the trouble with the coffee maker as well as the order yesterday. Um, I hope that the next delivery that we have for you goes a little bit more smoothly.",
+   "start": 455.34000000000003,
+   "end": 466.18,
+   "emotions": [
+    "apologetic"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Yeah, me too. I hope it goes better. [laughs] All right, no, thank you so much for your time.",
+   "start": 467.34000000000003,
+   "end": 471.32,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Absolutely, you too. Have a good day. Bye.",
+   "start": 472.4,
+   "end": 474.22,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Yep, bye.",
+   "start": 474.62,
+   "end": 475.13,
+   "emotions": []
+  }
+ ],
+ "evaluation": {
+  "reward": 1.0,
+  "reward_breakdown": {
+   "DB": 1.0,
+   "COMMUNICATE": 1.0
+  },
+  "db": {
+   "target_hash": "a401213dadc4ed879c5dadcd9ea5b93604d71269b01a660590d6ac3683d9a0de",
+   "predicted_hash": "a401213dadc4ed879c5dadcd9ea5b93604d71269b01a660590d6ac3683d9a0de"
+  },
+  "communicate_checks": [
+   {
+    "info": "12-cup coffee maker",
+    "met": true
+   },
+   {
+    "info": "your home address",
+    "met": true
+   },
+   {
+    "info": "Thursday by end of day",
+    "met": true
+   },
+   {
+    "info": "end in 8821",
+    "met": true
+   },
+   {
+    "info": "6:00 this evening",
+    "met": true
+   }
+  ],
+  "tool_calls": 7,
+  "failed_calls": 0
+ },
+ "variations": [
+  {
+   "name": "Every read issued twice",
+   "expect": "still passes: looking is free",
+   "result": {
+    "reward": 1.0,
+    "reward_breakdown": {
+     "DB": 1.0,
+     "COMMUNICATE": 1.0
+    }
+   }
+  },
+  {
+   "name": "Skip the last write (create_replacement_order)",
+   "expect": "DB fails: the end state no longer matches",
+   "result": {
+    "reward": 0.0,
+    "reward_breakdown": {
+     "DB": 0.0,
+     "COMMUNICATE": 1.0
+    }
+   }
+  },
+  {
+   "name": "Agent never says “12-cup coffee maker”",
+   "expect": "COMMUNICATE fails: a required fact went unsaid",
+   "result": {
+    "reward": 0.0,
+    "reward_breakdown": {
+     "DB": 1.0,
+     "COMMUNICATE": 0.0
+    }
+   }
+  }
+ ]
+}

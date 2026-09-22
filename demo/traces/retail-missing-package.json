@@ -1,0 +1,1838 @@
+{
+ "conversation_id": "retail-missing-package",
+ "domain": "retail",
+ "task": {
+  "description": {
+   "purpose": "Find the headphones order, report what the delivered scan does and does not show, check that the same blue model is in stock, open carrier trace WST481662, record the caller's wish for a same-model replacement at the original price with West 23rd Street pickup as a preference, and email the trace confirmation to the order contact.",
+   "relevant_policies": "domains/retail/policy.md",
+   "notes": "The caller is under time pressure for a gift and wants the replacement sent now, but policy requires the trace first and the carrier has until 6 PM tomorrow to answer. Stock is not authorization, no replacement may be created, and the pickup location is a preference, not a promise."
+  },
+  "user_scenario": {
+   "persona": "A polite, slightly anxious young man who fills pauses with 'um' and 'like' and repeats 'okay' when taking things in. He is worried about timing because the item is a gift.",
+   "instructions": {
+    "domain": "retail",
+    "reason_for_call": "Your Westline order says it was delivered, but you do not have it.",
+    "known_info": "You are Ethan Patel.\nThe order number is 7319 and it is a pair of blue noise-canceling headphones.\nThe email on the order is ethan.patel@northmail.com (Patel spelled P-A-T-E-L, northmail spelled N-O-R-T-H-M-A-I-L).\nYou live in an apartment building with a front desk and a package room behind it. You checked both last night and this morning and the desk has nothing for you.\nThe attendant checked the delivery log and shelves and found no driver signature around that time. There is no delivery photo in your email.\nThe headphones are a gift and you fly out Friday around noon, so you need them by Thursday.\nYou prefer the Westline pickup counter on West Twenty-third Street, which you have used before.\nYou know the black version now has a different price.",
+    "unknown_info": "You do not know what the carrier scan shows, whether the item is in stock, or what the trace process involves.",
+    "task_instructions": "Open by saying an order says it was delivered but you do not have it. Give the order number (say it as seven three one nine) and that it is blue noise-canceling headphones, then your email when asked, spelling Patel and northmail. Confirm it is an apartment building and describe the front desk, package room and your checks. If asked about the log, say they checked both, the attendant found no driver signature, and there is no delivery photo in the email. Agree to hold if asked.\n\nWhen told it could be a bad scan or a neighboring entrance, say that is what you figured, explain it is a time-sensitive gift and you fly out Friday around noon, and ask if anything can be done to get it in time. Confirm Thursday is ideal and Friday afternoon does not help. When told a trace comes first, ask whether you have to wait another two days and what that actually means. Then ask whether it goes out automatically and whether they can make an exception given the timing. Ask them to make sure it is the exact same model and the same blue color, noting the black one has a different price now. Ask if it could be sent somewhere other than your building so this does not happen again; when asked, name the West Twenty-third Street pickup counter. Say you mostly just want the first package found. Ask what happens if the package turns up after the replacement ships. Ask for the case number so you do not get double-charged. Accept the email, then say you got it and it says the trace is open until 6:00 tomorrow, and ask if that is the one. Say that is all for this order, thank the agent and end the call."
+   }
+  },
+  "communicate_info": [
+   "three eighteen",
+   "front entrance",
+   "same blue model",
+   "six tomorrow evening",
+   "WST four eight one"
+  ],
+  "nl_assertions": [
+   "Agent tells the caller that the scan was near the building with no unit number or locker and that it cannot tell whether it was a bad scan or a drop at a neighboring entrance.",
+   "Agent opens a carrier trace before any replacement and does not create a replacement during the call.",
+   "Agent tells the caller that the replacement does not go out automatically and that he must approve it through the link in the trace email or by calling with the case number.",
+   "Agent records the West 23rd Street pickup counter as a preference and tells the caller it cannot promise that location before a replacement exists.",
+   "Agent tells the caller that his original price carries over to the replacement.",
+   "Agent sends the trace confirmation to the email address on the order."
+  ],
+  "reward_basis": [
+   "DB",
+   "COMMUNICATE"
+  ]
+ },
+ "tables": {
+  "carrier_scans": 597,
+  "case_items": 60,
+  "case_notes": 25,
+  "case_preferences": 0,
+  "case_type_policy": 2,
+  "cases": 60,
+  "customers": 102,
+  "distribution_centers": 8,
+  "eligible_resolutions": 26,
+  "id_allocator": 3,
+  "note_topics": 5,
+  "notification_templates": 4,
+  "notifications": 0,
+  "order_items": 736,
+  "orders": 366,
+  "payments": 432,
+  "pickup_site_suffixes": 7,
+  "product_variants": 110,
+  "products": 81,
+  "refunds": 458,
+  "replacement_orders": 0,
+  "returns": 166,
+  "scenario": 12,
+  "section_read_cursor": 1,
+  "section_view": 2,
+  "specialist_transfers": 0
+ },
+ "rows": {
+  "carrier_scans": {
+   "594": {
+    "evidence_location": "near building",
+    "location": "front entrance",
+    "locker": null,
+    "order_reference": "5820447319",
+    "photo_reference": null,
+    "possible_misscan": true,
+    "scan_seq": 594,
+    "scanned_at": "2026-08-24T19:18:00+00:00",
+    "scanned_at_display": "15:18 yesterday",
+    "unit_number": null
+   }
+  },
+  "order_items": {
+   "blue-noise-canceling-headphones": {
+    "color": "blue",
+    "currency": "USD",
+    "item_reference": "blue-noise-canceling-headphones",
+    "line_no": 1,
+    "name": null,
+    "order_reference": "5820447319",
+    "product_reference": "blue-noise-canceling-headphones",
+    "total_after_tax": 214.99,
+    "variant_label": null,
+    "variant_reference": "blue-noise-canceling-headphones"
+   }
+  },
+  "orders": {
+   "5820441319": {
+    "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+    "destination_label": "home_address_on_order",
+    "fulfillment_status": "delivered",
+    "order_reference": "5820441319",
+    "placed_on": "2026-08-14",
+    "replaces_order_reference": null,
+    "representative_item": "desk lamp"
+   },
+   "5820447019": {
+    "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+    "destination_label": "home_address_on_order",
+    "fulfillment_status": "delivered",
+    "order_reference": "5820447019",
+    "placed_on": "2026-07-11",
+    "replaces_order_reference": null,
+    "representative_item": "cutting board"
+   },
+   "5820447319": {
+    "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+    "destination_label": "home_address_on_order",
+    "fulfillment_status": "delivered",
+    "order_reference": "5820447319",
+    "placed_on": "2026-08-21",
+    "replaces_order_reference": null,
+    "representative_item": null
+   },
+   "5820449319": {
+    "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+    "destination_label": "home_address_on_order",
+    "fulfillment_status": "delivered",
+    "order_reference": "5820449319",
+    "placed_on": "2026-07-30",
+    "replaces_order_reference": null,
+    "representative_item": "wool socks"
+   }
+  },
+  "scenario": {
+   "min_reference_suffix_digits": {
+    "key": "min_reference_suffix_digits",
+    "value": "4"
+   },
+   "order_customer_fields": {
+    "key": "order_customer_fields",
+    "value": "customer_id,display_name,verified_email"
+   },
+   "order_reference_mask": {
+    "key": "order_reference_mask",
+    "value": "{last4}"
+   },
+   "next_support_case_id": {
+    "key": "next_support_case_id",
+    "value": "8cf648a4-ca60-4387-bc11-ec38f426123a"
+   },
+   "next_support_case_number": {
+    "key": "next_support_case_number",
+    "value": "WST481662"
+   },
+   "scenario_time": {
+    "key": "scenario_time",
+    "value": "2026-08-25T15:40:00-04:00"
+   },
+   "next_notification_id": {
+    "key": "next_notification_id",
+    "value": "521527dc-8856-4b33-8e08-69658b1ca80b"
+   },
+   "target_case_id": {
+    "key": "target_case_id",
+    "value": "8cf648a4-ca60-4387-bc11-ec38f426123a"
+   },
+   "target_case_number": {
+    "key": "target_case_number",
+    "value": "WST481662"
+   }
+  },
+  "section_read_cursor": {
+   "5820447319|carrier_scans": {
+    "order_reference": "5820447319",
+    "reads_served": 1,
+    "section": "carrier_scans"
+   }
+  },
+  "section_view": {
+   "5820447319|carrier_scans|0": {
+    "note": "First look: the evidence panel is not populated yet, so the section is omitted entirely rather than returned empty.",
+    "order_reference": "5820447319",
+    "payload": null,
+    "section": "carrier_scans",
+    "view_index": 0
+   },
+   "5820447319|carrier_scans|1": {
+    "note": "Second and later looks disclose the evidence panel: the geofence the scan landed in, whether a unit or locker was captured, and whether that is consistent with a mis-scan.",
+    "order_reference": "5820447319",
+    "payload": {
+     "locker": null,
+     "photo": null,
+     "possible_misscan": true,
+     "scan_location": "near building",
+     "unit_number": null
+    },
+    "section": "carrier_scans",
+    "view_index": 1
+   }
+  },
+  "product_variants": {
+   "blue-noise-canceling-headphones": {
+    "color": "blue",
+    "currency": "USD",
+    "current_price": 214.99,
+    "display_name": null,
+    "in_stock": null,
+    "product_reference": "blue-noise-canceling-headphones",
+    "same_variant_in_stock": true,
+    "variant_reference": "blue-noise-canceling-headphones"
+   }
+  },
+  "case_type_policy": {
+   "delivery_trace": {
+    "approval_channel": "trace_notification",
+    "approval_required": true,
+    "carrier_may_contact_customer": true,
+    "case_type": "delivery_trace",
+    "deadline_local_time": "18:00",
+    "deadline_offset_days": 1,
+    "duplicate_refund_blocked": null,
+    "eligibility_triggers": [
+     "carrier_confirms_missing",
+     "carrier_response_deadline_expires"
+    ],
+    "initial_status": "open",
+    "next_action": "review requested resolution and fulfillment after an eligibility trigger",
+    "order_view_fields": [
+     "case_number",
+     "status",
+     "deadline",
+     "carrier_may_contact_customer",
+     "replacement_created"
+    ],
+    "pickup_guaranteed": false,
+    "preference_instruction_template": "Check {site} pickup availability first after replacement eligibility.",
+    "related_view_fields": [
+     "case_number",
+     "order_reference",
+     "item",
+     "status",
+     "preferences"
+    ],
+    "review_window_max_days": null,
+    "review_window_min_days": null
+   }
+  },
+  "customers": {
+   "c51d2171-c10b-489b-9186-a93ebd98613d": {
+    "address_label": "home_address_on_order",
+    "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+    "display_name": "Ethan Patel",
+    "email": "ethan.patel@northmail.com",
+    "fulfillment_region": "nj-metro",
+    "masked_email": "e***@northmail.com",
+    "masked_phone": "***-***-4471"
+   }
+  },
+  "cases": {
+   "8cf648a4-ca60-4387-bc11-ec38f426123a": {
+    "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+    "order_reference": "5820447319",
+    "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+    "case_type": "delivery_trace",
+    "status": "open",
+    "reason": "delivered_not_received",
+    "item_description": null,
+    "carrier_response": "none",
+    "deadline_at": "2026-08-26T22:00:00+00:00",
+    "deadline_display": "18:00 tomorrow",
+    "carrier_may_contact_customer": true,
+    "replacement_created": false,
+    "requested_resolution": "undecided",
+    "needed_by": "2026-08-27",
+    "approval_required": true,
+    "approval_channel": "trace_notification",
+    "next_action": "review requested resolution and fulfillment after an eligibility trigger",
+    "eligibility_triggers": [
+     "carrier_confirms_missing",
+     "carrier_response_deadline_expires"
+    ],
+    "review_window_min_days": null,
+    "review_window_max_days": null,
+    "duplicate_refund_blocked": null,
+    "return_evidence_attached": null,
+    "return_reference": null,
+    "payment_reference": null,
+    "amount_under_review": null,
+    "fee_reimbursement_approved": false,
+    "pickup_guaranteed": false,
+    "opened_at": "2026-08-25T19:40:00+00:00"
+   }
+  },
+  "notification_templates": {
+   "delivery_trace_confirmation": {
+    "delivery_progression": [
+     "sent",
+     "delivered"
+    ],
+    "included_fields": [
+     "case_number",
+     "status",
+     "carrier_response_deadline",
+     "approval_link"
+    ],
+    "initial_status": "sent",
+    "message_type": "delivery_trace_confirmation",
+    "optional_photo_link": null,
+    "order_view_fields": [
+     "notification_id",
+     "type",
+     "status"
+    ],
+    "photo_link_section": null,
+    "subject_prefix": "Your Westline delivery trace",
+    "template": "delivery_trace_confirmation"
+   }
+  },
+  "notifications": {
+   "521527dc-8856-4b33-8e08-69658b1ca80b": {
+    "channel": "email",
+    "template": "delivery_trace_confirmation",
+    "message_type": "delivery_trace_confirmation",
+    "masked_destination": "e***@northmail.com",
+    "status": "sent",
+    "status_index": 0,
+    "status_progression": [
+     "sent",
+     "delivered"
+    ],
+    "included_fields": [
+     "case_number",
+     "status",
+     "carrier_response_deadline",
+     "approval_link"
+    ],
+    "sent_at": "2026-08-25T19:40:00+00:00",
+    "notification_id": "521527dc-8856-4b33-8e08-69658b1ca80b",
+    "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+    "order_reference": "5820447319",
+    "subject_prefix": "Your Westline delivery trace",
+    "optional_photo_link": null,
+    "photo_link_section": null,
+    "sent_at_display": null,
+    "created_at": "2026-08-25T19:40:00+00:00"
+   }
+  }
+ },
+ "events": [
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Thank you for calling Westline Customer Care. This is Daniel. How can I help you?",
+   "start": 0.0,
+   "end": 4.04,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Hey, I'm calling about an order that says it's delivered, but I don't have it yet. So just wanted to check in on that.",
+   "start": 5.02,
+   "end": 12.1,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay, yeah. Let me take a look. Do you have the order number with you?",
+   "start": 13.64,
+   "end": 16.98,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "I do, yeah. The order number is seven three one nine. The order is, like, a pair of n- blue noise-canceling headphones.",
+   "start": 18.14,
+   "end": 27.16,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Got it. And just to make sure I pull up the right account, what's the email address on the order?",
+   "start": 28.4,
+   "end": 33.44,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "The email address is ethan.patel, that's P-A-T-E-L, @northmail.com. N-O-R-T-H-M-A-I-L.com.",
+   "start": 35.03,
+   "end": 47.04,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "All right, one second. I'm going to kind of take a look.",
+   "start": 49.04,
+   "end": 53.5,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Yeah.",
+   "start": 54.38,
+   "end": 54.76,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "rm-001",
+   "name": "get_order",
+   "arguments": {
+    "order_reference": "7319",
+    "customer_email": "ethan.patel@northmail.com",
+    "include": [
+     "items",
+     "fulfillment",
+     "carrier_scans"
+    ]
+   },
+   "label": "open the order record",
+   "at": 55.0,
+   "status": 200,
+   "output": {
+    "order_reference": "7319",
+    "customer": {
+     "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+     "display_name": "Ethan Patel",
+     "verified_email": "e***@northmail.com"
+    },
+    "items": [
+     {
+      "item_reference": "blue-noise-canceling-headphones",
+      "product_reference": "blue-noise-canceling-headphones",
+      "color": "blue"
+     }
+    ],
+    "fulfillment": {
+     "status": "delivered",
+     "latest_scan": {
+      "time": "15:18 yesterday",
+      "location": "front entrance",
+      "photo": null
+     }
+    }
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "carrier_scans": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820447319"
+       },
+       "matched": [
+        "594"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "customers": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "order_items": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820447319"
+       },
+       "matched": [
+        "blue-noise-canceling-headphones"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "orders": {
+     "keys": [
+      "5820447319"
+     ],
+     "queries": [
+      {
+       "where": {
+        "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d"
+       },
+       "matched": [
+        "5820441319",
+        "5820447019",
+        "5820447319",
+        "5820449319"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "min_reference_suffix_digits",
+      "order_customer_fields",
+      "order_reference_mask"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "section_read_cursor": {
+     "keys": [
+      "5820447319|carrier_scans"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "section_view": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820447319",
+        "section": "carrier_scans"
+       },
+       "matched": [
+        "5820447319|carrier_scans|0",
+        "5820447319|carrier_scans|1"
+       ]
+      }
+     ],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "section_read_cursor",
+     "key": "5820447319|carrier_scans",
+     "kind": "updated",
+     "columns": [
+      "reads_served"
+     ],
+     "before": {
+      "order_reference": "5820447319",
+      "reads_served": 0,
+      "section": "carrier_scans"
+     },
+     "after": {
+      "order_reference": "5820447319",
+      "reads_served": 2,
+      "section": "carrier_scans"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay, I found it. The carrier scan says delivered yesterday at three eighteen and left at the front entrance. Is this an apartment building?",
+   "start": 72.94,
+   "end": 81.94,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Uh, yes, it is an apartment building. Um, there's a front desk and then also a package room behind it. Um, I checked both last night and this morning, and yeah, the desk just doesn't have anything for me. So wanted to know what's going on.",
+   "start": 85.4,
+   "end": 99.74000000000001,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Did they happen to check their delivery l- de- delivery log or check the shelves?",
+   "start": 101.18,
+   "end": 106.03999999999999,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Yeah, they checked both. The attendant said there wasn't a driver signature, like, around that time too. Um, there's also no delivery photo in the email.",
+   "start": 107.12,
+   "end": 114.92,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Got it.",
+   "start": 118.58,
+   "end": 119.03999999999999,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Yeah. On my end, I'm not seeing a photo here either. Let me check the scan details. Could I put you on hold just for a minute?",
+   "start": 121.32,
+   "end": 129.46,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "rm-002",
+   "name": "get_order",
+   "arguments": {
+    "order_reference": "7319",
+    "customer_email": "ethan.patel@northmail.com",
+    "include": [
+     "carrier_scans"
+    ]
+   },
+   "label": "review carrier scan details",
+   "at": 129.46,
+   "status": 200,
+   "output": {
+    "order_reference": "7319",
+    "fulfillment": {
+     "carrier_evidence": {
+      "locker": null,
+      "photo": null,
+      "possible_misscan": true,
+      "scan_location": "near building",
+      "unit_number": null
+     }
+    }
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "customers": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "orders": {
+     "keys": [
+      "5820447319"
+     ],
+     "queries": [
+      {
+       "where": {
+        "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d"
+       },
+       "matched": [
+        "5820441319",
+        "5820447019",
+        "5820447319",
+        "5820449319"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "min_reference_suffix_digits",
+      "order_reference_mask"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "section_read_cursor": {
+     "keys": [
+      "5820447319|carrier_scans"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "section_view": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820447319",
+        "section": "carrier_scans"
+       },
+       "matched": [
+        "5820447319|carrier_scans|0",
+        "5820447319|carrier_scans|1"
+       ]
+      }
+     ],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "section_read_cursor",
+     "key": "5820447319|carrier_scans",
+     "kind": "updated",
+     "columns": [
+      "reads_served"
+     ],
+     "before": {
+      "order_reference": "5820447319",
+      "reads_served": 1,
+      "section": "carrier_scans"
+     },
+     "after": {
+      "order_reference": "5820447319",
+      "reads_served": 2,
+      "section": "carrier_scans"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Yeah, for sure.",
+   "start": 130.34,
+   "end": 131.14,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay. Thank you so much for holding. So the scan is- near the building, but it doesn't show a unit number or a locker.",
+   "start": 152.84,
+   "end": 160.5,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "It could be a bad, bad scan, or it may have gone to a neighboring entrance. I can't tell which one from this screen.",
+   "start": 161.7,
+   "end": 168.9,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "I see. Yeah, that's what I've-- that's kind of what I figured, that it could have gone somewhere else. Um, the problem is these are a gift, so it's time sensitive, and I'm flying out Friday around noon. Is there anything you could do just to get it in time or...?",
+   "start": 170.34,
+   "end": 186.3,
+   "emotions": [
+    "concerned"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Yeah. So when do you kind of need them in hand? Is Thursday ideal?",
+   "start": 189.58,
+   "end": 195.12,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Yeah, definitely Thursday would be ideal. Friday, you know, noon, afternoon doesn't really help me, 'cause I would have left already at that time.",
+   "start": 196.62,
+   "end": 204.98,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Right. That makes a ton of sense. Let me see what the replacement inventory looks like before I tell you anything.",
+   "start": 206.3,
+   "end": 211.65,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "rm-003",
+   "name": "get_product",
+   "arguments": {
+    "product_reference": "blue-noise-canceling-headphones",
+    "include_inventory": true
+   },
+   "label": "check replacement inventory",
+   "at": 211.65,
+   "status": 200,
+   "output": {
+    "product_reference": "blue-noise-canceling-headphones",
+    "variant": {
+     "color": "blue"
+    },
+    "inventory": {
+     "same_variant_in_stock": true
+    }
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "product_variants": {
+     "keys": [
+      "blue-noise-canceling-headphones"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Yeah.",
+   "start": 212.48,
+   "end": 212.96,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Give me about 20 seconds.",
+   "start": 213.28,
+   "end": 214.42000000000002,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "All right. So the same blue model that you ordered is still in stock. The catch is I have to open a carrier trace first.",
+   "start": 230.88,
+   "end": 238.14,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "rm-004",
+   "name": "open_delivery_trace",
+   "arguments": {
+    "order_reference": "7319",
+    "item_references": [
+     "blue-noise-canceling-headphones"
+    ],
+    "reason": "delivered_not_received",
+    "requested_resolution": "undecided",
+    "needed_by": "2026-08-27"
+   },
+   "label": "open a missing-package trace",
+   "at": 238.14,
+   "status": 200,
+   "output": {
+    "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+    "case_number": "WST481662",
+    "status": "open",
+    "carrier_response_deadline": "18:00 tomorrow",
+    "replacement_created": false,
+    "eligibility_triggers": [
+     "carrier_confirms_missing",
+     "carrier_response_deadline_expires"
+    ],
+    "next_action": "review requested resolution and fulfillment after an eligibility trigger",
+    "approval_required": true,
+    "approval_channel": "trace_notification",
+    "notification_status": "not_sent"
+   },
+   "matches_recording": true,
+   "write_tool": true,
+   "reads": {
+    "case_items": {
+     "keys": [
+      "8cf648a4-ca60-4387-bc11-ec38f426123a|blue-noise-canceling-headphones"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "case_type_policy": {
+     "keys": [
+      "delivery_trace"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "cases": {
+     "keys": [
+      "8cf648a4-ca60-4387-bc11-ec38f426123a"
+     ],
+     "queries": [
+      {
+       "where": {
+        "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a"
+       },
+       "matched": []
+      }
+     ],
+     "scanned": false
+    },
+    "customers": {
+     "keys": [
+      "c51d2171-c10b-489b-9186-a93ebd98613d"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "order_items": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820447319"
+       },
+       "matched": [
+        "blue-noise-canceling-headphones"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "orders": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "scenario": {
+     "keys": [
+      "min_reference_suffix_digits",
+      "next_support_case_id",
+      "next_support_case_number",
+      "scenario_time"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "case_items",
+     "key": "8cf648a4-ca60-4387-bc11-ec38f426123a|blue-noise-canceling-headphones",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "item_reference": "blue-noise-canceling-headphones"
+     }
+    },
+    {
+     "table": "cases",
+     "key": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "order_reference": "5820447319",
+      "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+      "case_type": "delivery_trace",
+      "status": "open",
+      "reason": "delivered_not_received",
+      "item_description": null,
+      "carrier_response": "none",
+      "deadline_at": "2026-08-26T22:00:00+00:00",
+      "deadline_display": "18:00 tomorrow",
+      "carrier_may_contact_customer": true,
+      "replacement_created": false,
+      "requested_resolution": "replacement",
+      "needed_by": "2026-08-27",
+      "approval_required": true,
+      "approval_channel": "trace_notification",
+      "next_action": "review requested resolution and fulfillment after an eligibility trigger",
+      "eligibility_triggers": [
+       "carrier_confirms_missing",
+       "carrier_response_deadline_expires"
+      ],
+      "review_window_min_days": null,
+      "review_window_max_days": null,
+      "duplicate_refund_blocked": null,
+      "return_evidence_attached": null,
+      "return_reference": null,
+      "payment_reference": null,
+      "amount_under_review": null,
+      "fee_reimbursement_approved": false,
+      "pickup_guaranteed": false,
+      "opened_at": "2026-08-25T19:40:00+00:00"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Hmm. Does that mean I have to wait another two days before you send it? Like, what does that actually mean?",
+   "start": 239.92000000000002,
+   "end": 245.94,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "So in this case, not necessarily two full days. The station gets until six tomorrow evening to kind of answer this trace, and if they mark it missing sooner, we can move sooner than that. If there's no answer by six, you can go ahead and contact us, and we'll review the replacement then.",
+   "start": 247.44,
+   "end": 265.629,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "I see. So it doesn't go out automatically? Is there any way you could just because of how time sensitive it is?",
+   "start": 267.64,
+   "end": 273.86,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Unfortunately, no. You'll need to approve it. Usually, there's a link in the trace email, and if that email doesn't come through, go ahead and kind of call us with that case number.",
+   "start": 275.12,
+   "end": 284.5,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Okay. Okay, yeah. Can you just make sure it's the exact same model and the color is the same, the blue one? I know the black one has a different price now.",
+   "start": 286.36,
+   "end": 295.48,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Yeah. I can note down the exact item number and that you want a replacement, not a refund. So in this case, your original price would just carry over to the replacement.",
+   "start": 297.78,
+   "end": 306.49,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Okay. And could I have it sent somewhere besides my building, just so, you know, it doesn't happen again?",
+   "start": 308.18,
+   "end": 314.2,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Um, maybe. Once that re- replacement is kind of released, the system will show whether a pickup is available for that item. Did you have a specific location in mind?",
+   "start": 315.92,
+   "end": 325.8,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Yeah, the location, um, the branch on the West Twenty-third Street, the pickup counter. I've used, I've used that one before, so I would prefer that.",
+   "start": 327.28,
+   "end": 336.4,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay. I can go ahead and add that as one of your preferences. Just give me about 10 seconds.",
+   "start": 339.14,
+   "end": 344.24,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "rm-005",
+   "name": "update_case",
+   "arguments": {
+    "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+    "requested_resolution": "replacement",
+    "preferred_pickup_location": "West 23rd Street pickup counter",
+    "note": "Preserve exact blue variant and original price if replacement becomes eligible."
+   },
+   "label": "agent records pickup preference",
+   "at": 346.0,
+   "status": 200,
+   "output": {
+    "status": "preference_added",
+    "visible_to_next_reviewer": true,
+    "review_instruction": "Check West 23rd Street pickup availability first after replacement eligibility.",
+    "pickup_guaranteed": false
+   },
+   "matches_recording": true,
+   "write_tool": true,
+   "reads": {
+    "case_notes": {
+     "keys": [
+      "8cf648a4-ca60-4387-bc11-ec38f426123a|1"
+     ],
+     "queries": [
+      {
+       "where": {
+        "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a"
+       },
+       "matched": []
+      }
+     ],
+     "scanned": false
+    },
+    "case_preferences": {
+     "keys": [
+      "8cf648a4-ca60-4387-bc11-ec38f426123a"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "case_type_policy": {
+     "keys": [
+      "delivery_trace"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "cases": {
+     "keys": [
+      "8cf648a4-ca60-4387-bc11-ec38f426123a"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "note_topics": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "pickup_site_suffixes": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "scenario": {
+     "keys": [
+      "scenario_time"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "case_notes",
+     "key": "8cf648a4-ca60-4387-bc11-ec38f426123a|1",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "note_no": 1,
+      "note": "Preserve exact blue variant and original price if replacement becomes eligible.",
+      "topic": null,
+      "visible_to_next_reviewer": true,
+      "created_at": "2026-08-25T19:40:00+00:00"
+     }
+    },
+    {
+     "table": "case_preferences",
+     "key": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "pickup_location": "West 23rd Street pickup counter",
+      "pickup_site": "West 23rd Street",
+      "review_instruction": "Check West 23rd Street pickup availability first after replacement eligibility.",
+      "visible_to_next_reviewer": true,
+      "recorded_at": "2026-08-25T19:40:00+00:00"
+     }
+    },
+    {
+     "table": "cases",
+     "key": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+     "kind": "updated",
+     "columns": [
+      "requested_resolution"
+     ],
+     "before": {
+      "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "order_reference": "5820447319",
+      "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+      "case_type": "delivery_trace",
+      "status": "open",
+      "reason": "delivered_not_received",
+      "item_description": null,
+      "carrier_response": "none",
+      "deadline_at": "2026-08-26T22:00:00+00:00",
+      "deadline_display": "18:00 tomorrow",
+      "carrier_may_contact_customer": true,
+      "replacement_created": false,
+      "requested_resolution": "undecided",
+      "needed_by": "2026-08-27",
+      "approval_required": true,
+      "approval_channel": "trace_notification",
+      "next_action": "review requested resolution and fulfillment after an eligibility trigger",
+      "eligibility_triggers": [
+       "carrier_confirms_missing",
+       "carrier_response_deadline_expires"
+      ],
+      "review_window_min_days": null,
+      "review_window_max_days": null,
+      "duplicate_refund_blocked": null,
+      "return_evidence_attached": null,
+      "return_reference": null,
+      "payment_reference": null,
+      "amount_under_review": null,
+      "fee_reimbursement_approved": false,
+      "pickup_guaranteed": false,
+      "opened_at": "2026-08-25T19:40:00+00:00"
+     },
+     "after": {
+      "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "order_reference": "5820447319",
+      "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+      "case_type": "delivery_trace",
+      "status": "open",
+      "reason": "delivered_not_received",
+      "item_description": null,
+      "carrier_response": "none",
+      "deadline_at": "2026-08-26T22:00:00+00:00",
+      "deadline_display": "18:00 tomorrow",
+      "carrier_may_contact_customer": true,
+      "replacement_created": false,
+      "requested_resolution": "replacement",
+      "needed_by": "2026-08-27",
+      "approval_required": true,
+      "approval_channel": "trace_notification",
+      "next_action": "review requested resolution and fulfillment after an eligibility trigger",
+      "eligibility_triggers": [
+       "carrier_confirms_missing",
+       "carrier_response_deadline_expires"
+      ],
+      "review_window_min_days": null,
+      "review_window_max_days": null,
+      "duplicate_refund_blocked": null,
+      "return_evidence_attached": null,
+      "return_reference": null,
+      "payment_reference": null,
+      "amount_under_review": null,
+      "fee_reimbursement_approved": false,
+      "pickup_guaranteed": false,
+      "opened_at": "2026-08-25T19:40:00+00:00"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay. I have now added that as a preference for you. I don't want to promise you it before the replacement actually exists, but the next- person will see it and kind of check that location first.",
+   "start": 349.44,
+   "end": 360.6,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Okay. No, yeah, that's fine. I mostly don't want the second one. I just want, you know, the first one, wherever it is. Uh, so yeah, that's fine.",
+   "start": 362.6,
+   "end": 369.98,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Perfect. Yeah, I totally understand that. And also, if the package kind of turns up before anything else ships, you can just kind of keep it, and that trace will close.",
+   "start": 372.604,
+   "end": 381.024,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Okay. Nice. Um, and what if it turns up after the replacement ships?",
+   "start": 382.404,
+   "end": 386.684,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Then in that case, um, go ahead and kind of just give us a call before opening the replacement, and we can look at the trace result and tell you which one needs to go back. And in this case, you would not get charged again without any sort of notice.",
+   "start": 387.864,
+   "end": 400.864,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Okay. Okay, yeah. Just so, um, I can keep track and just so I don't get, like, double-charged, um, what's the case number for this?",
+   "start": 402.544,
+   "end": 410.264,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "The case number is WST four eight one- six six two. And I can go ahead and send that, um, to your email for that order. Um, it will probably come in the next 30 seconds to two minutes.",
+   "start": 411.624,
+   "end": 430.504,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Okay, yeah. That sounds good.",
+   "start": 431.884,
+   "end": 433.264,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "rm-006",
+   "name": "send_case_notification",
+   "arguments": {
+    "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+    "channel": "email",
+    "destination_source": "order_contact",
+    "template": "delivery_trace_confirmation"
+   },
+   "label": "send the delivery-trace email after customer approval",
+   "at": 435.0,
+   "status": 200,
+   "output": {
+    "notification_id": "521527dc-8856-4b33-8e08-69658b1ca80b",
+    "status": "sent",
+    "masked_destination": "e***@northmail.com",
+    "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+    "case_number": "WST481662",
+    "included_fields": [
+     "case_number",
+     "status",
+     "carrier_response_deadline",
+     "approval_link"
+    ]
+   },
+   "matches_recording": true,
+   "write_tool": true,
+   "reads": {
+    "cases": {
+     "keys": [
+      "8cf648a4-ca60-4387-bc11-ec38f426123a"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "customers": {
+     "keys": [
+      "c51d2171-c10b-489b-9186-a93ebd98613d"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "notification_templates": {
+     "keys": [
+      "delivery_trace_confirmation"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "notifications": {
+     "keys": [
+      "521527dc-8856-4b33-8e08-69658b1ca80b"
+     ],
+     "queries": [
+      {
+       "where": {
+        "notification_id": "521527dc-8856-4b33-8e08-69658b1ca80b"
+       },
+       "matched": []
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "next_notification_id",
+      "scenario_time",
+      "target_case_id",
+      "target_case_number"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "notifications",
+     "key": "521527dc-8856-4b33-8e08-69658b1ca80b",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "channel": "email",
+      "template": "delivery_trace_confirmation",
+      "message_type": "delivery_trace_confirmation",
+      "masked_destination": "e***@northmail.com",
+      "status": "delivered",
+      "status_index": 1,
+      "status_progression": [
+       "sent",
+       "delivered"
+      ],
+      "included_fields": [
+       "case_number",
+       "status",
+       "carrier_response_deadline",
+       "approval_link"
+      ],
+      "sent_at": "2026-08-25T19:40:00+00:00",
+      "notification_id": "521527dc-8856-4b33-8e08-69658b1ca80b",
+      "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "order_reference": "5820447319",
+      "subject_prefix": "Your Westline delivery trace",
+      "optional_photo_link": null,
+      "photo_link_section": null,
+      "sent_at_display": null,
+      "created_at": "2026-08-25T19:40:00+00:00"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Okay. Well-",
+   "start": 439.704,
+   "end": 440.284,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "I'm just checking.",
+   "start": 440.08,
+   "end": 441.36,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "That's it for me. Oh, okay. Perfect. Let me know if you get that.",
+   "start": 440.6,
+   "end": 444.08,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Okay. Yeah, I, I got the email just now. Um, yeah, it says here the trace is open until 6:00 tomorrow.",
+   "start": 450.024,
+   "end": 459.284,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Is that c- is that the one?",
+   "start": 461.544,
+   "end": 463.284,
+   "emotions": []
+  },
+  {
+   "kind": "tool",
+   "call_id": "rm-007",
+   "name": "get_order",
+   "arguments": {
+    "order_reference": "7319",
+    "customer_email": "ethan.patel@northmail.com",
+    "include": [
+     "cases",
+     "notifications"
+    ]
+   },
+   "label": "review the open carrier trace and matching notification",
+   "at": 462.9,
+   "status": 200,
+   "output": {
+    "order_reference": "7319",
+    "cases": [
+     {
+      "status": "open",
+      "deadline": "18:00 tomorrow",
+      "carrier_may_contact_customer": true,
+      "replacement_created": false,
+      "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "case_number": "WST481662"
+     }
+    ],
+    "notifications": [
+     {
+      "notification_id": "521527dc-8856-4b33-8e08-69658b1ca80b",
+      "type": "delivery_trace_confirmation",
+      "status": "delivered"
+     }
+    ]
+   },
+   "matches_recording": true,
+   "write_tool": false,
+   "reads": {
+    "case_preferences": {
+     "keys": [
+      "8cf648a4-ca60-4387-bc11-ec38f426123a"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "case_type_policy": {
+     "keys": [
+      "delivery_trace"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "cases": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d"
+       },
+       "matched": [
+        "8cf648a4-ca60-4387-bc11-ec38f426123a"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "customers": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "notification_templates": {
+     "keys": [
+      "delivery_trace_confirmation"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "notifications": {
+     "keys": [],
+     "queries": [],
+     "scanned": true
+    },
+    "orders": {
+     "keys": [
+      "5820447319"
+     ],
+     "queries": [
+      {
+       "where": {
+        "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d"
+       },
+       "matched": [
+        "5820441319",
+        "5820447019",
+        "5820447319",
+        "5820449319"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "scenario": {
+     "keys": [
+      "min_reference_suffix_digits",
+      "order_reference_mask",
+      "target_case_id",
+      "target_case_number"
+     ],
+     "queries": [],
+     "scanned": false
+    }
+   },
+   "writes": [
+    {
+     "table": "notifications",
+     "key": "521527dc-8856-4b33-8e08-69658b1ca80b",
+     "kind": "updated",
+     "columns": [
+      "status",
+      "status_index"
+     ],
+     "before": {
+      "channel": "email",
+      "template": "delivery_trace_confirmation",
+      "message_type": "delivery_trace_confirmation",
+      "masked_destination": "e***@northmail.com",
+      "status": "sent",
+      "status_index": 0,
+      "status_progression": [
+       "sent",
+       "delivered"
+      ],
+      "included_fields": [
+       "case_number",
+       "status",
+       "carrier_response_deadline",
+       "approval_link"
+      ],
+      "sent_at": "2026-08-25T19:40:00+00:00",
+      "notification_id": "521527dc-8856-4b33-8e08-69658b1ca80b",
+      "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "order_reference": "5820447319",
+      "subject_prefix": "Your Westline delivery trace",
+      "optional_photo_link": null,
+      "photo_link_section": null,
+      "sent_at_display": null,
+      "created_at": "2026-08-25T19:40:00+00:00"
+     },
+     "after": {
+      "channel": "email",
+      "template": "delivery_trace_confirmation",
+      "message_type": "delivery_trace_confirmation",
+      "masked_destination": "e***@northmail.com",
+      "status": "delivered",
+      "status_index": 1,
+      "status_progression": [
+       "sent",
+       "delivered"
+      ],
+      "included_fields": [
+       "case_number",
+       "status",
+       "carrier_response_deadline",
+       "approval_link"
+      ],
+      "sent_at": "2026-08-25T19:40:00+00:00",
+      "notification_id": "521527dc-8856-4b33-8e08-69658b1ca80b",
+      "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "order_reference": "5820447319",
+      "subject_prefix": "Your Westline delivery trace",
+      "optional_photo_link": null,
+      "photo_link_section": null,
+      "sent_at_display": null,
+      "created_at": "2026-08-25T19:40:00+00:00"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "That's perfect. Um, that's the right package. Um, in the case that they find the package, the carrier may contact you directly. Otherwise, go ahead and just kind of use that trace after it closes.",
+   "start": 463.284,
+   "end": 475.224,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Okay. Okay. No, yeah, um, thanks for, thanks for this. I know it's not ideal, but at least I know, like, where it's gonna be and that there's gonna be a replacement coming if not. Um, yeah.",
+   "start": 477.064,
+   "end": 488.724,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Yeah. Once again, so sorry about that. I, I totally get it. Is there anything else I can do on this order that you wanted me to kind of check while I have it open?",
+   "start": 489.844,
+   "end": 498.444,
+   "emotions": [
+    "apologetic"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Um, no, that's it for this one. We're just... Hopefully we just find it.",
+   "start": 499.804,
+   "end": 503.183,
+   "emotions": [
+    "hopeful"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "Well, all right, Ethan. Um, keep that case number handy, and we'll go from there tomorrow.",
+   "start": 505.124,
+   "end": 509.724,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Okay. Okay, will do. Um, yeah, thank you so much.",
+   "start": 511.304,
+   "end": 514.044,
+   "emotions": [
+    "relieved"
+   ]
+  },
+  {
+   "kind": "say",
+   "role": "assistant",
+   "speaker": "Daniel",
+   "text": "You're welcome. Take so much care.",
+   "start": 514.924,
+   "end": 516.984,
+   "emotions": []
+  },
+  {
+   "kind": "say",
+   "role": "user",
+   "speaker": "Ethan",
+   "text": "Okay. Thank you. Bye-bye.",
+   "start": 517.064,
+   "end": 518.484,
+   "emotions": []
+  }
+ ],
+ "evaluation": {
+  "reward": 1.0,
+  "reward_breakdown": {
+   "DB": 1.0,
+   "COMMUNICATE": 1.0
+  },
+  "db": {
+   "target_hash": "139e0e9e9b1809dee73ac216f85c7dc07c88a662c148e408fbd1cf35759c35c0",
+   "predicted_hash": "139e0e9e9b1809dee73ac216f85c7dc07c88a662c148e408fbd1cf35759c35c0"
+  },
+  "communicate_checks": [
+   {
+    "info": "three eighteen",
+    "met": true
+   },
+   {
+    "info": "front entrance",
+    "met": true
+   },
+   {
+    "info": "same blue model",
+    "met": true
+   },
+   {
+    "info": "six tomorrow evening",
+    "met": true
+   },
+   {
+    "info": "WST four eight one",
+    "met": true
+   }
+  ],
+  "tool_calls": 7,
+  "failed_calls": 0
+ },
+ "variations": [
+  {
+   "name": "Every read issued twice",
+   "expect": "still passes: looking is free",
+   "result": {
+    "reward": 1.0,
+    "reward_breakdown": {
+     "DB": 1.0,
+     "COMMUNICATE": 1.0
+    }
+   }
+  },
+  {
+   "name": "Skip the last write (send_case_notification)",
+   "expect": "DB fails: the end state no longer matches",
+   "result": {
+    "reward": 0.0,
+    "reward_breakdown": {
+     "DB": 0.0,
+     "COMMUNICATE": 1.0
+    }
+   }
+  },
+  {
+   "name": "Agent never says “three eighteen”",
+   "expect": "COMMUNICATE fails: a required fact went unsaid",
+   "result": {
+    "reward": 0.0,
+    "reward_breakdown": {
+     "DB": 1.0,
+     "COMMUNICATE": 0.0
+    }
+   }
+  }
+ ]
+}
