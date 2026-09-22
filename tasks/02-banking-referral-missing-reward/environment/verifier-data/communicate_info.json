@@ -1,0 +1,116 @@
+{
+  "_comment": [
+    "Facts a correct handling of this call has to reach the caller. End-state",
+    "checking cannot see any of them: the referral row is byte-identical whether",
+    "or not the agent explained that approval is not what earns the bonus, quoted",
+    "the qualifying window, or admitted it cannot look at the referred customer's",
+    "spending. This is a call about why nothing has happened yet, so almost all of",
+    "the value in it is in what gets said.",
+    "",
+    "Each entry is satisfied when any one of its surface forms appears in the",
+    "agent's utterances, matched case-insensitively with whitespace collapsed.",
+    "",
+    "A form that is a single number or a single word is matched on boundaries; a",
+    "form of two or more words is matched as a plain substring. That is why bare",
+    "figures like '15' are listed: '15' will find \"15 USD\", \"15.00 dollars\" and",
+    "\"a total of 15\", but will not match '$150', so an agent that quotes the wrong",
+    "amount gets no credit. Bare words are fenced for the same reason - 'two' must",
+    "not be found inside 'network'. Anchors are only ever the whole value: 'five'",
+    "is not listed for 95, since \"five business days\" would then satisfy a fee.",
+    "The alternatives exist so an agent is not failed for saying 'two billing",
+    "cycles' instead of '2 billing cycles'. Every form is a distinctive multi-word",
+    "phrase; nothing here would match an arbitrary transcript.",
+    "",
+    "Requirements already asserted against the database are deliberately not",
+    "repeated. The tracker session against ce7d58b0-b5fc-42cb-a6e0-7a57929e1205, the secure-message notification",
+    "and the referral staying at approved / purchase_pending on the $100 offer are",
+    "all checked as state, so restating any of them here - including the offer",
+    "amount - would only double-count them."
+  ],
+  "required": [
+    {
+      "id": "approval_is_not_the_trigger",
+      "why": "the caller's whole complaint rests on believing his sister's approval earned the bonus; unless that is corrected he leaves the call still expecting money that is not coming yet and calls back for the same reason",
+      "any_of": [
+        "approval alone does not trigger",
+        "approval alone doesn't trigger",
+        "approval alone is not enough",
+        "approval alone isn't enough",
+        "approval by itself does not",
+        "approval by itself doesn't",
+        "approval on its own does not",
+        "approval on its own doesn't",
+        "being approved is not enough",
+        "being approved isn't enough",
+        "approval does not release the reward",
+        "approval does not earn the reward",
+        "approval is not what pays",
+        "approval is not the thing that pays"
+      ]
+    },
+    {
+      "id": "qualifying_purchase_window",
+      "why": "the bonus depends on a qualifying purchase landing inside a fixed window, and he is the one who will pass that on to his sister; without the window he cannot tell her whether there is still time",
+      "any_of": [
+        "90 days",
+        "90-day",
+        "ninety days",
+        "ninety-day",
+        "90",
+        "ninety"
+      ]
+    },
+    {
+      "id": "posting_delay",
+      "why": "he called because it feels slow, and the honest answer is that the reward can lag the qualifying purchase by up to two billing cycles; he needs the interval to know when it is genuinely worth calling back",
+      "any_of": [
+        "two billing cycles",
+        "2 billing cycles",
+        "two billing statements",
+        "2 billing statements",
+        "two statement cycles",
+        "2 statement cycles",
+        "two full billing cycles"
+      ]
+    },
+    {
+      "id": "cannot_see_referred_customers_activity",
+      "why": "he keeps asking whether his sister actually bought anything, and the agent genuinely cannot look; saying so is both the privacy boundary and the reason the agent cannot simply resolve his question",
+      "any_of": [
+        "cannot see or disclose",
+        "can't see or disclose",
+        "cannot see your sister's purchase",
+        "can't see your sister's purchase",
+        "cannot see her purchase",
+        "can't see her purchase",
+        "cannot disclose her purchase",
+        "can't disclose her purchase",
+        "cannot see her transactions",
+        "can't see her transactions",
+        "cannot look at her account",
+        "can't look at her account",
+        "no visibility into her account",
+        "not able to see what she has spent"
+      ]
+    },
+    {
+      "id": "do_not_reapply",
+      "why": "he is one sentence away from telling his sister to apply again, which would create a duplicate application and a worse problem than the one he called about; this is the only actively harmful thing he might go and do",
+      "any_of": [
+        "do not reapply",
+        "don't reapply",
+        "should not reapply",
+        "shouldn't reapply",
+        "not to reapply",
+        "avoid reapplying",
+        "do not apply again",
+        "don't apply again",
+        "should not apply again",
+        "shouldn't apply again",
+        "do not submit another application",
+        "don't submit another application",
+        "duplicate applications"
+      ]
+    }
+  ]
+}

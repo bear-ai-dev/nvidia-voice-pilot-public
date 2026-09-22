@@ -1,0 +1,219 @@
+{
+  "conversation_id": "telecom-data-usage-cleanup",
+  "domain": "telecom",
+  "scenario_time": "2026-08-27T19:30:00-05:00",
+  "calls": [
+    {
+      "call_id": "td-001",
+      "name": "lookup_customer",
+      "arguments": {
+        "mobile_number": "404-555-0176",
+        "full_name": "Benjamin Reed",
+        "date_of_birth": "November 22, 1991"
+      },
+      "expected_output": {
+        "customer_id": "6dcb2039-012b-4723-a256-13bb7b6467c2",
+        "match": "unique",
+        "required_verification_factors": [
+          "mobile_number",
+          "full_name",
+          "date_of_birth"
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "find a customer using their phone number",
+      "source_event_index": 8
+    },
+    {
+      "call_id": "td-001b",
+      "name": "verify_customer_identity",
+      "arguments": {
+        "customer_id": "6dcb2039-012b-4723-a256-13bb7b6467c2",
+        "mobile_number": "404-555-0176",
+        "full_name": "Benjamin Reed",
+        "date_of_birth": "November 22, 1991"
+      },
+      "expected_output": {
+        "verification_id": "ae1d7bf3-792a-4a70-8673-16c535063f29",
+        "status": "verified",
+        "matched_factors": [
+          "mobile_number",
+          "full_name",
+          "date_of_birth"
+        ],
+        "access_scope": [
+          "lines",
+          "usage",
+          "billing"
+        ],
+        "verified_at": "2026-08-27T19:31:08-05:00"
+      },
+      "state_effect": "identity_verified",
+      "source_label": "validate collected identity factors before account access",
+      "source_event_index": 10
+    },
+    {
+      "call_id": "td-002",
+      "name": "get_customer_account",
+      "arguments": {
+        "customer_id": "6dcb2039-012b-4723-a256-13bb7b6467c2",
+        "verification_id": "ae1d7bf3-792a-4a70-8673-16c535063f29",
+        "include": [
+          "lines",
+          "devices",
+          "plans"
+        ]
+      },
+      "expected_output": {
+        "customer_id": "6dcb2039-012b-4723-a256-13bb7b6467c2",
+        "lines": [
+          {
+            "line_id": "ec8443dc-5fa9-4579-8dbe-5eafc61d53ac",
+            "masked_mobile_number": "***-***-0176",
+            "status": "active",
+            "billing_cycle_id": "305af2ad-04af-420c-9562-a935b04b855b"
+          }
+        ],
+        "devices": [
+          {
+            "device_id": "17c528ea-9b9d-48cd-8268-c6cca19d817e",
+            "model": "Pixel 8",
+            "line_id": "ec8443dc-5fa9-4579-8dbe-5eafc61d53ac",
+            "provisioning_status": "active"
+          }
+        ],
+        "plans": [
+          {
+            "plan_id": "70102739-54a7-4e7b-b251-5040b1fc2f21",
+            "name": "Unlimited Start",
+            "line_id": "ec8443dc-5fa9-4579-8dbe-5eafc61d53ac"
+          }
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "retrieve customer, line, device, and plan using the resolved customer ID",
+      "source_event_index": 12
+    },
+    {
+      "call_id": "td-003",
+      "name": "get_line_data_usage",
+      "arguments": {
+        "line_id": "ec8443dc-5fa9-4579-8dbe-5eafc61d53ac",
+        "verification_id": "ae1d7bf3-792a-4a70-8673-16c535063f29",
+        "window": "last_24_hours"
+      },
+      "expected_output": {
+        "line_id": "ec8443dc-5fa9-4579-8dbe-5eafc61d53ac",
+        "billing_cycle_id": "305af2ad-04af-420c-9562-a935b04b855b",
+        "measurement_source": "carrier_metering",
+        "window_start": "2026-08-27T00:00:00-05:00",
+        "window_end": "2026-08-27T04:00:00-05:00",
+        "used_gigabytes": 11.8,
+        "remaining_high_speed_gigabytes": 2.2,
+        "app_attribution_available": false,
+        "as_of": "2026-08-27T19:31:45-05:00"
+      },
+      "state_effect": "read_only",
+      "source_label": "check the line's current data usage",
+      "source_event_index": 18
+    },
+    {
+      "call_id": "td-004",
+      "name": "get_customer_bills",
+      "arguments": {
+        "customer_id": "6dcb2039-012b-4723-a256-13bb7b6467c2",
+        "verification_id": "ae1d7bf3-792a-4a70-8673-16c535063f29",
+        "status": "current",
+        "include": [
+          "cycle"
+        ]
+      },
+      "expected_output": {
+        "bill_id": "7af62370-8858-4af6-b2cd-2b702fd15586",
+        "billing_cycle_id": "305af2ad-04af-420c-9562-a935b04b855b",
+        "cycle_start": "2026-08-06T00:00:00-05:00",
+        "cycle_end": "2026-09-05T00:00:00-05:00",
+        "cycle_resets_in_days": 9,
+        "as_of": "2026-08-27T19:34:10-05:00"
+      },
+      "state_effect": "read_only",
+      "source_label": "retrieve the customer's current bill",
+      "source_event_index": 37
+    },
+    {
+      "call_id": "td-004b",
+      "name": "get_customer_bills",
+      "arguments": {
+        "customer_id": "6dcb2039-012b-4723-a256-13bb7b6467c2",
+        "verification_id": "ae1d7bf3-792a-4a70-8673-16c535063f29",
+        "status": "current",
+        "include": [
+          "charges",
+          "overages",
+          "plan_behavior"
+        ]
+      },
+      "expected_output": {
+        "bill_id": "7af62370-8858-4af6-b2cd-2b702fd15586",
+        "billing_cycle_id": "305af2ad-04af-420c-9562-a935b04b855b",
+        "overage_charge": 0.0,
+        "currency": "USD",
+        "after_high_speed_allowance": "speed_reduced",
+        "as_of": "2026-08-27T19:34:22-05:00"
+      },
+      "state_effect": "read_only",
+      "source_label": "open the scoped current-bill sections after the agent says so",
+      "source_event_index": 42
+    },
+    {
+      "call_id": "td-004c",
+      "name": "get_data_addon_offers",
+      "arguments": {
+        "line_id": "ec8443dc-5fa9-4579-8dbe-5eafc61d53ac",
+        "verification_id": "ae1d7bf3-792a-4a70-8673-16c535063f29"
+      },
+      "expected_output": {
+        "line_id": "ec8443dc-5fa9-4579-8dbe-5eafc61d53ac",
+        "offers": [
+          {
+            "offer_id": "21298486-3eca-4c2e-8d07-2b13c0a33fcc",
+            "eligibility_status": "eligible",
+            "data_gigabytes": 5.0,
+            "price": 40.0,
+            "currency": "USD",
+            "billing_timing": "next_bill",
+            "effective_timing": "immediate",
+            "expires_at": "2026-08-28T19:35:00-05:00"
+          }
+        ],
+        "as_of": "2026-08-27T19:34:46-05:00"
+      },
+      "state_effect": "read_only",
+      "source_label": "retrieve a current eligible offer before quoting it",
+      "source_event_index": 46
+    },
+    {
+      "call_id": "td-005",
+      "name": "add_data_addon",
+      "arguments": {
+        "line_id": "ec8443dc-5fa9-4579-8dbe-5eafc61d53ac",
+        "offer_id": "21298486-3eca-4c2e-8d07-2b13c0a33fcc",
+        "customer_authorized": true
+      },
+      "expected_output": {
+        "transaction_id": "dfdab773-2580-4908-91cf-99a2b4826547",
+        "status": "active",
+        "offer_id": "21298486-3eca-4c2e-8d07-2b13c0a33fcc",
+        "effective_at": "2026-08-27T19:37:35-05:00",
+        "bill_reference": "7af62370-8858-4af6-b2cd-2b702fd15586",
+        "charged_price": 40.0,
+        "currency": "USD",
+        "added_high_speed_gigabytes": 5.0,
+        "remaining_high_speed_gigabytes": 7.2
+      },
+      "state_effect": "data_addon_created",
+      "source_label": "add additional mobile data and charge it to the customer's bill",
+      "source_event_index": 72
+    }
+  ]
+}

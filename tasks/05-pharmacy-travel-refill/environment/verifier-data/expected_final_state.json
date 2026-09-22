@@ -1,0 +1,66 @@
+{
+  "_comment": [
+    "State the recorded conversation must leave behind. Asserted as a subset:",
+    "every field here must be present with this value, and the database may know",
+    "more. Only fields the recorded tool results revealed are asserted.",
+    "",
+    "_key_columns declares how each table is addressed, so a row is identified by",
+    "a stable business key rather than by position in the snapshot."
+  ],
+  "_key_columns": {
+    "prescriptions": "prescription_id",
+    "latest_claims": "prescription_id",
+    "claim_overrides": "override_id",
+    "fill_queue": "prescription_id",
+    "stores": "store_id"
+  },
+  "prescriptions": {
+    "9670dbb4-6227-48ed-99fc-7ce746085502": {
+      "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
+      "medication_id": "9dcd4906-4db3-4290-bccd-afde111823cb",
+      "fill_store_id": "8e22d41d-843c-4e73-95c0-3c9877366ba9",
+      "prescription_valid": true,
+      "received_at": "2026-08-27T10:42:00-05:00",
+      "workflow_status": "awaiting_pharmacist_verification",
+      "customer_facing_status": "processing",
+      "priority_reason": "traveling on 2026-08-28; waiting for pickup on the evening of 2026-08-27",
+      "payment_options": ["app_prepay_if_offered_when_ready", "pay_15_at_pickup"],
+      "ready_alert_destination_id": "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e",
+      "notification_channel": "sms",
+      "ready_alert": "enabled"
+    }
+  },
+  "latest_claims": {
+    "9670dbb4-6227-48ed-99fc-7ce746085502": {
+      "status": "paid",
+      "reason": null,
+      "copay": 15.0,
+      "currency": "USD",
+      "override_id": "9e90544a-3497-4aee-a1f0-4437d4f4684c",
+      "submitted_at": "2026-08-27T18:12:00-05:00"
+    }
+  },
+  "claim_overrides": {
+    "9e90544a-3497-4aee-a1f0-4437d4f4684c": {
+      "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+      "reason": "lost_medication",
+      "status": "approved_one_time",
+      "urgency_context": "Patient leaves town on the morning of 2026-08-28 and needs the inhaler on the evening of 2026-08-27",
+      "consumed_at": "2026-08-27T18:12:00-05:00"
+    }
+  },
+  "fill_queue": {
+    "9670dbb4-6227-48ed-99fc-7ce746085502": {
+      "status": "active",
+      "position": 1,
+      "estimated_minutes": 30,
+      "pharmacist_verification_required": true,
+      "priority_note": "present"
+    }
+  },
+  "stores": {
+    "8e22d41d-843c-4e73-95c0-3c9877366ba9": {
+      "queue_next_position": 2
+    }
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "conversation_id": "banking-transaction-dispute-session",
+  "domain": "banking",
+  "scenario_time": "2026-02-25T16:20:00-05:00",
+  "calls": [
+    {
+      "call_id": "bd-001",
+      "name": "lookup_customer",
+      "arguments": {
+        "full_name": "Justin Porter",
+        "email": "jporter92@email.com"
+      },
+      "expected_output": {
+        "customer_id": "4e8c3a97-e6ad-4737-aede-c8acd4993277",
+        "match": "unique",
+        "required_verification_methods": [
+          "billing_zip",
+          "birth_month_day"
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "find the customer by name and email",
+      "source_event_index": 6
+    },
+    {
+      "call_id": "bd-002",
+      "name": "verify_customer_identity",
+      "arguments": {
+        "customer_id": "4e8c3a97-e6ad-4737-aede-c8acd4993277",
+        "billing_zip": "64114",
+        "birth_month_day": "February 19"
+      },
+      "expected_output": {
+        "verification_id": "dbf560d6-9aa5-4471-a5b1-7a3af5c51fb8",
+        "status": "verified",
+        "matched_methods": [
+          "billing_zip",
+          "birth_month_day"
+        ]
+      },
+      "state_effect": "identity_verified",
+      "source_label": "validate the supplied identity factors",
+      "source_event_index": 11
+    },
+    {
+      "call_id": "bd-003",
+      "name": "get_credit_card_transactions",
+      "arguments": {
+        "customer_id": "4e8c3a97-e6ad-4737-aede-c8acd4993277",
+        "amount": 243.18,
+        "descriptor_contains": "MRKTPLC*8472",
+        "posted_date": "2026-02-23"
+      },
+      "expected_output": {
+        "transactions": [
+          {
+            "transaction_id": "b2047621-d2c7-437c-bb56-c81a700e2099",
+            "card_last4": "9102",
+            "amount": 243.18,
+            "currency": "USD",
+            "category": "online marketplace",
+            "preceded_by_authorization_amount": 1.0
+          }
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "retrieve the customer's credit-card transactions",
+      "source_event_index": 17
+    },
+    {
+      "call_id": "bd-004",
+      "name": "search_knowledge_base",
+      "arguments": {
+        "query": "unauthorized transaction procedure for unfamiliar marketplace descriptor and possible household use"
+      },
+      "expected_output": {
+        "record_id": "8d5fe793-b41b-48c9-aef8-e3ffd9d1d4ab",
+        "effective_at": "2026-01-15",
+        "steps": [
+          "review household use",
+          "review saved wallets",
+          "submit only if unauthorized"
+        ],
+        "posted_charge_can_be_erased": false,
+        "provisional_credit_guaranteed": false,
+        "investigation_timing_basis": "transaction_type",
+        "post_submit_outputs": [
+          "claim reference",
+          "written timing disclosures in secure messages"
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "review the unauthorized-transaction procedure",
+      "source_event_index": 27
+    },
+    {
+      "call_id": "bd-005",
+      "name": "create_secure_self_service_session",
+      "arguments": {
+        "customer_id": "4e8c3a97-e6ad-4737-aede-c8acd4993277",
+        "workflow": "transaction_dispute",
+        "resource_id": "b2047621-d2c7-437c-bb56-c81a700e2099",
+        "delivery_channels": [
+          "secure_message"
+        ]
+      },
+      "expected_output": {
+        "session_id": "0ae36057-bbbb-42e3-994f-55f064bc374c",
+        "status": "issued",
+        "submitted": false,
+        "claim_id": null,
+        "access_location": "online_banking",
+        "display_label": "Review transaction ending 8472",
+        "allowed_customer_actions": [
+          "review",
+          "submit",
+          "close_page"
+        ],
+        "deliveries": [
+          {
+            "channel": "secure_message",
+            "status": "delivered"
+          }
+        ]
+      },
+      "state_effect": "self_service_session_issued",
+      "source_label": "open a secure dispute session for transaction ending 8472",
+      "source_event_index": 35
+    },
+    {
+      "call_id": "bd-006",
+      "name": "get_secure_self_service_session",
+      "arguments": {
+        "customer_id": "4e8c3a97-e6ad-4737-aede-c8acd4993277",
+        "session_id": "0ae36057-bbbb-42e3-994f-55f064bc374c"
+      },
+      "expected_output": {
+        "session_id": "0ae36057-bbbb-42e3-994f-55f064bc374c",
+        "status": "open_not_submitted",
+        "submitted": false,
+        "resume_supported": true,
+        "claim_id": null
+      },
+      "state_effect": "read_only",
+      "source_label": "review the issued dispute session; no claim has been submitted",
+      "source_event_index": 44
+    },
+    {
+      "call_id": "bd-007",
+      "name": "search_knowledge_base",
+      "arguments": {
+        "query": "Does an unused unsubmitted dispute session affect future dispute rights?"
+      },
+      "expected_output": {
+        "record_id": "022398d3-51e3-4dcd-b56b-064d53b159f0",
+        "effective_at": "2026-01-15",
+        "unused_unsubmitted_session_waives_future_rights": false,
+        "guidance": "Contact the bank promptly if a genuinely unauthorized transaction is later discovered."
+      },
+      "state_effect": "read_only",
+      "source_label": "retrieve unused-session and future-rights guidance",
+      "source_event_index": 61
+    }
+  ]
+}

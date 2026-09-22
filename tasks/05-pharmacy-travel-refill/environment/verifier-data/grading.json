@@ -1,0 +1,34 @@
+{
+  "_comment": [
+    "How the grading layer treats each table when looking for collateral damage.",
+    "Damage is a row the agent inserted, deleted or modified that the gold path",
+    "left untouched. Rows the gold path also touched are the agent's work area: each",
+    "may end as it started, which expected_final_state.json then judges, or as the",
+    "gold path left it, so an agent that reaches the right outcome by a different",
+    "route is not penalised for the route it took. A third value in one is damage."
+  ],
+  "damage": {
+    "_ignore_reason": [
+      "Reads must be free: an agent may look at anything as often as it likes, so",
+      "nothing a read advances can count as damage. id_allocator moves when an",
+      "extra create is issued, but the row that create produced is caught on its",
+      "own account. scenario is the immutable clock."
+    ],
+    "ignore_tables": [
+      "scenario",
+      "id_allocator",
+      "tool_call_log"
+    ],
+    "_append_reason": [
+      "claims is append-only in the real system and a resubmission genuinely",
+      "leaves a second row. The outcome is asserted through the latest_claims",
+      "view, so an extra claim row is a different route to the same place. A",
+      "modification to an existing claim row is still damage, and so is any new",
+      "row in a table not listed here - initiating a transfer nobody asked for",
+      "has consequences, so transfer_requests is deliberately absent."
+    ],
+    "append_tolerated": [
+      "claims"
+    ]
+  }
+}

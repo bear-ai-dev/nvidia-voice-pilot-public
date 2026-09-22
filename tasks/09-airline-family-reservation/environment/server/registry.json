@@ -1,0 +1,1303 @@
+{
+  "schema_version": "0.2.0",
+  "registry_name": "airline",
+  "registry_version": "0.4.0",
+  "compatibility": "custom_tau_style_not_literal_tau_registry",
+  "design_note": "Airline booking domain typed for deterministic mock backends: every result schema is fully typed with additionalProperties:false, closed enums cover identity-verification status, fare families, certificate status, and the reservation lifecycle (draft -> quoted -> pending_payment -> confirmed -> ticketed) with payment authorization distinguished from capture; airport codes are IATA-patterned, temporal fields use ISO 8601 date/date-time (documented sentinels excepted), and every monetary amount carries an ISO 4217 currency. book_reservation keeps certificate_id and quote_id required but nullable so callers must state 'no certificate' / 'no prior quote' explicitly. Customer-side seat selection remains a customer action, not an agent mutation.",
+  "tools": [
+    {
+      "name": "list_supported_airports",
+      "description": "List airports supported for a destination area before recommending one.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "destination_area": {
+            "type": "string",
+            "description": "City, metro area, or landmark area the traveler needs to reach."
+          }
+        },
+        "required": [
+          "destination_area"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "airports": {
+            "type": "array",
+            "description": "Supported airports serving the destination area.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "description": "IATA airport code.",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Airport display name."
+                }
+              },
+              "required": [
+                "code",
+                "name"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1
+          },
+          "recommended_airport_code": {
+            "type": "string",
+            "description": "Recommended airport code.",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "recommendation_basis": {
+            "type": "string",
+            "description": "Comparison basis for the recommendation, such as distance or city access."
+          },
+          "retrieved_at": {
+            "type": "string",
+            "description": "Retrieval timestamp.",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "airports",
+          "recommended_airport_code",
+          "recommendation_basis",
+          "retrieved_at"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "search_flights",
+      "description": "Search round-trip flight options for a fixed route, dates, traveler count, and stop limit.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "origin_airport": {
+            "type": "string",
+            "description": "Origin IATA airport code.",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "destination_airport": {
+            "type": "string",
+            "description": "Destination IATA airport code.",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "departure_date": {
+            "type": "string",
+            "description": "Customer-stated outbound date (ISO 8601).",
+            "format": "date"
+          },
+          "return_date": {
+            "type": "string",
+            "description": "Customer-stated return date (ISO 8601).",
+            "format": "date"
+          },
+          "traveler_count": {
+            "type": "integer",
+            "description": "Number of travelers.",
+            "minimum": 1
+          },
+          "max_stops": {
+            "type": "integer",
+            "description": "Maximum stops per direction.",
+            "minimum": 0,
+            "maximum": 2
+          },
+          "max_layover_minutes": {
+            "type": "number",
+            "description": "Optional maximum acceptable connection time in minutes.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "origin_airport",
+          "destination_airport",
+          "departure_date",
+          "return_date",
+          "traveler_count",
+          "max_stops"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "search_id": {
+            "type": "string",
+            "description": "Flight-search identifier.",
+            "format": "uuid"
+          },
+          "outbound": {
+            "type": "object",
+            "description": "Selected best outbound flight option. Present when the search returns direct flight options within the requested stop limit; absent when only a best-connection comparison is returned.",
+            "properties": {
+              "flight_id": {
+                "type": "string",
+                "description": "Stable flight identifier for downstream pricing and booking.",
+                "format": "uuid"
+              },
+              "origin": {
+                "type": "object",
+                "description": "Origin airport.",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "IATA airport code.",
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Airport display name."
+                  }
+                },
+                "required": [
+                  "code",
+                  "name"
+                ],
+                "additionalProperties": false
+              },
+              "destination": {
+                "type": "object",
+                "description": "Destination airport.",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "IATA airport code.",
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Airport display name."
+                  }
+                },
+                "required": [
+                  "code",
+                  "name"
+                ],
+                "additionalProperties": false
+              },
+              "departure_date": {
+                "type": "string",
+                "description": "Local departure date.",
+                "format": "date"
+              },
+              "departure_time": {
+                "type": "string",
+                "description": "Local departure time at the origin airport, 24-hour HH:MM.",
+                "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+              },
+              "arrival_time": {
+                "type": "string",
+                "description": "Local arrival time at the destination airport, 24-hour HH:MM.",
+                "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+              },
+              "duration_minutes": {
+                "type": "integer",
+                "description": "Scheduled block time in minutes.",
+                "minimum": 1
+              },
+              "stops": {
+                "type": "integer",
+                "description": "Number of stops for this flight.",
+                "minimum": 0,
+                "maximum": 2
+              }
+            },
+            "required": [
+              "flight_id",
+              "origin",
+              "destination",
+              "departure_date",
+              "departure_time",
+              "arrival_time",
+              "duration_minutes",
+              "stops"
+            ],
+            "additionalProperties": false
+          },
+          "return": {
+            "type": "object",
+            "description": "Selected best return flight option. Present when the search returns direct flight options within the requested stop limit; absent when only a best-connection comparison is returned.",
+            "properties": {
+              "flight_id": {
+                "type": "string",
+                "description": "Stable flight identifier for downstream pricing and booking.",
+                "format": "uuid"
+              },
+              "origin": {
+                "type": "object",
+                "description": "Origin airport.",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "IATA airport code.",
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Airport display name."
+                  }
+                },
+                "required": [
+                  "code",
+                  "name"
+                ],
+                "additionalProperties": false
+              },
+              "destination": {
+                "type": "object",
+                "description": "Destination airport.",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "IATA airport code.",
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Airport display name."
+                  }
+                },
+                "required": [
+                  "code",
+                  "name"
+                ],
+                "additionalProperties": false
+              },
+              "departure_date": {
+                "type": "string",
+                "description": "Local departure date.",
+                "format": "date"
+              },
+              "departure_time": {
+                "type": "string",
+                "description": "Local departure time at the origin airport, 24-hour HH:MM.",
+                "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+              },
+              "arrival_time": {
+                "type": "string",
+                "description": "Local arrival time at the destination airport, 24-hour HH:MM.",
+                "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+              },
+              "duration_minutes": {
+                "type": "integer",
+                "description": "Scheduled block time in minutes.",
+                "minimum": 1
+              },
+              "stops": {
+                "type": "integer",
+                "description": "Number of stops for this flight.",
+                "minimum": 0,
+                "maximum": 2
+              }
+            },
+            "required": [
+              "flight_id",
+              "origin",
+              "destination",
+              "departure_date",
+              "departure_time",
+              "arrival_time",
+              "duration_minutes",
+              "stops"
+            ],
+            "additionalProperties": false
+          },
+          "fare_options": {
+            "type": "array",
+            "description": "Fare families available on the returned outbound/return pair. Present together with outbound and return.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "fare_class": {
+                  "type": "string",
+                  "description": "Fare family.",
+                  "enum": [
+                    "basic_economy",
+                    "standard_economy"
+                  ]
+                },
+                "price_per_traveler": {
+                  "type": "number",
+                  "description": "Round-trip fare including taxes, per traveler, excluding paid bags and optional products.",
+                  "minimum": 0
+                },
+                "currency": {
+                  "type": "string",
+                  "description": "ISO 4217 currency code.",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "relative_price_rank": {
+                  "type": "string",
+                  "description": "Relative price of this fare family within the returned options.",
+                  "enum": [
+                    "lower",
+                    "higher"
+                  ]
+                },
+                "advance_seat_selection_allowed": {
+                  "type": "boolean",
+                  "description": "Whether advance seat selection is included for this fare family."
+                }
+              },
+              "required": [
+                "fare_class",
+                "price_per_traveler",
+                "currency",
+                "relative_price_rank",
+                "advance_seat_selection_allowed"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1
+          },
+          "best_connection": {
+            "type": "object",
+            "description": "Best connecting itinerary within the stop and layover limits, for price comparison. Present when the search allows stops and a connecting comparison is available; absent for nonstop-only result sets.",
+            "properties": {
+              "itinerary_id": {
+                "type": "string",
+                "description": "Stable itinerary identifier for the connecting option.",
+                "format": "uuid"
+              },
+              "total_savings": {
+                "type": "number",
+                "description": "Total savings versus the comparable direct itinerary for all travelers.",
+                "minimum": 0
+              },
+              "currency": {
+                "type": "string",
+                "description": "ISO 4217 currency code.",
+                "pattern": "^[A-Z]{3}$"
+              },
+              "additional_duration_each_way": {
+                "type": "string",
+                "description": "Human-readable added travel time per direction versus the direct option."
+              },
+              "additional_duration_minutes_each_way": {
+                "type": "integer",
+                "description": "Added travel time per direction versus the direct option, in minutes.",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "itinerary_id",
+              "total_savings",
+              "currency",
+              "additional_duration_each_way",
+              "additional_duration_minutes_each_way"
+            ],
+            "additionalProperties": false
+          },
+          "availability_checked_at": {
+            "type": "string",
+            "description": "Availability-check timestamp.",
+            "format": "date-time"
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "Search expiration: an ISO 8601 timestamp, or the sentinel 'quote_required_before_booking' when prices are only guaranteed by a subsequent itinerary quote."
+          }
+        },
+        "required": [
+          "search_id",
+          "availability_checked_at",
+          "expires_at"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "calculate_itinerary_price",
+      "description": "Calculate fare, taxes, baggage, mobility-device treatment, and an optional insurance quote for an itinerary.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "outbound_flight_id": {
+            "type": "string",
+            "description": "Selected outbound flight identifier.",
+            "format": "uuid"
+          },
+          "return_flight_id": {
+            "type": "string",
+            "description": "Selected return flight identifier.",
+            "format": "uuid"
+          },
+          "traveler_count": {
+            "type": "integer",
+            "description": "Number of travelers.",
+            "minimum": 1
+          },
+          "fare_class": {
+            "type": "string",
+            "description": "Fare family to quote.",
+            "enum": [
+              "basic_economy",
+              "standard_economy"
+            ]
+          },
+          "checked_bag_count": {
+            "type": "integer",
+            "description": "Paid checked bags.",
+            "minimum": 0
+          },
+          "mobility_device_count": {
+            "type": "integer",
+            "description": "Mobility devices recorded separately from paid baggage.",
+            "minimum": 0
+          },
+          "include_insurance_quote": {
+            "type": "boolean",
+            "description": "Whether to return the optional insurance price."
+          }
+        },
+        "required": [
+          "outbound_flight_id",
+          "return_flight_id",
+          "traveler_count",
+          "fare_class",
+          "checked_bag_count",
+          "mobility_device_count",
+          "include_insurance_quote"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "quote_id": {
+            "type": "string",
+            "description": "Quote identifier.",
+            "format": "uuid"
+          },
+          "fare_taxes_and_checked_bags": {
+            "type": "number",
+            "description": "Total for fare, taxes, and paid checked bags for all travelers.",
+            "minimum": 0
+          },
+          "mobility_device_charge": {
+            "type": "number",
+            "description": "Total mobility-device charge, recorded separately from paid baggage.",
+            "minimum": 0
+          },
+          "trip_insurance": {
+            "type": "number",
+            "description": "Optional trip-insurance price for all travelers. Present exactly when include_insurance_quote was true; absent otherwise.",
+            "minimum": 0
+          },
+          "insurance_plan_document": {
+            "type": "string",
+            "description": "Current insurance plan document reference. Present exactly when include_insurance_quote was true; absent otherwise."
+          },
+          "total_with_insurance": {
+            "type": "number",
+            "description": "Final total including trip insurance. Present exactly when include_insurance_quote was true; absent otherwise.",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "description": "ISO 4217 currency code.",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "Quote expiration timestamp.",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "quote_id",
+          "fare_taxes_and_checked_bags",
+          "mobility_device_charge",
+          "currency",
+          "expires_at"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "check_mobility_device_requirements",
+      "description": "Return current fee, baggage-count, labeling, serial-number, and airport-notification rules for one mobility-device type.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "device_type": {
+            "type": "string",
+            "description": "Customer-stated mobility device."
+          }
+        },
+        "required": [
+          "device_type"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "device_type": {
+            "type": "string",
+            "description": "Device type the rules apply to."
+          },
+          "counts_as_paid_bag": {
+            "type": "boolean",
+            "description": "Whether the device counts as paid baggage."
+          },
+          "fee": {
+            "type": "number",
+            "description": "Device fee.",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "description": "ISO 4217 currency code.",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "serial_number_required": {
+            "type": "boolean",
+            "description": "Whether reservation entry needs a serial number."
+          },
+          "labeling_guidance": {
+            "type": "string",
+            "description": "Labeling guidance for the device."
+          },
+          "airport_notification_required": {
+            "type": "boolean",
+            "description": "Whether the airport must be notified about the device."
+          },
+          "effective_at": {
+            "type": "string",
+            "description": "Effective date of this rule version.",
+            "format": "date"
+          }
+        },
+        "required": [
+          "device_type",
+          "counts_as_paid_bag",
+          "fee",
+          "currency",
+          "serial_number_required",
+          "labeling_guidance",
+          "airport_notification_required",
+          "effective_at"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_customer_profile",
+      "description": "Retrieve a customer profile with selected reservation and masked payment sections.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Contact email on the customer profile.",
+            "format": "email"
+          },
+          "include": {
+            "type": "array",
+            "description": "Profile sections to retrieve.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "reservations",
+                "payment_methods",
+                "travel_certificates"
+              ]
+            },
+            "minItems": 1
+          },
+          "verification_id": {
+            "type": "string",
+            "description": "Successful identity-verification record.",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "email",
+          "include",
+          "verification_id"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Customer identifier.",
+            "format": "uuid"
+          },
+          "verification_id": {
+            "type": "string",
+            "description": "Verification record used for this read.",
+            "format": "uuid"
+          },
+          "duplicate_reservation": {
+            "type": "boolean",
+            "description": "Whether an existing reservation duplicates the itinerary being booked. Present when 'reservations' was included."
+          },
+          "payment_methods": {
+            "type": "array",
+            "description": "Masked stored payment methods. Present when 'payment_methods' was included.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string",
+                  "description": "Tokenized payment-method identifier for booking.",
+                  "format": "uuid"
+                },
+                "brand": {
+                  "type": "string",
+                  "description": "Card brand."
+                },
+                "last4": {
+                  "type": "string",
+                  "description": "Last four digits of the card number.",
+                  "pattern": "^[0-9]{4}$"
+                }
+              },
+              "required": [
+                "token",
+                "brand",
+                "last4"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "travel_certificate_input_required": {
+            "type": "boolean",
+            "description": "Whether the customer must supply the certificate code to use a travel certificate. Present when 'travel_certificates' was included."
+          }
+        },
+        "required": [
+          "customer_id",
+          "verification_id",
+          "duplicate_reservation"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "verify_customer_identity",
+      "description": "Validate collected customer identity factors before reading stored reservations, payment methods, or certificates.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "full_name": {
+            "type": "string",
+            "description": "Customer full name."
+          },
+          "date_of_birth": {
+            "type": "string",
+            "description": "Customer date of birth (ISO 8601).",
+            "format": "date"
+          },
+          "email": {
+            "type": "string",
+            "description": "Customer email.",
+            "format": "email"
+          }
+        },
+        "required": [
+          "full_name",
+          "date_of_birth",
+          "email"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "verification_id": {
+            "type": "string",
+            "description": "Verification identifier for subsequent account calls.",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "description": "Verification outcome. 'verified' permits account reads; 'failed' requires escalation per policy; 'needs_more_factors' requires collecting additional identity factors.",
+            "enum": [
+              "verified",
+              "failed",
+              "needs_more_factors"
+            ]
+          },
+          "customer_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Resolved customer identifier. Null unless status is 'verified'.",
+            "format": "uuid"
+          },
+          "matched_factors": {
+            "type": "array",
+            "description": "Identity factors that matched the profile.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "full_name",
+                "date_of_birth",
+                "email"
+              ]
+            }
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "Verification expiry: an ISO 8601 timestamp, or the sentinel 'end_of_call'."
+          }
+        },
+        "required": [
+          "verification_id",
+          "status",
+          "customer_id",
+          "matched_factors",
+          "expires_at"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "book_reservation",
+      "description": "Create an authorized reservation and return its confirmation, itinerary, ancillary products, and tender allocation.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Resolved customer identifier.",
+            "format": "uuid"
+          },
+          "outbound_flight_id": {
+            "type": "string",
+            "description": "Selected outbound flight identifier.",
+            "format": "uuid"
+          },
+          "return_flight_id": {
+            "type": "string",
+            "description": "Selected return flight identifier.",
+            "format": "uuid"
+          },
+          "travelers": {
+            "type": "array",
+            "description": "Travelers exactly as supplied by the customer.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "full_name": {
+                  "type": "string",
+                  "description": "Traveler full name."
+                },
+                "date_of_birth": {
+                  "type": "string",
+                  "description": "Traveler date of birth (ISO 8601).",
+                  "format": "date"
+                }
+              },
+              "required": [
+                "full_name",
+                "date_of_birth"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1
+          },
+          "contact_email": {
+            "type": "string",
+            "description": "Reservation contact email.",
+            "format": "email"
+          },
+          "fare_class": {
+            "type": "string",
+            "description": "Fare family to book.",
+            "enum": [
+              "basic_economy",
+              "standard_economy"
+            ]
+          },
+          "checked_bag_count": {
+            "type": "integer",
+            "description": "Paid checked bags.",
+            "minimum": 0
+          },
+          "mobility_devices": {
+            "type": "array",
+            "description": "Mobility devices to record separately from paid baggage.",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 0
+          },
+          "include_trip_insurance": {
+            "type": "boolean",
+            "description": "Whether the customer approved optional trip insurance."
+          },
+          "payment_method_token": {
+            "type": "string",
+            "description": "Masked or tokenized remainder-payment method.",
+            "format": "uuid"
+          },
+          "confirmed_total": {
+            "type": "number",
+            "description": "Total authorized by the customer.",
+            "minimum": 0
+          },
+          "customer_authorized": {
+            "type": "boolean",
+            "description": "Whether the customer authorized the itinerary, optional products, and stated total."
+          },
+          "verification_id": {
+            "type": "string",
+            "description": "Successful identity-verification record.",
+            "format": "uuid"
+          },
+          "quote_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Current itinerary quote identifier from calculate_itinerary_price. Null means no prior quote exists for this booking; state null explicitly rather than omitting the field.",
+            "format": "uuid"
+          },
+          "certificate_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Validated certificate identifier from validate_travel_certificate. Null means no travel certificate is applied to this booking; state null explicitly rather than omitting the field.",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "customer_id",
+          "outbound_flight_id",
+          "return_flight_id",
+          "travelers",
+          "contact_email",
+          "fare_class",
+          "checked_bag_count",
+          "mobility_devices",
+          "include_trip_insurance",
+          "payment_method_token",
+          "confirmed_total",
+          "customer_authorized",
+          "verification_id",
+          "quote_id",
+          "certificate_id"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "reservation_id": {
+            "type": "string",
+            "description": "Reservation identifier.",
+            "format": "uuid"
+          },
+          "confirmation_code": {
+            "type": "string",
+            "description": "Customer confirmation code."
+          },
+          "status": {
+            "type": "string",
+            "description": "Reservation lifecycle status.",
+            "enum": [
+              "draft",
+              "quoted",
+              "pending_payment",
+              "confirmed",
+              "ticketed"
+            ]
+          },
+          "ticketing_status": {
+            "type": "string",
+            "description": "Ticket-issuance state, distinct from reservation confirmation.",
+            "enum": [
+              "pending",
+              "ticketed",
+              "failed"
+            ]
+          },
+          "itinerary": {
+            "type": "object",
+            "description": "Booked round-trip itinerary.",
+            "properties": {
+              "origin": {
+                "type": "object",
+                "description": "Origin airport.",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "IATA airport code.",
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Airport display name."
+                  }
+                },
+                "required": [
+                  "code",
+                  "name"
+                ],
+                "additionalProperties": false
+              },
+              "destination": {
+                "type": "object",
+                "description": "Destination airport.",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "IATA airport code.",
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Airport display name."
+                  }
+                },
+                "required": [
+                  "code",
+                  "name"
+                ],
+                "additionalProperties": false
+              },
+              "departure_date": {
+                "type": "string",
+                "description": "Local outbound departure date.",
+                "format": "date"
+              },
+              "return_date": {
+                "type": "string",
+                "description": "Local return departure date.",
+                "format": "date"
+              }
+            },
+            "required": [
+              "origin",
+              "destination",
+              "departure_date",
+              "return_date"
+            ],
+            "additionalProperties": false
+          },
+          "travelers": {
+            "type": "array",
+            "description": "Travelers on the reservation.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "traveler_id": {
+                  "type": "string",
+                  "description": "Stable traveler identifier.",
+                  "format": "uuid"
+                },
+                "full_name": {
+                  "type": "string",
+                  "description": "Traveler full name."
+                },
+                "date_of_birth": {
+                  "type": "string",
+                  "description": "Traveler date of birth (ISO 8601).",
+                  "format": "date"
+                }
+              },
+              "required": [
+                "traveler_id",
+                "full_name",
+                "date_of_birth"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1
+          },
+          "fare_class": {
+            "type": "string",
+            "description": "Booked fare family.",
+            "enum": [
+              "basic_economy",
+              "standard_economy"
+            ]
+          },
+          "seat_selection": {
+            "type": "object",
+            "description": "Customer-side seat-selection state. A confirmed reservation does not by itself confirm seats.",
+            "properties": {
+              "available": {
+                "type": "boolean",
+                "description": "Whether seat selection is available to the customer for this reservation."
+              },
+              "confirmed_seats": {
+                "type": "array",
+                "description": "Backend-confirmed seat assignments. Empty until seat selection is completed.",
+                "items": {
+                  "type": "string",
+                  "description": "Seat label, e.g. 16A."
+                }
+              }
+            },
+            "required": [
+              "available",
+              "confirmed_seats"
+            ],
+            "additionalProperties": false
+          },
+          "checked_bag_count": {
+            "type": "integer",
+            "description": "Paid checked bags on the reservation.",
+            "minimum": 0
+          },
+          "mobility_devices": {
+            "type": "array",
+            "description": "Mobility devices recorded separately from paid baggage.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "device_type": {
+                  "type": "string",
+                  "description": "Recorded device type."
+                },
+                "fee": {
+                  "type": "number",
+                  "description": "Device fee in the reservation currency.",
+                  "minimum": 0
+                },
+                "serial_number_required": {
+                  "type": "boolean",
+                  "description": "Whether a serial number is required for this entry."
+                }
+              },
+              "required": [
+                "device_type",
+                "fee",
+                "serial_number_required"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "trip_insurance": {
+            "type": "object",
+            "description": "Trip-insurance state for the reservation.",
+            "properties": {
+              "included": {
+                "type": "boolean",
+                "description": "Whether trip insurance was purchased."
+              },
+              "price": {
+                "type": "number",
+                "description": "Insurance price in the reservation currency. Present when included is true.",
+                "minimum": 0
+              },
+              "covered_traveler_ids": {
+                "type": "array",
+                "description": "Traveler IDs covered by the plan. Present when included is true.",
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "required": [
+              "included"
+            ],
+            "additionalProperties": false
+          },
+          "payment_allocation": {
+            "type": "array",
+            "description": "Tender split for the charged total.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "tender": {
+                  "type": "string",
+                  "description": "Tender reference, such as a travel-certificate or masked-card identifier."
+                },
+                "amount": {
+                  "type": "number",
+                  "description": "Amount allocated to this tender in the reservation currency.",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "tender",
+                "amount"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1
+          },
+          "payment_status": {
+            "type": "string",
+            "description": "Payment state for the remainder tender. 'authorized' and 'captured' are distinct states and must not be collapsed.",
+            "enum": [
+              "authorized",
+              "captured",
+              "failed"
+            ]
+          },
+          "currency": {
+            "type": "string",
+            "description": "ISO 4217 currency code.",
+            "pattern": "^[A-Z]{3}$"
+          }
+        },
+        "required": [
+          "reservation_id",
+          "confirmation_code",
+          "status",
+          "ticketing_status",
+          "itinerary",
+          "travelers",
+          "fare_class",
+          "seat_selection",
+          "checked_bag_count",
+          "mobility_devices",
+          "trip_insurance",
+          "payment_allocation",
+          "payment_status",
+          "currency"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "validate_travel_certificate",
+      "description": "Validate a customer-provided travel certificate and return a stable certificate ID, status, balance, and applicable amount before booking.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Resolved customer identifier.",
+            "format": "uuid"
+          },
+          "verification_id": {
+            "type": "string",
+            "description": "Successful identity-verification record.",
+            "format": "uuid"
+          },
+          "certificate_code": {
+            "type": "string",
+            "description": "Customer-provided certificate code."
+          }
+        },
+        "required": [
+          "customer_id",
+          "verification_id",
+          "certificate_code"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "certificate_id": {
+            "type": "string",
+            "description": "Stable certificate identifier for booking.",
+            "format": "uuid"
+          },
+          "masked_code": {
+            "type": "string",
+            "description": "Masked certificate code for readback."
+          },
+          "status": {
+            "type": "string",
+            "description": "Validation outcome. Only 'valid' certificates may be applied to a booking.",
+            "enum": [
+              "valid",
+              "invalid",
+              "expired"
+            ]
+          },
+          "available_balance": {
+            "type": "number",
+            "description": "Available certificate balance.",
+            "minimum": 0
+          },
+          "applicable_amount": {
+            "type": "number",
+            "description": "Amount applicable to the current quote.",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "description": "ISO 4217 currency code.",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "Certificate expiry date. Present when the certificate has an expiry.",
+            "format": "date"
+          }
+        },
+        "required": [
+          "certificate_id",
+          "masked_code",
+          "status",
+          "available_balance",
+          "applicable_amount",
+          "currency"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "transfer_to_specialist",
+      "description": "Transfer the conversation with a concise reason and context summary when policy or tooling requires a specialist.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Why the transfer is required."
+          },
+          "summary": {
+            "type": "string",
+            "description": "Context already collected so the customer does not repeat it."
+          }
+        },
+        "required": [
+          "reason",
+          "summary"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Transfer outcome. 'initiated' means the transfer is being completed; do not claim success on 'failed'.",
+            "enum": [
+              "initiated",
+              "completed",
+              "failed"
+            ]
+          },
+          "transfer_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Transfer identifier. Null when status is 'failed'.",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "status",
+          "transfer_id"
+        ],
+        "additionalProperties": false
+      }
+    }
+  ]
+}

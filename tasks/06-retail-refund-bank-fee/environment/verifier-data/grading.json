@@ -1,0 +1,93 @@
+{
+  "_comment": [
+    "How the grading layer treats each table when looking for collateral damage.",
+    "Damage is a row the agent inserted, deleted or modified that the gold path",
+    "left untouched. Rows the gold path also touched are the agent's work area: each",
+    "may end as it started, which expected_final_state.json then judges, or as the",
+    "gold path left it, so an agent that reaches the right outcome by a different",
+    "route is not penalised for the route it took. A third value in one is damage.",
+    "",
+    "Reads must be free: an agent may look at anything as often as it likes, so",
+    "nothing a read advances can count as damage. This desk serves an order",
+    "progressively, which means a read writes, and the tables it writes were found",
+    "by reading the handlers rather than by their names. Three exclusions express",
+    "that, and the narrowest one that suffices is the one used."
+  ],
+  "damage": {
+    "_volatile_reason": [
+      "The narrowest exclusion: named columns are dropped before a row is hashed,",
+      "so the table stays under the damage check while the columns a read advances",
+      "stop mattering.",
+      "",
+      "notifications needs this and it is the one that is not obvious from the",
+      "name. get_order with 'notifications' in include runs _advance_notification,",
+      "which collects the next delivery receipt the mail provider has for the",
+      "message and bumps status_index. Looking at a confirmation email therefore",
+      "rewrites its row, and an agent that checks whether its own email went out",
+      "must not be charged for it. That UPDATE sets status and status_index and",
+      "nothing else, so those two columns are the whole of what a read moves and",
+      "the rest of the row is still compared.",
+      "",
+      "Excluding the table wholesale instead would also make an inserted row",
+      "invisible, and an unrequested message to a real customer is precisely the",
+      "consequential side effect this check exists to catch. An agent that sends a",
+      "notification against a case this conversation has nothing to do with is",
+      "charged for it here.",
+      "",
+      "The exclusion list is copied into state_digest.json when the digest is",
+      "generated and read back from there by the grading layer, so both sides of",
+      "the comparison hash rows the same way. Changing this list means",
+      "regenerating the digest with tests/make_digest.py."
+    ],
+    "read_volatile_columns": {
+      "notifications": [
+        "status",
+        "status_index"
+      ]
+    },
+    "_ignore_reason": [
+      "The blunt instrument, appropriate only where the table holds nothing but",
+      "read state, so there is no insert worth catching and dropping columns would",
+      "buy nothing.",
+      "",
+      "section_read_cursor is the depth counter get_order advances on every section",
+      "it serves, and section_read_log is the view the verifier addresses those",
+      "same rows through. A row there is a read count and nothing else: a new one",
+      "means the agent looked at a section nobody had looked at yet, which is a",
+      "read and must stay free.",
+      "",
+      "id_allocator moves when an extra create is issued, but the row that create",
+      "produced is caught on its own account. tool_call_log is the audit trail of",
+      "the run itself. scenario is the immutable clock and the desk's rendering",
+      "settings."
+    ],
+    "ignore_tables": [
+      "scenario",
+      "id_allocator",
+      "tool_call_log",
+      "section_read_cursor",
+      "section_read_log"
+    ],
+    "_append_reason": [
+      "case_notes is append-only in the real system: update_case has no",
+      "idempotency key, so a call that timed out and was retried genuinely leaves",
+      "a second identical note, and documenting one thing more than the recording",
+      "did is a different route to the same place rather than a fault. What the",
+      "case must end up saying is asserted through case_note_log, so the outcome",
+      "is not weakened by tolerating an extra row. case_note_log is the view over",
+      "the same rows and has to follow it.",
+      "",
+      "Modifying or deleting a note that was already there is still damage, and",
+      "so is any new row in a table not listed here. Opening a case, creating a",
+      "replacement order and its lines, recording a pickup preference against a",
+      "case, sending a message to a customer, and handing a call to a specialist",
+      "all have consequences for someone when nobody asked for them, so cases,",
+      "case_items, case_preferences, notifications, orders, order_items,",
+      "replacement_orders and specialist_transfers are deliberately absent."
+    ],
+    "append_tolerated": [
+      "case_notes",
+      "case_note_log"
+    ]
+  }
+}

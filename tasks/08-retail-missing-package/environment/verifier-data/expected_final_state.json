@@ -1,0 +1,116 @@
+{
+  "_comment": [
+    "State the recorded conversation must leave behind. Asserted as a subset:",
+    "every field here must be present with this value, and the database may know",
+    "more. Only fields the recorded tool results revealed, or state that follows",
+    "necessarily from them, are asserted.",
+    "",
+    "_key_columns declares how each table is addressed, so a row is identified by",
+    "a stable business key rather than by position in the snapshot. case_note_log",
+    "is a view that gives a single-column key to a table whose primary key is a",
+    "pair.",
+    "",
+    "This document is read by both layers and everything in it has to be an",
+    "outcome rather than a route, so nothing a read advances is asserted here.",
+    "section_read_log is left out although the recording drives the carrier",
+    "evidence to two reads: reads_served counts how many times the agent looked,",
+    "which is the one thing the grading layer must not score.",
+    "",
+    "The confirmation's status is asserted, but as a set rather than as one",
+    "value. send_case_notification hands the message over as 'sent'; the recorded",
+    "'delivered' is not a later event but the effect of the one get_order that",
+    "reads it back, because _advance_notification collects the next delivery",
+    "receipt each time the message is looked at. Asserting 'delivered' alone would",
+    "be asserting that the agent read its own email exactly once. The",
+    "delivery_trace_confirmation template hands the message over as 'sent' and its",
+    "delivery progression ends at 'delivered', so those two are the whole of what",
+    "a correct run can leave behind and either of them is accepted. The set still",
+    "asserts something real: it says a message actually went out and that it did",
+    "not fail, which is what the caller was promised, while saying nothing about",
+    "how many times anybody looked at it.",
+    "",
+    "status_index is not asserted. It is a bare read counter with no outcome",
+    "meaning, and it is one of the two columns the damage policy drops from the",
+    "row hash for exactly that reason.",
+    "",
+    "The conformance layer pins both far harder than an assertion could: each",
+    "read depth returns a different payload and the replay is byte-exact, so a",
+    "cursor or a delivery state that advanced wrongly fails env_check.sh on the",
+    "wire."
+  ],
+  "_key_columns": {
+    "cases": "case_number",
+    "case_note_log": "note_key",
+    "case_preferences": "case_number",
+    "notifications": "notification_id",
+    "id_allocator": "entity_type",
+    "orders": "order_reference"
+  },
+  "cases": {
+    "8cf648a4-ca60-4387-bc11-ec38f426123a": {
+      "order_reference": "5820447319",
+      "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+      "case_type": "delivery_trace",
+      "status": "open",
+      "reason": "delivered_not_received",
+      "carrier_response": "none",
+      "deadline_display": "18:00 tomorrow",
+      "carrier_may_contact_customer": true,
+      "replacement_created": false,
+      "requested_resolution": "replacement",
+      "needed_by": "2026-08-27",
+      "approval_required": true,
+      "approval_channel": "trace_notification",
+      "next_action": "review requested resolution and fulfillment after an eligibility trigger",
+      "eligibility_triggers": [
+        "carrier_confirms_missing",
+        "carrier_response_deadline_expires"
+      ],
+      "pickup_guaranteed": false,
+      "fee_reimbursement_approved": false
+    }
+  },
+  "case_note_log": {
+    "8cf648a4-ca60-4387-bc11-ec38f426123a#1": {
+      "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "note": "Preserve exact blue variant and original price if replacement becomes eligible.",
+      "visible_to_next_reviewer": true
+    }
+  },
+  "case_preferences": {
+    "8cf648a4-ca60-4387-bc11-ec38f426123a": {
+      "pickup_location": "West 23rd Street pickup counter",
+      "pickup_site": "West 23rd Street",
+      "review_instruction": "Check West 23rd Street pickup availability first after replacement eligibility.",
+      "visible_to_next_reviewer": true
+    }
+  },
+  "notifications": {
+    "521527dc-8856-4b33-8e08-69658b1ca80b": {
+      "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "order_reference": "5820447319",
+      "channel": "email",
+      "template": "delivery_trace_confirmation",
+      "message_type": "delivery_trace_confirmation",
+      "status": {
+        "_any_of": [
+          "sent",
+          "delivered"
+        ]
+      },
+      "masked_destination": "e***@northmail.com",
+      "included_fields": [
+        "case_number",
+        "status",
+        "carrier_response_deadline",
+        "approval_link"
+      ]
+    }
+  },
+  "orders": {
+    "5820447319": {
+      "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+      "fulfillment_status": "delivered"
+    }
+  }
+}

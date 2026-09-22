@@ -1,0 +1,135 @@
+{
+  "_comment": [
+    "State the recorded conversation must leave behind. Asserted as a subset:",
+    "every field here must be present with this value, and the database may know",
+    "more. Only fields the recorded tool results revealed are asserted.",
+    "",
+    "_key_columns declares how each table is addressed, so a row is identified by",
+    "a stable business key rather than by position in the snapshot."
+  ],
+  "_key_columns": {
+    "reservations": "reservation_id",
+    "travelers": "traveler_id",
+    "reservation_mobility_devices": "device_entry_id",
+    "payment_allocations": "allocation_id",
+    "reservation_payment_totals": "reservation_id",
+    "travel_certificates": "certificate_id",
+    "certificate_redemptions": "redemption_id",
+    "identity_verifications": "verification_id",
+    "fare_quotes": "quote_id",
+    "confirmation_code_pool": "code"
+  },
+  "reservations": {
+    "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7": {
+      "confirmation_code": "B9RT6M",
+      "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+      "quote_id": "b28a0bbf-614c-4616-862c-fbeef88f6495",
+      "outbound_flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+      "return_flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+      "departure_date": "2026-10-14",
+      "return_date": "2026-10-19",
+      "contact_email": "linda.carver9@outlook.com",
+      "fare_class": "standard_economy",
+      "checked_bag_count": 2,
+      "status": "confirmed",
+      "ticketing_status": "ticketed",
+      "payment_status": "captured",
+      "seat_selection_available": true,
+      "insurance_included": true,
+      "insurance_price": 94.6,
+      "charged_total": 1281.0,
+      "currency": "USD"
+    }
+  },
+  "travelers": {
+    "1a7ef9d5-196f-456c-a780-1acafefd1fd1": {
+      "reservation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7",
+      "full_name": "Linda Marie Carver",
+      "date_of_birth": "1954-03-08",
+      "traveler_index": 1
+    },
+    "b0b29fec-eb5c-469e-bee0-046f8c861822": {
+      "reservation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7",
+      "full_name": "Evan James Carver",
+      "date_of_birth": "2014-07-21",
+      "traveler_index": 2
+    }
+  },
+  "reservation_mobility_devices": {
+    "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7-device-1": {
+      "reservation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7",
+      "device_type": "folding walker",
+      "fee": 0.0,
+      "counts_as_paid_bag": false,
+      "serial_number_required": false
+    }
+  },
+  "payment_allocations": {
+    "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7-tender-1": {
+      "reservation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7",
+      "allocation_index": 1,
+      "tender": "travel_certificate_CT-449108",
+      "tender_kind": "travel_certificate",
+      "amount": 200.0,
+      "currency": "USD"
+    },
+    "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7-tender-2": {
+      "reservation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7",
+      "allocation_index": 2,
+      "tender": "visa_ending_1182",
+      "tender_kind": "card",
+      "amount": 1081.0,
+      "currency": "USD"
+    }
+  },
+  "reservation_payment_totals": {
+    "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7": {
+      "charged_total": 1281.0,
+      "allocated_total": 1281.0,
+      "tender_count": 2
+    }
+  },
+  "travel_certificates": {
+    "18e422e6-a2c3-4cb8-93fa-daf7a28c328b": {
+      "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+      "masked_code": "CT-***108",
+      "status": "redeemed",
+      "original_amount": 200.0,
+      "available_balance": 0.0,
+      "expires_at": "2026-12-31"
+    }
+  },
+  "certificate_redemptions": {
+    "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7-redemption-1": {
+      "certificate_id": "18e422e6-a2c3-4cb8-93fa-daf7a28c328b",
+      "reservation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7",
+      "amount": 200.0,
+      "currency": "USD"
+    }
+  },
+  "identity_verifications": {
+    "661f8b5c-f3d8-4612-8645-00f9a5ecded8": {
+      "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+      "status": "verified",
+      "matched_factors": ["full_name", "date_of_birth", "email"],
+      "expires_at": "end_of_call"
+    }
+  },
+  "fare_quotes": {
+    "b28a0bbf-614c-4616-862c-fbeef88f6495": {
+      "fare_taxes_and_checked_bags": 1186.4,
+      "mobility_device_charge": 0.0,
+      "trip_insurance": 94.6,
+      "total_with_insurance": 1281.0,
+      "insurance_plan_id": "insurance-standard-band-3",
+      "currency": "USD",
+      "expires_at": "2026-08-27T12:33:00-07:00"
+    }
+  },
+  "confirmation_code_pool": {
+    "B9RT6M": {
+      "pool_seq": 381,
+      "issued_at": "2026-08-26T12:30:00-07:00"
+    }
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "_comment": [
+    "Facts a correct handling of this call has to reach the caller. End-state",
+    "checking cannot see these: the database is identical whether or not the agent",
+    "told him how much the overnight traffic actually was, how little was left",
+    "before he bought anything, that none of it can be given back, or that the",
+    "plan slows down rather than billing him for it. This call is handled badly if",
+    "any of them goes unsaid - he rang up believing he had been hacked and",
+    "believing he was about to be charged for it.",
+    "",
+    "Each entry is satisfied when any one of its surface forms appears in the",
+    "agent's utterances, matched case-insensitively with whitespace collapsed. The",
+    "",
+    "A form that is a single number or a single word is matched on boundaries; a",
+    "form of two or more words is matched as a plain substring. That is why bare",
+    "figures like '15' are listed: '15' will find \"15 USD\", \"15.00 dollars\" and",
+    "\"a total of 15\", but will not match '$150', so an agent that quotes the wrong",
+    "amount gets no credit. Bare words are fenced for the same reason - 'two' must",
+    "not be found inside 'network'. Anchors are only ever the whole value: 'five'",
+    "is not listed for 95, since \"five business days\" would then satisfy a fee.",
+    "alternatives exist so an agent is not failed for saying 'forty dollars'",
+    "instead of '$40'. Facts the records already carry are not repeated here as",
+    "speech - that the line ends the cycle with 7.2 gigabytes of high-speed data",
+    "and that five gigabytes were added is checked as state."
+  ],
+  "required": [
+    {
+      "id": "overnight_usage_measured",
+      "why": "he was asleep and did not believe the alert; the carrier's own measured figure for the window is the evidence that the usage was real, and it is what his handset's app screen gets corroborated against",
+      "any_of": [
+        "11.8 gigabytes",
+        "11.8 gb",
+        "11.8gb",
+        "11.8 gigs",
+        "11.8 gig",
+        "eleven point eight gigabytes",
+        "eleven point eight gigs",
+        "used 11.8",
+        "11.8"
+      ]
+    },
+    {
+      "id": "remaining_before_addon",
+      "why": "he is travelling before the cycle ends and has to decide whether to spend forty dollars; what is actually left at full speed is the number that decision turns on, and it is not the number the alert gave him",
+      "any_of": [
+        "2.2 gigabytes",
+        "2.2 gb",
+        "2.2gb",
+        "2.2 gigs",
+        "2.2 gig",
+        "two point two gigabytes",
+        "two point two gigs",
+        "2.2 left",
+        "2.2 remaining"
+      ]
+    },
+    {
+      "id": "usage_not_recoverable",
+      "why": "he asked outright whether the data was coming back, and turning off the app setting feels to him like undoing it; no tool credits metered usage, and letting him believe otherwise is a promise the carrier cannot keep",
+      "any_of": [
+        "can't be put back",
+        "cannot be put back",
+        "can't put that back",
+        "cannot put that back",
+        "can't be restored",
+        "cannot be restored",
+        "can't be returned",
+        "cannot be returned",
+        "can't get that data back",
+        "cannot get that data back",
+        "can't give that data back",
+        "cannot give that data back",
+        "can't be undone",
+        "cannot be undone",
+        "can't be reversed",
+        "cannot be reversed",
+        "won't come back",
+        "will not come back",
+        "isn't coming back",
+        "is not coming back",
+        "no way to credit"
+      ]
+    },
+    {
+      "id": "no_overage_speed_reduced",
+      "why": "he was braced for a surprise bill; what the plan actually does past the allowance is slow him down, and the current bill carries no overage - both are things he can only learn by being told",
+      "any_of": [
+        "no overage",
+        "not an overage",
+        "isn't an overage",
+        "without an overage",
+        "slows you down",
+        "slow you down",
+        "slows down instead",
+        "slows down after",
+        "slows down once",
+        "slows down rather than",
+        "speed is reduced",
+        "speeds are reduced",
+        "reduced speed",
+        "reduce your speed",
+        "reduces your speed",
+        "throttled",
+        "throttle your"
+      ]
+    },
+    {
+      "id": "addon_price",
+      "why": "the policy forbids quoting a price that has not been read from a current offer, and he has to authorise the exact amount before it is charged; forty dollars is the figure he objected to and then agreed to",
+      "any_of": [
+        "$40",
+        "40 dollars",
+        "forty dollars",
+        "$40.00",
+        "40.00 usd",
+        "40 usd",
+        "40",
+        "forty"
+      ]
+    },
+    {
+      "id": "addon_billing_timing",
+      "why": "the charge does not come out now, it lands on a bill he has not received yet, and he needs to know it is a single charge on that bill rather than a new monthly cost",
+      "any_of": [
+        "next bill",
+        "next month's bill",
+        "next months bill",
+        "upcoming bill",
+        "one-time charge",
+        "one time charge",
+        "one-off charge",
+        "single charge",
+        "not a recurring charge",
+        "won't recur",
+        "will not recur",
+        "does not repeat",
+        "doesn't repeat"
+      ]
+    }
+  ]
+}

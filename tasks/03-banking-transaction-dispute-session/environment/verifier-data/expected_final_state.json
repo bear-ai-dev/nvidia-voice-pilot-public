@@ -1,0 +1,82 @@
+{
+  "_comment": [
+    "State the recorded conversation must leave behind. Asserted as a subset:",
+    "every field here must be present with this value, and the database may know",
+    "more. Only fields the recorded tool results revealed are asserted.",
+    "",
+    "_key_columns declares how each table is addressed, so a row is identified by",
+    "a stable business key rather than by position in the snapshot.",
+    "",
+    "This conversation makes two mutations: a verification record scoped to the",
+    "open dispute case, and a dispute session that was issued, delivered, and",
+    "then read as opened without ever being submitted. The session is asserted",
+    "with submitted false and claim_id null, because the customer decided the",
+    "charge was his wife's and closed the page. A run that submitted the dispute",
+    "to end the call tidily would fail here, and so would one that left the",
+    "session unopened.",
+    "",
+    "self_service_sessions.status is asserted as either value on purpose. Opening",
+    "the session happens in online banking, which no tool can observe, so the",
+    "handler writes 'issued' -> 'open_not_submitted' the first time the session is",
+    "read. Nothing requires that read: an agent that confirms the tracker it just",
+    "issued and one that does not have both handled the call correctly, and pinning",
+    "either value would make this assertion depend on the route after all."
+  ],
+  "_key_columns": {
+    "identity_verifications": "verification_id",
+    "self_service_sessions": "session_id",
+    "transactions": "transaction_id"
+  },
+  "identity_verifications": {
+    "dbf560d6-9aa5-4471-a5b1-7a3af5c51fb8": {
+      "customer_id": "4e8c3a97-e6ad-4737-aede-c8acd4993277",
+      "status": "verified",
+      "required_methods": [
+        "billing_zip",
+        "birth_month_day"
+      ],
+      "matched_methods": [
+        "billing_zip",
+        "birth_month_day"
+      ],
+      "time_asserted": false
+    }
+  },
+  "self_service_sessions": {
+    "0ae36057-bbbb-42e3-994f-55f064bc374c": {
+      "customer_id": "4e8c3a97-e6ad-4737-aede-c8acd4993277",
+      "workflow": "transaction_dispute",
+      "resource_id": "b2047621-d2c7-437c-bb56-c81a700e2099",
+      "status": {
+        "_any_of": [
+          "issued",
+          "open_not_submitted"
+        ]
+      },
+      "submitted": false,
+      "resume_supported": true,
+      "claim_tracked": true,
+      "claim_id": null,
+      "access_location": "online_banking",
+      "display_label": "Review transaction ending 8472",
+      "allowed_customer_actions": [
+        "review",
+        "submit",
+        "close_page"
+      ]
+    }
+  },
+  "transactions": {
+    "b2047621-d2c7-437c-bb56-c81a700e2099": {
+      "card_id": "card-justin-porter-9102",
+      "kind": "posted",
+      "amount": 243.18,
+      "currency": "USD",
+      "category": "online marketplace",
+      "descriptor": "MRKTPLC*8472",
+      "posted_date": "2026-02-23",
+      "preceded_by_authorization_amount": 1.0,
+      "status": "posted"
+    }
+  }
+}

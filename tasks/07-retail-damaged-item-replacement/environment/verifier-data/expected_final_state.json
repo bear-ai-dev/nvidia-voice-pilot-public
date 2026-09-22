@@ -1,0 +1,136 @@
+{
+  "_comment": [
+    "State the recorded conversation must leave behind. Asserted as a subset:",
+    "every field here must be present with this value, and the database may know",
+    "more. Only fields the recorded tool results revealed, or state that follows",
+    "necessarily from them, are asserted.",
+    "",
+    "_key_columns declares how each table is addressed, so a row is identified by",
+    "a stable business key rather than by position in the snapshot.",
+    "",
+    "The headphones case is asserted unchanged. This conversation reads it twice",
+    "and the agent says explicitly that nothing about it should move, so leaving",
+    "it alone is part of what a correct handling does.",
+    "",
+    "This document is read by both layers and everything in it has to be an",
+    "outcome rather than a route, so nothing a read advances is asserted here.",
+    "section_read_log is left out although the recording drives the eligibility",
+    "panel to two reads: reads_served counts how many times the agent looked,",
+    "which is the one thing the grading layer must not score.",
+    "",
+    "The confirmation's status is asserted, but as a set rather than as one",
+    "value, and on this order the point is unmissable. create_replacement_order",
+    "queues the message; the recorded 'sent' is not a later event but the effect",
+    "of the one get_order that reads it, because _advance_notification collects",
+    "the next delivery receipt each time the message is looked at. Asserting",
+    "'sent' alone would be asserting that the agent read its own email exactly",
+    "once. The replacement_confirmation template hands the message over as",
+    "'queued' and its delivery progression runs through 'sent' to 'delivered', so",
+    "those three are the whole of what a correct run can leave behind and any of",
+    "them is accepted. The set still asserts something real: the message exists on",
+    "a live delivery progression and has not failed, which is what the caller was",
+    "promised, while saying nothing about how many times anybody looked at it.",
+    "",
+    "status_index is not asserted. It is a bare read counter with no outcome",
+    "meaning, and it is one of the two columns the damage policy drops from the",
+    "row hash for exactly that reason.",
+    "",
+    "The conformance layer pins both far harder than an assertion could: each",
+    "read depth returns a different payload and the replay is byte-exact, so a",
+    "cursor or a delivery state that advanced wrongly fails env_check.sh on the",
+    "wire."
+  ],
+  "_key_columns": {
+    "orders": "order_reference",
+    "order_items": "item_reference",
+    "replacement_orders": "replacement_order_reference",
+    "notifications": "notification_id",
+    "cases": "case_number",
+    "case_preferences": "case_number",
+    "id_allocator": "entity_type"
+  },
+  "orders": {
+    "5820458821": {
+      "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+      "fulfillment_status": "processing",
+      "destination_label": "home_address_on_order",
+      "replaces_order_reference": "5820454086",
+      "representative_item": "12-cup coffee maker"
+    },
+    "5820454086": {
+      "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+      "fulfillment_status": "delivered"
+    }
+  },
+  "order_items": {
+    "5820458821-coffee-maker-matte-black-12-cup": {
+      "order_reference": "5820458821",
+      "variant_reference": "coffee-maker-matte-black-12-cup",
+      "product_reference": "12-cup-coffee-maker",
+      "name": "12-cup coffee maker",
+      "variant_label": "matte black"
+    }
+  },
+  "replacement_orders": {
+    "5820458821": {
+      "original_order_reference": "5820454086",
+      "reason": "damaged",
+      "status": "created",
+      "balance_due": 0.0,
+      "currency": "USD",
+      "fulfillment_method": "ship_to_address",
+      "fulfillment_location": "home_address_on_order",
+      "estimated_delivery_display": "Thursday end of day",
+      "estimate_guaranteed": false,
+      "distribution_center": "Edison",
+      "distribution_center_status": "provisional_until_shipped",
+      "tracking_notifications": true,
+      "return_required": false,
+      "disposition": "discard_or_recycle",
+      "safety": "do_not_power_on"
+    }
+  },
+  "notifications": {
+    "notification-5820458821": {
+      "order_reference": "5820458821",
+      "channel": "email",
+      "template": "replacement_confirmation",
+      "message_type": "replacement_confirmation",
+      "status": {
+        "_any_of": [
+          "queued",
+          "sent",
+          "delivered"
+        ]
+      },
+      "masked_destination": "e***@northmail.com",
+      "subject_prefix": "Your Westline replacement",
+      "optional_photo_link": true,
+      "photo_link_section": "later_in_email"
+    }
+  },
+  "cases": {
+    "8cf648a4-ca60-4387-bc11-ec38f426123a": {
+      "order_reference": "5820447319",
+      "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+      "case_type": "delivery_trace",
+      "status": "open",
+      "carrier_response": "none",
+      "deadline_display": "18:00 today",
+      "replacement_created": false,
+      "requested_resolution": "replacement",
+      "pickup_guaranteed": false
+    }
+  },
+  "case_preferences": {
+    "8cf648a4-ca60-4387-bc11-ec38f426123a": {
+      "pickup_location": "West 23rd Street pickup counter",
+      "visible_to_next_reviewer": true
+    }
+  },
+  "id_allocator": {
+    "order": {
+      "next_value": 5820458822
+    }
+  }
+}

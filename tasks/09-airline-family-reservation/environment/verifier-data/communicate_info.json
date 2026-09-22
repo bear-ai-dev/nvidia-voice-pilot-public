@@ -1,0 +1,143 @@
+{
+  "_comment": [
+    "Facts a correct handling of this call has to reach the caller. End-state",
+    "checking cannot see these: the database is identical whether or not the",
+    "agent told her what the connection would have saved her, that the insurance",
+    "she bought has exclusions, or that a confirmed reservation is not a confirmed",
+    "seat, and this call is handled badly if any of them goes unsaid.",
+    "",
+    "Each entry is satisfied when any one of its surface forms appears in the",
+    "agent's utterances, matched case-insensitively with whitespace collapsed.",
+    "",
+    "A form that is a single number or a single word is matched on boundaries; a",
+    "form of two or more words is matched as a plain substring. That is why bare",
+    "figures like '15' are listed: '15' will find \"15 USD\", \"15.00 dollars\" and",
+    "\"a total of 15\", but will not match '$150', so an agent that quotes the wrong",
+    "amount gets no credit. Bare words are fenced for the same reason - 'two' must",
+    "not be found inside 'network'. Anchors are only ever the whole value: 'five'",
+    "is not listed for 95, since \"five business days\" would then satisfy a fee.",
+    "The alternatives exist so an agent is not failed for saying 'two hundred",
+    "dollars' instead of '$200'. Facts the records already carry are not repeated",
+    "here as speech - that the walker was booked as a mobility device rather than",
+    "as baggage, and that the reservation is ticketed against captured money, are",
+    "checked as state."
+  ],
+  "required": [
+    {
+      "id": "connection_saving",
+      "why": "she asked for the one-stop comparison before choosing, and the only way she can judge it is the actual saving for the two of them rather than 'not worth it'",
+      "any_of": [
+        "$62",
+        "62 dollars",
+        "sixty-two dollars",
+        "sixty two dollars",
+        "62.00 in total",
+        "saves 62",
+        "saving of 62",
+        "62"
+      ]
+    },
+    {
+      "id": "insurance_exclusions",
+      "why": "she is buying an optional product whose limits the agent is forbidden to summarise; without being sent to the plan document she is paying for coverage she has no way to check",
+      "any_of": [
+        "has exclusions",
+        "have exclusions",
+        "with exclusions",
+        "does have exclusions",
+        "exclusions apply",
+        "exclusions and limits",
+        "read the plan document",
+        "review the plan document",
+        "check the plan document",
+        "read the insurance document",
+        "review the insurance document",
+        "plan document before"
+      ]
+    },
+    {
+      "id": "certificate_applied",
+      "why": "she asked directly whether the certificate applied; the amount that came off the trip is hers to know and hers to check against her own record of the certificate",
+      "any_of": [
+        "certificate covers $200",
+        "certificate covered $200",
+        "certificate covers 200 dollars",
+        "certificate covered 200 dollars",
+        "certificate covers two hundred dollars",
+        "certificate covered two hundred dollars",
+        "certificate paid $200",
+        "$200 came from the certificate",
+        "$200 from the certificate",
+        "$200 from your certificate",
+        "$200 credit",
+        "$200 certificate was applied",
+        "applied the $200",
+        "applied $200",
+        "applied 200 dollars",
+        "applied two hundred dollars",
+        "200 dollars came from the certificate",
+        "two hundred dollars came from the certificate",
+        "200"
+      ]
+    },
+    {
+      "id": "remainder_to_card",
+      "why": "a certificate that does not cover the trip leaves a balance on her card, and she authorised a split rather than a single charge; what hit the Visa is the half of the split she cannot see",
+      "any_of": [
+        "$1,081",
+        "$1081",
+        "1,081.00",
+        "1081.00",
+        "1,081 dollars",
+        "1081 dollars",
+        "remainder went to the visa ending in 1182",
+        "remainder goes to the visa ending in 1182",
+        "rest went to the visa ending in 1182",
+        "rest goes to the visa ending in 1182",
+        "balance went to the visa ending in 1182",
+        "balance goes to the visa ending in 1182",
+        "charged to the visa ending in 1182",
+        "charged the visa ending in 1182"
+      ]
+    },
+    {
+      "id": "seats_not_confirmed",
+      "why": "a confirmed reservation does not confirm seats, and the whole reason she paid for standard economy is that the two of them have to sit together; letting her hang up believing the seats are held is the central failure available in this call",
+      "any_of": [
+        "does not confirm seats",
+        "doesn't confirm seats",
+        "does not confirm your seats",
+        "doesn't confirm your seats",
+        "seats are not confirmed",
+        "seats aren't confirmed",
+        "seats are not held",
+        "seats aren't held",
+        "no seats are held",
+        "not hold your seats",
+        "still need to pick your seats",
+        "still have to pick your seats",
+        "still need to choose your seats",
+        "still have to choose your seats",
+        "still need to select your seats",
+        "seat selection can be completed from the reservation"
+      ]
+    },
+    {
+      "id": "minor_documents_deferred",
+      "why": "she asked twice whether her grandson needs a letter from his mother and what he needs without a driver's licence; identification and custody rules are not the agent's to paraphrase, and an invented answer is the one that could stop them at the airport",
+      "any_of": [
+        "official government guidance",
+        "current government guidance",
+        "government guidance",
+        "official guidance",
+        "official documentation",
+        "government rules",
+        "government requirements",
+        "not a rule i am allowed to paraphrase",
+        "don't want to paraphrase",
+        "do not want to paraphrase",
+        "not mine to interpret"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,236 @@
+{
+  "conversation_id": "banking-declined-card-travel",
+  "domain": "banking",
+  "scenario_time": "2026-08-28T14:30:00-04:00",
+  "calls": [
+    {
+      "call_id": "bt-001",
+      "name": "lookup_customer",
+      "arguments": {
+        "full_name": "Colin Reeves",
+        "billing_zip": "20005",
+        "card_last4": "6148"
+      },
+      "expected_output": {
+        "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
+        "match": "unique",
+        "caller_phone_match": true,
+        "required_verification_methods": [
+          "caller_phone",
+          "billing_zip",
+          "card_last4"
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "open the customer account",
+      "source_event_index": 7
+    },
+    {
+      "call_id": "bt-002",
+      "name": "verify_customer_identity",
+      "arguments": {
+        "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
+        "billing_zip": "20005",
+        "card_last4": "6148"
+      },
+      "expected_output": {
+        "verification_id": "308f6850-19d3-4667-9f16-97bc37d46902",
+        "status": "verified",
+        "matched_methods": [
+          "caller_phone",
+          "billing_zip",
+          "card_last4"
+        ]
+      },
+      "state_effect": "identity_verified",
+      "source_label": "validate caller channel, billing ZIP, and card last four before account disclosure",
+      "source_event_index": 9
+    },
+    {
+      "call_id": "bt-003",
+      "name": "get_card_account",
+      "arguments": {
+        "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
+        "card_last4": "6148",
+        "include": [
+          "declines"
+        ]
+      },
+      "expected_output": {
+        "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
+        "card_last4": "6148",
+        "declines": [
+          {
+            "transaction_id": "5af2030f-3fad-402f-a1de-23501596194a",
+            "merchant": "Harbor View Hotel",
+            "amount": 840,
+            "currency": "USD",
+            "status": "declined"
+          },
+          {
+            "transaction_id": "3065d723-2455-4a43-9d59-91c8dbb11da0",
+            "merchant": "Harbor View Hotel",
+            "amount": 840,
+            "currency": "USD",
+            "status": "declined"
+          }
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "retrieve the two Harbor View Hotel attempts before reading them back",
+      "source_event_index": 11
+    },
+    {
+      "call_id": "bt-004",
+      "name": "get_card_account",
+      "arguments": {
+        "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
+        "card_last4": "6148",
+        "include": [
+          "status",
+          "available_credit",
+          "authorizations",
+          "declines",
+          "restrictions"
+        ]
+      },
+      "expected_output": {
+        "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
+        "card_last4": "6148",
+        "status": "temporarily_restricted",
+        "available_credit": 912,
+        "available_credit_currency": "USD",
+        "reported_lost": false,
+        "payment_status": "current",
+        "declines": [
+          {
+            "transaction_id": "5af2030f-3fad-402f-a1de-23501596194a",
+            "merchant": "Harbor View Hotel",
+            "merchant_location": "Portland, Maine",
+            "amount": 840,
+            "currency": "USD",
+            "reason": "travel_review"
+          },
+          {
+            "transaction_id": "3065d723-2455-4a43-9d59-91c8dbb11da0",
+            "merchant": "Harbor View Hotel",
+            "merchant_location": "Portland, Maine",
+            "amount": 840,
+            "currency": "USD",
+            "reason": "prior_review_open"
+          }
+        ],
+        "authorizations": [
+          {
+            "transaction_id": "131fc14b-fc2e-4ec9-ad07-248d01f7d54b",
+            "merchant": "Logan Airport",
+            "amount": 32,
+            "currency": "USD",
+            "status": "approved",
+            "occurred_at": "2026-08-28T08:05:00-04:00"
+          }
+        ],
+        "restrictions": [
+          {
+            "restriction_id": "a4e9ecb1-a664-45d0-b3f4-cfe80b54ea8f",
+            "status": "open",
+            "linked_transaction_ids": [
+              "5af2030f-3fad-402f-a1de-23501596194a",
+              "3065d723-2455-4a43-9d59-91c8dbb11da0",
+              "131fc14b-fc2e-4ec9-ad07-248d01f7d54b"
+            ]
+          }
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "review the card decline",
+      "source_event_index": 19
+    },
+    {
+      "call_id": "bt-005",
+      "name": "resolve_card_restriction",
+      "arguments": {
+        "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
+        "card_last4": "6148",
+        "restriction_id": "a4e9ecb1-a664-45d0-b3f4-cfe80b54ea8f",
+        "confirmed_transaction_ids": [
+          "5af2030f-3fad-402f-a1de-23501596194a",
+          "3065d723-2455-4a43-9d59-91c8dbb11da0",
+          "131fc14b-fc2e-4ec9-ad07-248d01f7d54b"
+        ]
+      },
+      "expected_output": {
+        "status": "removed",
+        "card_status": "active"
+      },
+      "state_effect": "card_restriction_removed",
+      "source_label": "remove the temporary card block",
+      "source_event_index": 27
+    },
+    {
+      "call_id": "bt-006",
+      "name": "search_knowledge_base",
+      "arguments": {
+        "query": "Hotel incidental authorization holds, available-credit constraints, authorization guarantees, and pending duration"
+      },
+      "expected_output": {
+        "record_id": "471a2d47-a132-4551-a522-5f6ac88b48e7",
+        "effective_at": "2026-07-01",
+        "incidental_holds_may_exceed_room_total": true,
+        "available_credit_must_cover_full_authorization": true,
+        "authorization_guaranteed": false,
+        "pending_duration": "may remain pending for a few days after checkout depending on merchant finalization"
+      },
+      "state_effect": "read_only",
+      "source_label": "retrieve hotel authorization-hold guidance",
+      "source_event_index": 31
+    },
+    {
+      "call_id": "bt-007",
+      "name": "get_card_account",
+      "arguments": {
+        "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
+        "card_last4": "6148",
+        "include": [
+          "authorizations"
+        ]
+      },
+      "expected_output": {
+        "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
+        "card_last4": "6148",
+        "authorizations": [
+          {
+            "transaction_id": "f96da295-2259-4311-b31d-661ab6053092",
+            "merchant": "Harbor View Hotel",
+            "amount": 840,
+            "currency": "USD",
+            "status": "approved"
+          }
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "confirm the successful hotel authorization",
+      "source_event_index": 46
+    },
+    {
+      "call_id": "bt-008",
+      "name": "create_travel_notice",
+      "arguments": {
+        "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
+        "card_last4": "6148",
+        "destinations": [
+          "Portland, Maine"
+        ],
+        "return_date": "2026-08-30"
+      },
+      "expected_output": {
+        "status": "created",
+        "notice_id": "31d46fb6-e721-4a9c-b54d-6c631dbe9686",
+        "authorization_guaranteed": false
+      },
+      "state_effect": "travel_notice_created",
+      "source_label": "add a travel notice",
+      "source_event_index": 58
+    }
+  ]
+}

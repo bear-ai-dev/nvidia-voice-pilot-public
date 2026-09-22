@@ -1,0 +1,203 @@
+{
+  "conversation_id": "retail-missing-package",
+  "domain": "retail",
+  "scenario_time": "2026-08-25T15:40:00-04:00",
+  "calls": [
+    {
+      "call_id": "rm-001",
+      "name": "get_order",
+      "arguments": {
+        "order_reference": "7319",
+        "customer_email": "ethan.patel@northmail.com",
+        "include": [
+          "items",
+          "fulfillment",
+          "carrier_scans"
+        ]
+      },
+      "expected_output": {
+        "order_reference": "7319",
+        "customer": {
+          "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+          "display_name": "Ethan Patel",
+          "verified_email": "e***@northmail.com"
+        },
+        "items": [
+          {
+            "item_reference": "blue-noise-canceling-headphones",
+            "product_reference": "blue-noise-canceling-headphones",
+            "color": "blue"
+          }
+        ],
+        "fulfillment": {
+          "status": "delivered",
+          "latest_scan": {
+            "time": "15:18 yesterday",
+            "location": "front entrance",
+            "photo": null
+          }
+        }
+      },
+      "state_effect": "read_only",
+      "source_label": "open the order record",
+      "source_event_index": 8
+    },
+    {
+      "call_id": "rm-002",
+      "name": "get_order",
+      "arguments": {
+        "order_reference": "7319",
+        "customer_email": "ethan.patel@northmail.com",
+        "include": [
+          "carrier_scans"
+        ]
+      },
+      "expected_output": {
+        "order_reference": "7319",
+        "fulfillment": {
+          "carrier_evidence": {
+            "scan_location": "near building",
+            "unit_number": null,
+            "locker": null,
+            "photo": null,
+            "possible_misscan": true
+          }
+        }
+      },
+      "state_effect": "read_only",
+      "source_label": "review carrier scan details",
+      "source_event_index": 16
+    },
+    {
+      "call_id": "rm-003",
+      "name": "get_product",
+      "arguments": {
+        "product_reference": "blue-noise-canceling-headphones",
+        "include_inventory": true
+      },
+      "expected_output": {
+        "product_reference": "blue-noise-canceling-headphones",
+        "variant": {
+          "color": "blue"
+        },
+        "inventory": {
+          "same_variant_in_stock": true
+        }
+      },
+      "state_effect": "read_only",
+      "source_label": "check replacement inventory",
+      "source_event_index": 25
+    },
+    {
+      "call_id": "rm-004",
+      "name": "open_delivery_trace",
+      "arguments": {
+        "order_reference": "7319",
+        "item_references": [
+          "blue-noise-canceling-headphones"
+        ],
+        "reason": "delivered_not_received",
+        "requested_resolution": "undecided",
+        "needed_by": "2026-08-27"
+      },
+      "expected_output": {
+        "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+        "status": "open",
+        "carrier_response_deadline": "18:00 tomorrow",
+        "replacement_created": false,
+        "eligibility_triggers": [
+          "carrier_confirms_missing",
+          "carrier_response_deadline_expires"
+        ],
+        "next_action": "review requested resolution and fulfillment after an eligibility trigger",
+        "approval_required": true,
+        "approval_channel": "trace_notification",
+        "notification_status": "not_sent",
+        "case_number": "WST481662"
+      },
+      "state_effect": "delivery_trace_opened",
+      "source_label": "open a missing-package trace",
+      "source_event_index": 29
+    },
+    {
+      "call_id": "rm-005",
+      "name": "update_case",
+      "arguments": {
+        "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+        "requested_resolution": "replacement",
+        "preferred_pickup_location": "West 23rd Street pickup counter",
+        "note": "Preserve exact blue variant and original price if replacement becomes eligible."
+      },
+      "expected_output": {
+        "status": "preference_added",
+        "visible_to_next_reviewer": true,
+        "review_instruction": "Check West 23rd Street pickup availability first after replacement eligibility.",
+        "pickup_guaranteed": false
+      },
+      "state_effect": "case_preference_added",
+      "source_label": "agent records pickup preference",
+      "source_event_index": 41
+    },
+    {
+      "call_id": "rm-006",
+      "name": "send_case_notification",
+      "arguments": {
+        "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+        "channel": "email",
+        "destination_source": "order_contact",
+        "template": "delivery_trace_confirmation"
+      },
+      "expected_output": {
+        "notification_id": "521527dc-8856-4b33-8e08-69658b1ca80b",
+        "status": "sent",
+        "masked_destination": "e***@northmail.com",
+        "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+        "included_fields": [
+          "case_number",
+          "status",
+          "carrier_response_deadline",
+          "approval_link"
+        ],
+        "case_number": "WST481662"
+      },
+      "state_effect": "notification_sent",
+      "source_label": "send the delivery-trace email after customer approval",
+      "source_event_index": 51
+    },
+    {
+      "call_id": "rm-007",
+      "name": "get_order",
+      "arguments": {
+        "order_reference": "7319",
+        "customer_email": "ethan.patel@northmail.com",
+        "include": [
+          "cases",
+          "notifications"
+        ]
+      },
+      "expected_output": {
+        "order_reference": "7319",
+        "cases": [
+          {
+            "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+            "status": "open",
+            "deadline": "18:00 tomorrow",
+            "carrier_may_contact_customer": true,
+            "replacement_created": false,
+            "case_number": "WST481662"
+          }
+        ],
+        "notifications": [
+          {
+            "notification_id": "521527dc-8856-4b33-8e08-69658b1ca80b",
+            "status": "delivered",
+            "type": "delivery_trace_confirmation"
+          }
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "review the open carrier trace and matching notification",
+      "source_event_index": 58
+    }
+  ]
+}

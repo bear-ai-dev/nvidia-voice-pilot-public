@@ -1,0 +1,100 @@
+{
+  "_comment": [
+    "How the grading layer treats each table when looking for collateral damage.",
+    "Damage is a row the agent inserted, deleted or modified that the gold path",
+    "left untouched. Rows the gold path also touched are the agent's work area: each",
+    "may end as it started, which expected_final_state.json then judges, or as the",
+    "gold path left it, so an agent that reaches the right outcome by a different",
+    "route is not penalised for the route it took. A third value in one is damage."
+  ],
+  "damage": {
+    "_volatile_reason": [
+      "Reads must be free: an agent may look at anything as often as it likes, so",
+      "nothing a read advances can count as damage. These two tables hold real",
+      "content and one lifecycle marker apiece that a read writes, so the marker is",
+      "dropped from the row hash and the table itself stays under the damage check.",
+      "That is the difference that matters: excluding the whole table would also",
+      "make an *inserted* row invisible, and a self-service session or a trusted",
+      "channel challenge the caller never asked for is exactly the consequential",
+      "side effect this check exists to catch. It matters more here than anywhere",
+      "else, because this conversation issues neither: every row in both tables",
+      "belongs to somebody else, so nothing an agent adds to either could be",
+      "legitimate work.",
+      "",
+      "self_service_sessions.status and .opened_at are written by",
+      "get_secure_self_service_session. Opening happens in online banking, which no",
+      "tool can observe, so the first read of a session whose owner opens it writes",
+      "issued -> open_not_submitted and stamps opened_at. The seed holds other",
+      "customers' sessions in 'issued' with customer_opens true, so reading one",
+      "moves it, and that read must stay free. Every other column is still hashed.",
+      "",
+      "channel_confirmations.status and .verified_at are written by",
+      "get_trusted_channel_confirmation, for the same reason: the customer",
+      "completes the challenge in an approved secure path no tool can observe, so",
+      "the first read after delivery writes the sent -> verified transition it",
+      "finds. The seed carries other profiles' confirmations sitting in 'sent'.",
+      "sent_at, expires_at, purpose, channel_id, masked_destination and",
+      "verification_id are all still hashed, so a challenge started against one of",
+      "those profiles is caught as an inserted row.",
+      "",
+      "Confirmed against environment/server/tools.py: those two UPDATE statements",
+      "name these columns and no others."
+    ],
+    "read_volatile_columns": {
+      "self_service_sessions": [
+        "status",
+        "opened_at"
+      ],
+      "channel_confirmations": [
+        "status",
+        "verified_at"
+      ]
+    },
+    "_ignore_reason": [
+      "Whole-table exclusion is the blunt instrument, kept only where the table",
+      "holds nothing but read state and there is therefore no insert worth",
+      "catching.",
+      "",
+      "card_section_read_cursor carries the whole weight of that principle in this",
+      "task. get_card_account serves a section at a depth that depends on how many",
+      "times it has been read, and the declines and authorizations sections are",
+      "incremental, so a second look reports what arrived since the first. The",
+      "recording reads the card three times for exactly that reason. Every one of",
+      "those reads increments reads_served and last_seen_seq, and an agent that",
+      "reads the card five times instead of three has done nothing but look. A",
+      "cursor row exists only because something was read, so excluding the columns",
+      "rather than the table would buy nothing.",
+      "",
+      "id_allocator moves when an extra create is issued, but the row that create",
+      "produced is caught on its own account. tool_call_log is the audit trail of",
+      "the grading run itself. scenario is the immutable clock."
+    ],
+    "ignore_tables": [
+      "scenario",
+      "id_allocator",
+      "tool_call_log",
+      "card_section_read_cursor"
+    ],
+    "_append_reason": [
+      "Nothing in this domain earns append tolerance, so the list is empty and",
+      "every insert outside the gold path's work area is damage.",
+      "",
+      "identity_verifications was the candidate, being the one audit-shaped table",
+      "here, but it does not need tolerating: verify_customer_identity derives the",
+      "verification id from the customer's open service case and upserts on it, so",
+      "a genuine re-verification updates the same row rather than leaving a second",
+      "one.",
+      "",
+      "travel_notices is the interesting exclusion in this task, because a travel",
+      "notice is the outcome the recording produces and create_travel_notice will",
+      "happily mint a second one under a suffixed id. That second notice is not a",
+      "harmless duplicate: it puts a trip on the card the customer never mentioned",
+      "and the note is visible to fraud review, so it stays damage. transactions is",
+      "excluded for a sharper reason still - resolve_card_restriction can insert a",
+      "re-presented authorization and move available credit, so an insert here is",
+      "money. notifications, specialist_transfers and session_deliveries are out on",
+      "the same principle: each reaches a customer or another team."
+    ],
+    "append_tolerated": []
+  }
+}

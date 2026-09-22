@@ -1,0 +1,349 @@
+{
+  "conversation_id": "airline-family-reservation",
+  "domain": "airline",
+  "scenario_time": "2026-08-26T12:30:00-07:00",
+  "calls": [
+    {
+      "call_id": "af-001",
+      "name": "list_supported_airports",
+      "arguments": {
+        "destination_area": "Washington, DC National Mall"
+      },
+      "expected_output": {
+        "airports": [
+          {
+            "code": "DCA",
+            "name": "Washington Reagan National"
+          },
+          {
+            "code": "IAD",
+            "name": "Washington Dulles International"
+          },
+          {
+            "code": "BWI",
+            "name": "Baltimore/Washington International"
+          }
+        ],
+        "recommended_airport_code": "DCA",
+        "recommendation_basis": "closest airport returned for the National Mall destination area and most direct city access among the supported options",
+        "retrieved_at": "2026-08-26T12:31:00-07:00"
+      },
+      "state_effect": "read_only",
+      "source_label": "calling tool to list supported airports",
+      "source_event_index": 13
+    },
+    {
+      "call_id": "af-002",
+      "name": "search_flights",
+      "arguments": {
+        "origin_airport": "PHX",
+        "destination_airport": "DCA",
+        "departure_date": "2026-10-14",
+        "return_date": "2026-10-19",
+        "traveler_count": 2,
+        "max_stops": 0
+      },
+      "expected_output": {
+        "search_id": "96a87cf6-ba8d-4705-995b-8805e877ab0b",
+        "outbound": {
+          "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+          "origin": {
+            "code": "PHX",
+            "name": "Phoenix Sky Harbor"
+          },
+          "destination": {
+            "code": "DCA",
+            "name": "Washington Reagan National"
+          },
+          "departure_date": "2026-10-14",
+          "departure_time": "09:10",
+          "arrival_time": "16:30",
+          "duration_minutes": 260,
+          "stops": 0
+        },
+        "return": {
+          "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+          "origin": {
+            "code": "DCA",
+            "name": "Washington Reagan National"
+          },
+          "destination": {
+            "code": "PHX",
+            "name": "Phoenix Sky Harbor"
+          },
+          "departure_date": "2026-10-19",
+          "departure_time": "15:40",
+          "arrival_time": "17:30",
+          "duration_minutes": 290,
+          "stops": 0
+        },
+        "fare_options": [
+          {
+            "fare_class": "basic_economy",
+            "price_per_traveler": 512.4,
+            "currency": "USD",
+            "relative_price_rank": "lower",
+            "advance_seat_selection_allowed": false
+          },
+          {
+            "fare_class": "standard_economy",
+            "price_per_traveler": 558.2,
+            "currency": "USD",
+            "relative_price_rank": "higher",
+            "advance_seat_selection_allowed": true
+          }
+        ],
+        "availability_checked_at": "2026-08-26T12:31:33-07:00",
+        "expires_at": "quote_required_before_booking"
+      },
+      "state_effect": "read_only",
+      "source_label": "calling tool to search for direct flights",
+      "source_event_index": 17
+    },
+    {
+      "call_id": "af-003",
+      "name": "search_flights",
+      "arguments": {
+        "origin_airport": "PHX",
+        "destination_airport": "DCA",
+        "departure_date": "2026-10-14",
+        "return_date": "2026-10-19",
+        "traveler_count": 2,
+        "max_stops": 1,
+        "max_layover_minutes": 300
+      },
+      "expected_output": {
+        "search_id": "b1e28687-a8fe-44c9-a18c-66b5dcc0dedb",
+        "best_connection": {
+          "itinerary_id": "87ba9919-0d38-418a-868c-42185e5a9ab9",
+          "total_savings": 62.0,
+          "currency": "USD",
+          "additional_duration_each_way": "almost three hours",
+          "additional_duration_minutes_each_way": 170
+        },
+        "availability_checked_at": "2026-08-26T12:32:17-07:00",
+        "expires_at": "quote_required_before_booking"
+      },
+      "state_effect": "read_only",
+      "source_label": "calling tool to search for one-stop flights",
+      "source_event_index": 24
+    },
+    {
+      "call_id": "af-003b",
+      "name": "check_mobility_device_requirements",
+      "arguments": {
+        "device_type": "folding walker"
+      },
+      "expected_output": {
+        "device_type": "folding walker",
+        "counts_as_paid_bag": false,
+        "fee": 0.0,
+        "currency": "USD",
+        "serial_number_required": false,
+        "labeling_guidance": "label with customer contact information and identify it as a mobility device at the airport",
+        "airport_notification_required": true,
+        "effective_at": "2026-07-01"
+      },
+      "state_effect": "read_only",
+      "source_label": "check folding-walker requirements before quoting baggage treatment",
+      "source_event_index": 28
+    },
+    {
+      "call_id": "af-004",
+      "name": "calculate_itinerary_price",
+      "arguments": {
+        "outbound_flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "return_flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+        "traveler_count": 2,
+        "fare_class": "standard_economy",
+        "checked_bag_count": 2,
+        "mobility_device_count": 1,
+        "include_insurance_quote": true
+      },
+      "expected_output": {
+        "quote_id": "b28a0bbf-614c-4616-862c-fbeef88f6495",
+        "fare_taxes_and_checked_bags": 1186.4,
+        "mobility_device_charge": 0.0,
+        "trip_insurance": 94.6,
+        "insurance_plan_document": "insurance-plan-document-current",
+        "total_with_insurance": 1281.0,
+        "currency": "USD",
+        "expires_at": "2026-08-27T12:33:00-07:00"
+      },
+      "state_effect": "read_only",
+      "source_label": "calculate the selected itinerary before stating mobility-device fee and final price",
+      "source_event_index": 33
+    },
+    {
+      "call_id": "af-004b",
+      "name": "verify_customer_identity",
+      "arguments": {
+        "full_name": "Linda Marie Carver",
+        "date_of_birth": "1954-03-08",
+        "email": "linda.carver9@outlook.com"
+      },
+      "expected_output": {
+        "verification_id": "661f8b5c-f3d8-4612-8645-00f9a5ecded8",
+        "status": "verified",
+        "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+        "matched_factors": [
+          "full_name",
+          "date_of_birth",
+          "email"
+        ],
+        "expires_at": "end_of_call"
+      },
+      "state_effect": "identity_verified",
+      "source_label": "validate collected identity factors before stored profile and payment access",
+      "source_event_index": 51
+    },
+    {
+      "call_id": "af-005",
+      "name": "get_customer_profile",
+      "arguments": {
+        "email": "linda.carver9@outlook.com",
+        "verification_id": "661f8b5c-f3d8-4612-8645-00f9a5ecded8",
+        "include": [
+          "reservations",
+          "payment_methods",
+          "travel_certificates"
+        ]
+      },
+      "expected_output": {
+        "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+        "verification_id": "661f8b5c-f3d8-4612-8645-00f9a5ecded8",
+        "duplicate_reservation": false,
+        "payment_methods": [
+          {
+            "token": "c1200f87-9c48-41f4-a6f9-04d89f28b2b2",
+            "brand": "Visa",
+            "last4": "1182"
+          }
+        ],
+        "travel_certificate_input_required": true
+      },
+      "state_effect": "read_only",
+      "source_label": "calling tool to retrieve the customer profile and reservations",
+      "source_event_index": 53
+    },
+    {
+      "call_id": "af-005b",
+      "name": "validate_travel_certificate",
+      "arguments": {
+        "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+        "verification_id": "661f8b5c-f3d8-4612-8645-00f9a5ecded8",
+        "certificate_code": "CT-449108"
+      },
+      "expected_output": {
+        "certificate_id": "18e422e6-a2c3-4cb8-93fa-daf7a28c328b",
+        "masked_code": "CT-***108",
+        "status": "valid",
+        "available_balance": 200.0,
+        "applicable_amount": 200.0,
+        "currency": "USD",
+        "expires_at": "2026-12-31"
+      },
+      "state_effect": "read_only",
+      "source_label": "validate the supplied certificate before applying it",
+      "source_event_index": 61
+    },
+    {
+      "call_id": "af-006",
+      "name": "book_reservation",
+      "arguments": {
+        "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+        "verification_id": "661f8b5c-f3d8-4612-8645-00f9a5ecded8",
+        "quote_id": "b28a0bbf-614c-4616-862c-fbeef88f6495",
+        "certificate_id": "18e422e6-a2c3-4cb8-93fa-daf7a28c328b",
+        "outbound_flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+        "return_flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+        "travelers": [
+          {
+            "full_name": "Linda Marie Carver",
+            "date_of_birth": "1954-03-08"
+          },
+          {
+            "full_name": "Evan James Carver",
+            "date_of_birth": "2014-07-21"
+          }
+        ],
+        "contact_email": "linda.carver9@outlook.com",
+        "fare_class": "standard_economy",
+        "checked_bag_count": 2,
+        "mobility_devices": [
+          "folding walker"
+        ],
+        "include_trip_insurance": true,
+        "payment_method_token": "c1200f87-9c48-41f4-a6f9-04d89f28b2b2",
+        "confirmed_total": 1281.0,
+        "customer_authorized": true
+      },
+      "expected_output": {
+        "reservation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7",
+        "confirmation_code": "B9RT6M",
+        "status": "confirmed",
+        "ticketing_status": "ticketed",
+        "itinerary": {
+          "origin": {
+            "code": "PHX",
+            "name": "Phoenix Sky Harbor"
+          },
+          "destination": {
+            "code": "DCA",
+            "name": "Washington Reagan National"
+          },
+          "departure_date": "2026-10-14",
+          "return_date": "2026-10-19"
+        },
+        "travelers": [
+          {
+            "traveler_id": "1a7ef9d5-196f-456c-a780-1acafefd1fd1",
+            "full_name": "Linda Marie Carver",
+            "date_of_birth": "1954-03-08"
+          },
+          {
+            "traveler_id": "b0b29fec-eb5c-469e-bee0-046f8c861822",
+            "full_name": "Evan James Carver",
+            "date_of_birth": "2014-07-21"
+          }
+        ],
+        "fare_class": "standard_economy",
+        "seat_selection": {
+          "available": true,
+          "confirmed_seats": []
+        },
+        "checked_bag_count": 2,
+        "mobility_devices": [
+          {
+            "device_type": "folding walker",
+            "fee": 0.0,
+            "serial_number_required": false
+          }
+        ],
+        "trip_insurance": {
+          "included": true,
+          "price": 94.6,
+          "covered_traveler_ids": [
+            "1a7ef9d5-196f-456c-a780-1acafefd1fd1",
+            "b0b29fec-eb5c-469e-bee0-046f8c861822"
+          ]
+        },
+        "payment_allocation": [
+          {
+            "tender": "travel_certificate_CT-449108",
+            "amount": 200.0
+          },
+          {
+            "tender": "visa_ending_1182",
+            "amount": 1081.0
+          }
+        ],
+        "payment_status": "captured",
+        "currency": "USD"
+      },
+      "state_effect": "reservation_created",
+      "source_label": "calling tool to book the new reservation",
+      "source_event_index": 63
+    }
+  ]
+}

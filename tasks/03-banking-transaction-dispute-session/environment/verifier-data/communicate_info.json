@@ -1,0 +1,134 @@
+{
+  "_comment": [
+    "Facts a correct handling of this call has to reach the caller. End-state",
+    "checking cannot see any of them: the records are byte-identical whether or",
+    "not the agent admitted a posted charge cannot be wiped, warned that",
+    "provisional credit is not promised, or told him that a purchase his own",
+    "household made must not go in as fraud. This conversation ends with nothing",
+    "filed, so nearly all of its value is in what was said.",
+    "",
+    "Each entry is satisfied when any one of its surface forms appears in the",
+    "agent's utterances, matched case-insensitively with whitespace collapsed.",
+    "",
+    "A form that is a single number or a single word is matched on boundaries; a",
+    "form of two or more words is matched as a plain substring. That is why bare",
+    "figures like '15' are listed: '15' will find \"15 USD\", \"15.00 dollars\" and",
+    "\"a total of 15\", but will not match '$150', so an agent that quotes the wrong",
+    "amount gets no credit. Bare words are fenced for the same reason - 'two' must",
+    "not be found inside 'network'. Anchors are only ever the whole value: 'five'",
+    "is not listed for 95, since \"five business days\" would then satisfy a fee.",
+    "The alternatives exist so an agent is not failed for saying 'can't erase'",
+    "instead of 'cannot erase'. Every form is a distinctive multi-word phrase;",
+    "nothing here would match an arbitrary transcript.",
+    "",
+    "Requirements already asserted against the database are deliberately not",
+    "repeated: the session existing against the right transaction, reaching",
+    "open_not_submitted, and carrying no claim id are all checked as state. The",
+    "'no claim until you submit' entry below is not that assertion restated - it",
+    "is a rule about what will happen next, which is what he is using to decide",
+    "whether to press the button, and the database looks the same either way."
+  ],
+  "required": [
+    {
+      "id": "posted_charge_cannot_be_erased",
+      "why": "he opened the call asking to have the charge taken off, and the honest answer is that no one here can simply erase a posted charge; leaving him thinking a phone call removes it sets him up for a second, angrier call",
+      "any_of": [
+        "cannot erase a posted charge",
+        "can't erase a posted charge",
+        "cannot erase the charge",
+        "can't erase the charge",
+        "cannot remove a posted charge",
+        "can't remove a posted charge",
+        "cannot undo a posted charge",
+        "can't undo a posted charge",
+        "posted charge cannot be erased",
+        "posted charge can't be erased",
+        "posted charge cannot be removed",
+        "not able to erase a posted charge",
+        "no way to erase a posted charge",
+        "cannot simply reverse a posted charge",
+        "can't just reverse a posted charge"
+      ]
+    },
+    {
+      "id": "provisional_credit_not_guaranteed",
+      "why": "filing a dispute is widely believed to put the money back straight away; he is deciding whether to file, and he is entitled to know the credit is not promised before he counts on it",
+      "any_of": [
+        "provisional credit is not guaranteed",
+        "provisional credit isn't guaranteed",
+        "provisional credit is never guaranteed",
+        "not guarantee provisional credit",
+        "does not guarantee provisional credit",
+        "doesn't guarantee provisional credit",
+        "no guarantee of provisional credit",
+        "cannot promise provisional credit",
+        "can't promise provisional credit",
+        "cannot promise you a provisional credit",
+        "provisional credit is not automatic",
+        "provisional credit isn't automatic"
+      ]
+    },
+    {
+      "id": "no_claim_until_he_submits",
+      "why": "he is being handed a form and could easily walk away believing the dispute is now running; nothing is filed until he presses submit, and the difference between an issued session and a live claim is the difference between having a case and not",
+      "any_of": [
+        "no claim exists until you",
+        "no claim is recorded until you",
+        "no claim until you submit",
+        "nothing is filed until you submit",
+        "nothing is filed until you press submit",
+        "nothing is submitted until you",
+        "not filed until you press submit",
+        "opening it does not submit",
+        "opening the form does not submit",
+        "opening the form doesn't submit",
+        "opening or saving the tool does not itself submit",
+        "the session is not a claim",
+        "a session is not a claim",
+        "having the form open is not the same as filing"
+      ]
+    },
+    {
+      "id": "household_purchase_is_not_fraud",
+      "why": "his daughter turns out to have made the purchase, and filing it as unauthorized anyway is the one genuinely damaging thing available in this call; the agent has to say plainly that a known household purchase does not go in as fraud",
+      "any_of": [
+        "should not be reported as fraud",
+        "shouldn't be reported as fraud",
+        "do not report it as fraud",
+        "don't report it as fraud",
+        "not report a household purchase as fraud",
+        "should not be disputed as fraud",
+        "shouldn't be disputed as fraud",
+        "do not file it as unauthorized",
+        "don't file it as unauthorized",
+        "do not submit it as unauthorized",
+        "don't submit it as unauthorized",
+        "do not submit the unauthorized transaction claim",
+        "don't submit the unauthorized transaction claim",
+        "would not be an unauthorized transaction",
+        "wouldn't be an unauthorized transaction",
+        "is not an unauthorized transaction"
+      ]
+    },
+    {
+      "id": "unused_session_does_not_waive_rights",
+      "why": "he asks directly whether walking away from the open form costs him something later; if he thinks it does he will file a dispute he does not believe in just to protect himself",
+      "any_of": [
+        "does not waive your rights",
+        "doesn't waive your rights",
+        "does not waive any rights",
+        "doesn't waive any rights",
+        "does not waive your future dispute rights",
+        "will not affect your future dispute rights",
+        "won't affect your future dispute rights",
+        "does not affect your right to dispute",
+        "doesn't affect your right to dispute",
+        "no effect on your future dispute rights",
+        "you do not lose any rights",
+        "you don't lose any rights",
+        "you do not give up any rights",
+        "you don't give up any rights"
+      ]
+    }
+  ]
+}

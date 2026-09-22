@@ -1,0 +1,67 @@
+schema_version = "1.4"
+
+[task]
+name = "voice-pilot/banking-transaction-dispute-session"
+version = "1.0.0"
+description = "Decide whether an unrecognised marketplace charge is fraud before anything is filed: resolve a caller against a register holding another customer of the same name, pin the charge down from what he can read off his statement alone, notice that a one-dollar pre-authorization points at a saved wallet rather than a stolen card, and open a secure dispute form the customer ends up correctly not submitting."
+keywords = ["voice-agent", "banking", "postgres", "tool-use", "customer-service", "dispute", "fraud-triage"]
+
+[[task.authors]]
+name = "nvidia-voice-pilot"
+
+[metadata]
+difficulty = "medium"
+category = "voice-agent-tool-use"
+source = "nvidia-voice-pilot-public"
+conversation_id = "banking-transaction-dispute-session"
+domain = "banking"
+scenario_time = "2026-02-25T16:20:00-05:00"
+recorded_tool_calls = 7
+task_kind = "voice-agent-outcome-graded"
+tags = [
+    "recorded-conversation",
+    "sql-backed-tools",
+    "identity-resolution",
+    "statement-search",
+    "card-on-file-signature",
+    "fraud-triage",
+    "knowledge-base-retrieval",
+    "secure-self-service-session",
+    "session-lifecycle",
+    "unsubmitted-claim",
+]
+
+[agent]
+user = "agent"
+timeout_sec = 3600
+
+[verifier]
+user = "root"
+timeout_sec = 1800
+
+[environment]
+workdir = "/workspace"
+build_timeout_sec = 2400
+cpus = 2
+memory_mb = 4096
+storage_mb = 10240
+network_mode = "none"
+
+[environment.env]
+TZ = "Etc/UTC"
+# The tool server is the only interface to the world. The database listens on
+# loopback and is not part of the contract.
+TOOL_SERVER_URL = "http://127.0.0.1:8080"
+STATE_OUT_DIR = "/out"
+# The run's side of the call. Graded alongside the database, because an
+# accurate record left behind by a misleading conversation is not a correct
+# outcome. A harness driving a real voice agent may repoint this.
+AGENT_TRANSCRIPT = "/workspace/transcript.txt"
+
+[environment.healthcheck]
+command = "test -f /tmp/task-infra/.ready"
+interval_sec = 5
+timeout_sec = 5
+# Absorbs cluster creation plus applying four seed files before the first probe.
+start_period_sec = 45
+retries = 12

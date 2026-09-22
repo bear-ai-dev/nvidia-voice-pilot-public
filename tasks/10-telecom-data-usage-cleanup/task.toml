@@ -1,0 +1,68 @@
+schema_version = "1.4"
+
+[task]
+name = "voice-pilot/telecom-data-usage-cleanup"
+version = "1.0.0"
+description = "Explain 11.8 gigabytes of overnight mobile data to the customer it was billed to: resolve him against a register holding another Benjamin Reed, verify before disclosing anything, read carrier metering as a measurement rather than as proof of which app caused it, separate the cycle reset date from the charges on the bill because the call discloses them at different moments, and sell five gigabytes of high-speed data only after a current eligible offer and an explicit authorization."
+keywords = ["voice-agent", "telecom", "postgres", "tool-use", "customer-service", "data-usage", "billing-cycle", "paid-add-on"]
+
+[[task.authors]]
+name = "nvidia-voice-pilot"
+
+[metadata]
+difficulty = "medium"
+category = "voice-agent-tool-use"
+source = "nvidia-voice-pilot-public"
+conversation_id = "telecom-data-usage-cleanup"
+domain = "telecom"
+scenario_time = "2026-08-27T19:30:00-05:00"
+recorded_tool_calls = 8
+task_kind = "voice-agent-outcome-graded"
+tags = [
+    "recorded-conversation",
+    "sql-backed-tools",
+    "two-step-identity-verification",
+    "scoped-account-access",
+    "aggregated-usage-metering",
+    "high-speed-allowance-arithmetic",
+    "billing-cycle-arithmetic",
+    "sectioned-bill-reads",
+    "offer-eligibility",
+    "paid-add-on-authorization",
+    "carrier-versus-customer-observed-facts",
+]
+
+[agent]
+user = "agent"
+timeout_sec = 3600
+
+[verifier]
+user = "root"
+timeout_sec = 1800
+
+[environment]
+workdir = "/workspace"
+build_timeout_sec = 2400
+cpus = 2
+memory_mb = 4096
+storage_mb = 10240
+network_mode = "none"
+
+[environment.env]
+TZ = "Etc/UTC"
+# The tool server is the only interface to the world. The database listens on
+# loopback and is not part of the contract.
+TOOL_SERVER_URL = "http://127.0.0.1:8080"
+STATE_OUT_DIR = "/out"
+# The run's side of the call. Graded alongside the database, because an
+# accurate record left behind by a misleading conversation is not a correct
+# outcome. A harness driving a real voice agent may repoint this.
+AGENT_TRANSCRIPT = "/workspace/transcript.txt"
+
+[environment.healthcheck]
+command = "test -f /tmp/task-infra/.ready"
+interval_sec = 5
+timeout_sec = 5
+# Absorbs cluster creation plus applying four seed files before the first probe.
+start_period_sec = 45
+retries = 12

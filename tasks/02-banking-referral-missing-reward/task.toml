@@ -1,0 +1,67 @@
+schema_version = "1.4"
+
+[task]
+name = "voice-pilot/banking-referral-missing-reward"
+version = "1.0.0"
+description = "Explain a referral bonus that has not arrived without crossing into the referred person's account: resolve the caller against a register that holds another customer of the same name, read the referral record for what it actually says, separate an approved application from a qualifying purchase using published terms rather than the marketing banner, and leave him able to watch the remaining stages himself instead of calling every week."
+keywords = ["voice-agent", "banking", "postgres", "tool-use", "customer-service", "referral", "third-party-privacy"]
+
+[[task.authors]]
+name = "nvidia-voice-pilot"
+
+[metadata]
+difficulty = "medium"
+category = "voice-agent-tool-use"
+source = "nvidia-voice-pilot-public"
+conversation_id = "banking-referral-missing-reward"
+domain = "banking"
+scenario_time = "2026-08-28T09:08:03-04:00"
+recorded_tool_calls = 9
+task_kind = "voice-agent-outcome-graded"
+tags = [
+    "recorded-conversation",
+    "sql-backed-tools",
+    "identity-resolution",
+    "referral-lifecycle",
+    "third-party-privacy",
+    "knowledge-base-retrieval",
+    "offer-version-pinning",
+    "secure-self-service-session",
+    "secure-notification-boundary",
+    "expectation-management",
+]
+
+[agent]
+user = "agent"
+timeout_sec = 3600
+
+[verifier]
+user = "root"
+timeout_sec = 1800
+
+[environment]
+workdir = "/workspace"
+build_timeout_sec = 2400
+cpus = 2
+memory_mb = 4096
+storage_mb = 10240
+network_mode = "none"
+
+[environment.env]
+TZ = "Etc/UTC"
+# The tool server is the only interface to the world. The database listens on
+# loopback and is not part of the contract.
+TOOL_SERVER_URL = "http://127.0.0.1:8080"
+STATE_OUT_DIR = "/out"
+# The run's side of the call. Graded alongside the database, because an
+# accurate record left behind by a misleading conversation is not a correct
+# outcome. A harness driving a real voice agent may repoint this.
+AGENT_TRANSCRIPT = "/workspace/transcript.txt"
+
+[environment.healthcheck]
+command = "test -f /tmp/task-infra/.ready"
+interval_sec = 5
+timeout_sec = 5
+# Absorbs cluster creation plus applying four seed files before the first probe.
+start_period_sec = 45
+retries = 12

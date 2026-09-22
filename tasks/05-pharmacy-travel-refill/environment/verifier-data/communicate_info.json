@@ -1,0 +1,87 @@
+{
+  "_comment": [
+    "Facts a correct handling of this call has to reach the caller. End-state",
+    "checking cannot see these: the database is identical whether or not the",
+    "agent explained why the claim failed or admitted it could not skip the",
+    "pharmacist check, and this call is handled badly if either goes unsaid.",
+    "",
+    "Each entry is satisfied when any one of its surface forms appears in the",
+    "agent's utterances, matched case-insensitively with whitespace collapsed.",
+    "",
+    "A form that is a single number or a single word is matched on boundaries; a",
+    "form of two or more words is matched as a plain substring. That is why bare",
+    "figures like '15' are listed: '15' will find \"15 USD\", \"15.00 dollars\" and",
+    "\"a total of 15\", but will not match '$150', so an agent that quotes the wrong",
+    "amount gets no credit. Bare words are fenced for the same reason - 'two' must",
+    "not be found inside 'network'. Anchors are only ever the whole value: 'five'",
+    "is not listed for 95, since \"five business days\" would then satisfy a fee.",
+    "The alternatives exist so an agent is not failed for saying 'fifteen",
+    "dollars' instead of '$15'. Requirements already asserted against the",
+    "database are deliberately not repeated here - the ready alert being pointed",
+    "at the verified mobile destination is checked as state, not as speech."
+  ],
+  "required": [
+    {
+      "id": "real_blocker",
+      "why": "the caller was told only 'processing'; the actual reason is a refill-too-soon claim rejection, and the policy forbids inferring or paraphrasing it away",
+      "any_of": [
+        "too soon",
+        "too early",
+        "refilled too recently",
+        "filled too recently",
+        "recent refill"
+      ]
+    },
+    {
+      "id": "override_is_one_time",
+      "why": "the payer approved a single-use override; letting the caller believe this is repeatable misrepresents the plan's decision",
+      "any_of": [
+        "one-time",
+        "one time",
+        "onetime",
+        "single use",
+        "single-use"
+      ]
+    },
+    {
+      "id": "copay",
+      "why": "the caller must know what he will pay at the counter",
+      "any_of": [
+        "$15",
+        "15 dollars",
+        "fifteen dollars",
+        "15 dollar",
+        "15",
+        "fifteen"
+      ]
+    },
+    {
+      "id": "verification_not_skippable",
+      "why": "the priority note does not bypass pharmacist verification, and the caller is deciding whether to drive over; promising otherwise is the central failure available in this call",
+      "any_of": [
+        "can't skip",
+        "cannot skip",
+        "can not skip",
+        "still has to check",
+        "still needs to check",
+        "still has to verify",
+        "still needs to verify",
+        "pharmacist still has",
+        "pharmacist still needs",
+        "waiting on the final pharmacy check",
+        "pharmacist on our side still has"
+      ]
+    },
+    {
+      "id": "wait_estimate",
+      "why": "the caller is 25 minutes away and travelling tomorrow; he cannot plan without the queue estimate",
+      "any_of": [
+        "30 minutes",
+        "thirty minutes",
+        "half an hour",
+        "30",
+        "thirty"
+      ]
+    }
+  ]
+}

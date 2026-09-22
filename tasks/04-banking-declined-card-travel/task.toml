@@ -1,0 +1,67 @@
+schema_version = "1.4"
+
+[task]
+name = "voice-pilot/banking-declined-card-travel"
+version = "1.0.0"
+description = "Get a traveller into his hotel room: resolve him against a register holding another customer of the same name at the same billing ZIP, read why a travel review declined two 840-dollar attempts rather than guessing, confirm the activity that opened the review before lifting it, and warn him that his available credit covers this hold but would not cover a larger one."
+keywords = ["voice-agent", "banking", "postgres", "tool-use", "customer-service", "card-restriction", "authorization-hold"]
+
+[[task.authors]]
+name = "nvidia-voice-pilot"
+
+[metadata]
+difficulty = "hard"
+category = "voice-agent-tool-use"
+source = "nvidia-voice-pilot-public"
+conversation_id = "banking-declined-card-travel"
+domain = "banking"
+scenario_time = "2026-08-28T14:30:00-04:00"
+recorded_tool_calls = 8
+task_kind = "voice-agent-outcome-graded"
+tags = [
+    "recorded-conversation",
+    "sql-backed-tools",
+    "identity-resolution",
+    "caller-channel-factor",
+    "card-restriction-lifecycle",
+    "progressive-section-disclosure",
+    "authorization-representation",
+    "available-credit-arithmetic",
+    "knowledge-base-retrieval",
+    "travel-notice",
+]
+
+[agent]
+user = "agent"
+timeout_sec = 3600
+
+[verifier]
+user = "root"
+timeout_sec = 1800
+
+[environment]
+workdir = "/workspace"
+build_timeout_sec = 2400
+cpus = 2
+memory_mb = 4096
+storage_mb = 10240
+network_mode = "none"
+
+[environment.env]
+TZ = "Etc/UTC"
+# The tool server is the only interface to the world. The database listens on
+# loopback and is not part of the contract.
+TOOL_SERVER_URL = "http://127.0.0.1:8080"
+STATE_OUT_DIR = "/out"
+# The run's side of the call. Graded alongside the database, because an
+# accurate record left behind by a misleading conversation is not a correct
+# outcome. A harness driving a real voice agent may repoint this.
+AGENT_TRANSCRIPT = "/workspace/transcript.txt"
+
+[environment.healthcheck]
+command = "test -f /tmp/task-infra/.ready"
+interval_sec = 5
+timeout_sec = 5
+# Absorbs cluster creation plus applying four seed files before the first probe.
+start_period_sec = 45
+retries = 12

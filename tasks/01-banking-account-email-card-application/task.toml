@@ -1,0 +1,67 @@
+schema_version = "1.4"
+
+[task]
+name = "voice-pilot/banking-account-email-card-application"
+version = "1.0.0"
+description = "Change a locked-out customer's profile email when the address on file is the address he cannot reach, then take him through choosing a travel card: confirm the change on a channel he does control rather than the one that is failing, quote product terms and welcome offers from published records instead of memory, hand him a secure application he completes himself, and answer the application's own questions without touching his financial information or promising an underwriting outcome."
+keywords = ["voice-agent", "banking", "postgres", "tool-use", "customer-service", "email-change", "card-application"]
+
+[[task.authors]]
+name = "nvidia-voice-pilot"
+
+[metadata]
+difficulty = "medium"
+category = "voice-agent-tool-use"
+source = "nvidia-voice-pilot-public"
+conversation_id = "banking-account-email-card-application"
+domain = "banking"
+scenario_time = "2026-08-27T10:45:00-04:00"
+recorded_tool_calls = 15
+task_kind = "voice-agent-outcome-graded"
+tags = [
+    "recorded-conversation",
+    "sql-backed-tools",
+    "identity-resolution",
+    "trusted-channel-confirmation",
+    "profile-email-change",
+    "knowledge-base-retrieval",
+    "product-catalog-projection",
+    "secure-self-service-session",
+    "session-lifecycle",
+    "underwriting-boundary",
+]
+
+[agent]
+user = "agent"
+timeout_sec = 3600
+
+[verifier]
+user = "root"
+timeout_sec = 1800
+
+[environment]
+workdir = "/workspace"
+build_timeout_sec = 2400
+cpus = 2
+memory_mb = 4096
+storage_mb = 10240
+network_mode = "none"
+
+[environment.env]
+TZ = "Etc/UTC"
+# The tool server is the only interface to the world. The database listens on
+# loopback and is not part of the contract.
+TOOL_SERVER_URL = "http://127.0.0.1:8080"
+STATE_OUT_DIR = "/out"
+# The run's side of the call. Graded alongside the database, because an
+# accurate record left behind by a misleading conversation is not a correct
+# outcome. A harness driving a real voice agent may repoint this.
+AGENT_TRANSCRIPT = "/workspace/transcript.txt"
+
+[environment.healthcheck]
+command = "test -f /tmp/task-infra/.ready"
+interval_sec = 5
+timeout_sec = 5
+# Absorbs cluster creation plus applying four seed files before the first probe.
+start_period_sec = 45
+retries = 12

@@ -1,0 +1,4 @@
+# The population generator is author-time tooling and must not ship.
+gen_seed.py
+__pycache__/
+*.pyc

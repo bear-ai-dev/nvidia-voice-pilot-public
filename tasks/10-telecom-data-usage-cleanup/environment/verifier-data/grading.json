@@ -1,0 +1,53 @@
+{
+  "_comment": [
+    "How the grading layer treats each table when looking for collateral damage.",
+    "Damage is a row the agent inserted, deleted or modified that the gold path",
+    "left untouched. Rows the gold path also touched are the agent's work area: each",
+    "may end as it started, which expected_final_state.json then judges, or as the",
+    "gold path left it, so an agent that reaches the right outcome by a different",
+    "route is not penalised for the route it took. A third value in one is damage."
+  ],
+  "damage": {
+    "_ignore_reason": [
+      "Reads must be free: an agent may look at anything as often as it likes, so",
+      "nothing a read advances can count as damage. tool_clock_cursor is exactly",
+      "that. This environment has no clock, so each timed tool carries an",
+      "invocation counter and reports the offset recorded against that ordinal;",
+      "get_line_data_usage, get_customer_bills and get_data_addon_offers all bump",
+      "their counter, which is how a second usage read is stamped later than the",
+      "first rather than identically. Checking the bill twice therefore modifies a",
+      "pre-existing row, and it is bookkeeping about the call rather than a change",
+      "to the account.",
+      "id_allocator moves when an add-on transaction or a specialist transfer takes",
+      "an identifier, but the row that allocation produced is caught on its own",
+      "account. scenario is the immutable clock. tool_call_log is bookkeeping.",
+      "tool_clock itself holds the recorded offsets and is never written, so it is",
+      "deliberately not listed: if a run somehow changed it, that is damage."
+    ],
+    "ignore_tables": [
+      "scenario",
+      "id_allocator",
+      "tool_call_log",
+      "tool_clock_cursor"
+    ],
+    "_append_reason": [
+      "identity_verifications is append-only and a second attempt genuinely leaves",
+      "a second row. The register holds another Benjamin Reed, so an agent that",
+      "resolves the wrong record first and verifies against it before finding the",
+      "right one files a verification under that other account. Re-verifying this",
+      "caller resolves back to the one record, keyed by account stem and channel,",
+      "and the gold path already touched it. Modifying a verification row that",
+      "already existed is still damage - that is how an access scope gets widened",
+      "or a cleared record revoked - and so is any new row in a table not listed",
+      "here.",
+      "addon_transactions and bill_charges are conspicuously absent. Buying a",
+      "second five-gigabyte add-on is not a harmless retry: it allocates another",
+      "transaction, puts another forty dollars on a bill the caller will actually",
+      "receive, and the caller in this recording was already angry about the first",
+      "forty. specialist_transfers is absent for the same reason."
+    ],
+    "append_tolerated": [
+      "identity_verifications"
+    ]
+  }
+}

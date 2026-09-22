@@ -1,0 +1,91 @@
+{
+  "_comment": [
+    "State the recorded conversation must leave behind. Asserted as a subset:",
+    "every field here must be present with this value, and the database may know",
+    "more. Only fields the recorded tool results revealed are asserted.",
+    "",
+    "_key_columns declares how each table is addressed, so a row is identified by",
+    "a stable business key rather than by position in the snapshot.",
+    "",
+    "line_high_speed_balance is a view, not a table. It is asserted because it is",
+    "where the call's effect actually shows: the allowance, the metered",
+    "consumption, and the purchased increment are separate quantities, and 7.2 is",
+    "their sum rather than a column anything wrote.",
+    "",
+    "tool_clock_cursor is deliberately not asserted. Its calls_served counters say",
+    "how many times each tool was invoked, which is a property of the route rather",
+    "than of the state the call left behind, and the grading layer reads this same",
+    "document: asserting them would fail an agent for checking the bill a third",
+    "time, which the contract holds free. Nothing is lost on the conformance side,",
+    "where the counters are already pinned far more tightly - every recorded",
+    "result carries the as_of the cursor produced, and those are compared",
+    "byte-for-byte, so a clock that miscounted would fail the replay before it",
+    "reached the state check."
+  ],
+  "_key_columns": {
+    "identity_verifications": "verification_id",
+    "addon_transactions": "transaction_id",
+    "bill_charges": "charge_id",
+    "line_high_speed_balance": "line_id",
+    "lines": "line_id",
+    "bills": "bill_id"
+  },
+  "identity_verifications": {
+    "ae1d7bf3-792a-4a70-8673-16c535063f29": {
+      "customer_id": "6dcb2039-012b-4723-a256-13bb7b6467c2",
+      "channel": "support",
+      "status": "verified",
+      "matched_factors": ["mobile_number", "full_name", "date_of_birth"],
+      "access_scope": ["lines", "usage", "billing"],
+      "verified_at_display": "2026-08-27T19:31:08-05:00"
+    }
+  },
+  "addon_transactions": {
+    "dfdab773-2580-4908-91cf-99a2b4826547": {
+      "line_id": "ec8443dc-5fa9-4579-8dbe-5eafc61d53ac",
+      "offer_id": "21298486-3eca-4c2e-8d07-2b13c0a33fcc",
+      "billing_cycle_id": "305af2ad-04af-420c-9562-a935b04b855b",
+      "bill_id": "7af62370-8858-4af6-b2cd-2b702fd15586",
+      "status": "active",
+      "data_gigabytes": 5.0,
+      "charged_price": 40.0,
+      "currency": "USD",
+      "effective_at_display": "2026-08-27T19:37:35-05:00",
+      "authorized_by_customer": true
+    }
+  },
+  "bill_charges": {
+    "charge-dfdab773-2580-4908-91cf-99a2b4826547": {
+      "bill_id": "7af62370-8858-4af6-b2cd-2b702fd15586",
+      "kind": "addon",
+      "amount": 40.0,
+      "currency": "USD",
+      "billing_timing": "next_bill"
+    }
+  },
+  "line_high_speed_balance": {
+    "ec8443dc-5fa9-4579-8dbe-5eafc61d53ac": {
+      "billing_cycle_id": "305af2ad-04af-420c-9562-a935b04b855b",
+      "allowance_gigabytes": 15.0,
+      "consumed_gigabytes": 12.8,
+      "added_gigabytes": 5.0,
+      "remaining_gigabytes": 7.2
+    }
+  },
+  "lines": {
+    "ec8443dc-5fa9-4579-8dbe-5eafc61d53ac": {
+      "customer_id": "6dcb2039-012b-4723-a256-13bb7b6467c2",
+      "masked_mobile_number": "***-***-0176",
+      "status": "active",
+      "plan_id": "70102739-54a7-4e7b-b251-5040b1fc2f21",
+      "billing_cycle_id": "305af2ad-04af-420c-9562-a935b04b855b"
+    }
+  },
+  "bills": {
+    "7af62370-8858-4af6-b2cd-2b702fd15586": {
+      "billing_cycle_id": "305af2ad-04af-420c-9562-a935b04b855b",
+      "status": "open",
+      "currency": "USD"
+    }
+  }
+}

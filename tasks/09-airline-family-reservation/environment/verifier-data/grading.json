@@ -1,0 +1,63 @@
+{
+  "_comment": [
+    "How the grading layer treats each table when looking for collateral damage.",
+    "Damage is a row the agent inserted, deleted or modified that the gold path",
+    "left untouched. Rows the gold path also touched are the agent's work area: each",
+    "may end as it started, which expected_final_state.json then judges, or as the",
+    "gold path left it, so an agent that reaches the right outcome by a different",
+    "route is not penalised for the route it took. A third value in one is damage."
+  ],
+  "damage": {
+    "_ignore_reason": [
+      "Reads must be free: an agent may look at anything as often as it likes, so",
+      "nothing a read advances can count as damage. Two of this domain's reads",
+      "persist rows. search_flights files a flight_searches row for any route and",
+      "date pair the cache has not seen, so an agent that checks a second airport",
+      "or a second pair of dates leaves searches behind. calculate_itinerary_price",
+      "inserts a fare_quotes row the first time an itinerary is priced and rewrites",
+      "the computed amounts and last_priced_at on every later call, so repricing -",
+      "which the desk does whenever the party, the bags or the insurance answer",
+      "changes - modifies a row that already existed. Quoting a price is not a",
+      "commitment and must not be damage; what the gold quote ends up holding is",
+      "still asserted, field by field, in expected_final_state.json. Those",
+      "assertions cover only fields that are functions of the itinerary rather than",
+      "of the call - the component amounts, the plan, the currency, and an",
+      "expires_at taken from the frozen scenario clock. last_priced_at, the one",
+      "field that records when pricing happened, is deliberately left unasserted.",
+      "check_read_freedom.sh reprices the gold itinerary three extra times after",
+      "the oracle and requires the reward to stay 1.0, so this is tested rather",
+      "than merely reasoned about.",
+      "id_allocator moves when a search, a failed verification or a transfer takes",
+      "an identifier, but the row that allocation produced is caught on its own",
+      "account. scenario is the immutable clock. tool_call_log is bookkeeping and",
+      "is not part of the snapshot at all."
+    ],
+    "ignore_tables": [
+      "scenario",
+      "id_allocator",
+      "tool_call_log",
+      "flight_searches",
+      "fare_quotes"
+    ],
+    "_append_reason": [
+      "identity_verifications is append-only and a second attempt genuinely leaves",
+      "a second row: an agent that mistypes a date of birth, or that verifies the",
+      "caller before pricing rather than after, files an attempt that cleared",
+      "nobody under its own allocated identifier. Re-verifying the same caller",
+      "resolves back to the one record, which the gold path already touched, so",
+      "tolerating inserts here costs nothing and only forgives a different route",
+      "to the same cleared access. Modifying a verification row that already",
+      "existed is still damage - that is how a cleared verification gets revoked -",
+      "and so is any new row in a table not listed here.",
+      "Nothing else is tolerated, deliberately. A reservation, a traveler, a tender",
+      "allocation, a certificate redemption or a mobility-device entry that nobody",
+      "asked for is a real consequence: it takes a seat out of inventory, spends a",
+      "record locator from the pool, draws down certificate value and charges a",
+      "card. specialist_transfers is absent for the same reason - handing the call",
+      "to a specialist is an action with a cost, not a free retry."
+    ],
+    "append_tolerated": [
+      "identity_verifications"
+    ]
+  }
+}

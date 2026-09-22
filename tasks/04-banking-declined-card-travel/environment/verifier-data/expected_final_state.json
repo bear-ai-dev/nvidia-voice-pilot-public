@@ -1,0 +1,99 @@
+{
+  "_comment": [
+    "State the recorded conversation must leave behind. Asserted as a subset:",
+    "every field here must be present with this value, and the database may know",
+    "more. Only facts the recorded tool results revealed, or that follow with no",
+    "further assumption from two of them, are asserted.",
+    "",
+    "_key_columns declares how each table is addressed, so a row is identified by",
+    "a stable business key rather than by position in the snapshot.",
+    "",
+    "The available credit of 72 is one of the derived assertions: the recorded",
+    "account read discloses 912, and the recorded read after the review is lifted",
+    "discloses an approved 840 hold, so 72 is what has to be left. The same",
+    "reasoning fixes which of the two 840 attempts carries the re-presentation and",
+    "which does not: only one of them fits inside 912, and the recorded read shows",
+    "exactly one authorization.",
+    "",
+    "The Logan authorization is asserted settled because the recorded read after",
+    "the review is lifted no longer reports it as outstanding, which is what",
+    "happens to a hold the review was sitting on once its activity is confirmed."
+  ],
+  "_key_columns": {
+    "identity_verifications": "verification_id",
+    "card_accounts": "card_id",
+    "transactions": "transaction_id",
+    "card_restrictions": "restriction_id",
+    "travel_notices": "notice_id"
+  },
+  "identity_verifications": {
+    "308f6850-19d3-4667-9f16-97bc37d46902": {
+      "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
+      "status": "verified",
+      "required_methods": ["caller_phone", "billing_zip", "card_last4"],
+      "matched_methods": ["caller_phone", "billing_zip", "card_last4"],
+      "time_asserted": false
+    }
+  },
+  "card_accounts": {
+    "card-colin-6148": {
+      "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
+      "card_last4": "6148",
+      "status": "active",
+      "reported_lost": false,
+      "payment_status": "current",
+      "available_credit": 72.0,
+      "available_credit_currency": "USD"
+    }
+  },
+  "transactions": {
+    "5af2030f-3fad-402f-a1de-23501596194a": {
+      "card_id": "card-colin-6148",
+      "kind": "decline",
+      "amount": 840.0,
+      "reason": "travel_review",
+      "represented_as": "f96da295-2259-4311-b31d-661ab6053092"
+    },
+    "3065d723-2455-4a43-9d59-91c8dbb11da0": {
+      "card_id": "card-colin-6148",
+      "kind": "decline",
+      "amount": 840.0,
+      "reason": "prior_review_open",
+      "represented_as": null
+    },
+    "131fc14b-fc2e-4ec9-ad07-248d01f7d54b": {
+      "card_id": "card-colin-6148",
+      "kind": "authorization",
+      "amount": 32.0,
+      "status": "approved",
+      "settlement_state": "settled"
+    },
+    "f96da295-2259-4311-b31d-661ab6053092": {
+      "card_id": "card-colin-6148",
+      "kind": "authorization",
+      "merchant": "Harbor View Hotel",
+      "amount": 840.0,
+      "currency": "USD",
+      "status": "approved",
+      "settlement_state": "pending"
+    }
+  },
+  "card_restrictions": {
+    "a4e9ecb1-a664-45d0-b3f4-cfe80b54ea8f": {
+      "card_id": "card-colin-6148",
+      "kind": "travel_review",
+      "status": "removed",
+      "customer_resolvable": true,
+      "resolved_at": "2026-08-28T14:30:00-04:00"
+    }
+  },
+  "travel_notices": {
+    "31d46fb6-e721-4a9c-b54d-6c631dbe9686": {
+      "card_id": "card-colin-6148",
+      "destinations": ["Portland, Maine"],
+      "return_date": "2026-08-30",
+      "authorization_guaranteed": false,
+      "status": "created"
+    }
+  }
+}

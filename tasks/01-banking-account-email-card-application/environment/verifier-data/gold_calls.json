@@ -1,0 +1,326 @@
+{
+  "conversation_id": "banking-account-email-card-application",
+  "domain": "banking",
+  "scenario_time": "2026-08-27T10:45:00-04:00",
+  "calls": [
+    {
+      "call_id": "bc-001",
+      "name": "lookup_customer",
+      "arguments": {
+        "account_id": "SF204771"
+      },
+      "expected_output": {
+        "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+        "full_name": "Johnny Monroe",
+        "match": "unique",
+        "required_verification_methods": [
+          "billing_zip",
+          "mobile_last4"
+        ],
+        "trusted_channels": [
+          {
+            "channel_id": "279561c9-f2ce-4402-a23a-2e19316678b3",
+            "type": "sms",
+            "masked_destination": "***-***-1251"
+          }
+        ],
+        "account_id": "SF204771"
+      },
+      "state_effect": "read_only",
+      "source_label": "find the customer by account ID",
+      "source_event_index": 8
+    },
+    {
+      "call_id": "bc-002",
+      "name": "get_current_time",
+      "arguments": {},
+      "expected_output": {
+        "status": "available",
+        "timestamp": "2026-08-27T10:46:31-04:00",
+        "timezone": "America/New_York"
+      },
+      "state_effect": "read_only",
+      "source_label": "retrieve the current time for verification records",
+      "source_event_index": 13
+    },
+    {
+      "call_id": "bc-003",
+      "name": "verify_customer_identity",
+      "arguments": {
+        "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+        "billing_zip": "19447",
+        "mobile_last4": "1251"
+      },
+      "expected_output": {
+        "verification_id": "613f42b7-69cd-4767-bf41-9a9db63ff731",
+        "status": "verified",
+        "matched_methods": [
+          "billing_zip",
+          "mobile_last4"
+        ]
+      },
+      "state_effect": "identity_verified",
+      "source_label": "validate the supplied identity factors",
+      "source_event_index": 15
+    },
+    {
+      "call_id": "bc-004",
+      "name": "start_trusted_channel_confirmation",
+      "arguments": {
+        "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+        "purpose": "email_change",
+        "channel": "sms",
+        "verification_id": "613f42b7-69cd-4767-bf41-9a9db63ff731"
+      },
+      "expected_output": {
+        "confirmation_id": "a241c1d7-d6c0-4489-9406-65a28d3bca66",
+        "status": "sent",
+        "masked_destination": "***-***-1251"
+      },
+      "state_effect": "confirmation_challenge_sent",
+      "source_label": "send a trusted-channel confirmation challenge before the agent says it was sent",
+      "source_event_index": 23
+    },
+    {
+      "call_id": "bc-004b",
+      "name": "get_trusted_channel_confirmation",
+      "arguments": {
+        "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+        "confirmation_id": "a241c1d7-d6c0-4489-9406-65a28d3bca66"
+      },
+      "expected_output": {
+        "confirmation_id": "a241c1d7-d6c0-4489-9406-65a28d3bca66",
+        "status": "verified",
+        "verified_at": "2026-08-27T10:48:39-04:00"
+      },
+      "state_effect": "trusted_channel_confirmed",
+      "source_label": "read the trusted-channel state without placing the spoken secret in tool arguments",
+      "source_event_index": 28
+    },
+    {
+      "call_id": "bc-005",
+      "name": "update_customer_email",
+      "arguments": {
+        "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+        "new_email": "johnny.monroe.travel@outlook.com",
+        "verification_id": "613f42b7-69cd-4767-bf41-9a9db63ff731",
+        "confirmation_id": "a241c1d7-d6c0-4489-9406-65a28d3bca66"
+      },
+      "expected_output": {
+        "status": "updated",
+        "primary_email": "johnny.monroe.travel@outlook.com",
+        "notification_email": "johnny.monroe.travel@outlook.com",
+        "login_identifier_changed": false,
+        "transition_security_notices": [
+          "old_email",
+          "new_email"
+        ]
+      },
+      "state_effect": "customer_email_updated",
+      "source_label": "change the customer email address after backend confirmation",
+      "source_event_index": 30
+    },
+    {
+      "call_id": "bc-006",
+      "name": "search_knowledge_base",
+      "arguments": {
+        "query": "travel cards with no foreign transaction fee, lounge access, and annual fee below $700"
+      },
+      "expected_output": {
+        "record_id": "63b6eab2-5559-4d42-a781-47c7c0413493",
+        "effective_at": "2026-07-01",
+        "matches": [
+          {
+            "product_id": "c6c675e6-0faf-4004-a5de-881eaaa805b7",
+            "product": "Summit Journey",
+            "annual_fee": 95,
+            "annual_fee_currency": "USD",
+            "foreign_transaction_fee": false,
+            "lounge_membership": false
+          },
+          {
+            "product_id": "acda644c-1054-410a-98a1-39fad9fe411e",
+            "product": "Summit Reserve",
+            "annual_fee": 395,
+            "annual_fee_currency": "USD",
+            "foreign_transaction_fee": false,
+            "lounge_membership": true
+          }
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "search current card-product knowledge",
+      "source_event_index": 37
+    },
+    {
+      "call_id": "bc-007",
+      "name": "search_knowledge_base",
+      "arguments": {
+        "query": "Does Summit Reserve include a free checked bag?"
+      },
+      "expected_output": {
+        "record_id": "0d57772d-88ff-474b-8c24-5476b7dc1921",
+        "effective_at": "2026-07-01",
+        "airline_incidental_credit": true,
+        "automatic_free_checked_bag": false,
+        "airline_specific_rules_apply": true
+      },
+      "state_effect": "read_only",
+      "source_label": "search current card-benefit knowledge",
+      "source_event_index": 42
+    },
+    {
+      "call_id": "bc-008",
+      "name": "search_knowledge_base",
+      "arguments": {
+        "query": "Current welcome offers for Summit Journey and Summit Reserve"
+      },
+      "expected_output": {
+        "record_id": "88b888dd-e6b1-4d27-927c-22d21bdaa700",
+        "effective_at": "2026-07-01",
+        "offers": [
+          {
+            "product_id": "c6c675e6-0faf-4004-a5de-881eaaa805b7",
+            "product": "Summit Journey",
+            "points": 40000,
+            "spend": 3000,
+            "spend_currency": "USD",
+            "days": 90
+          },
+          {
+            "product_id": "acda644c-1054-410a-98a1-39fad9fe411e",
+            "product": "Summit Reserve",
+            "points": 70000,
+            "spend": 5000,
+            "spend_currency": "USD",
+            "days": 90
+          }
+        ],
+        "offers_can_change": true,
+        "approval_guaranteed": false
+      },
+      "state_effect": "read_only",
+      "source_label": "search current welcome-offer knowledge",
+      "source_event_index": 47
+    },
+    {
+      "call_id": "bc-009",
+      "name": "create_secure_self_service_session",
+      "arguments": {
+        "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+        "workflow": "card_application",
+        "resource_id": "c6c675e6-0faf-4004-a5de-881eaaa805b7",
+        "delivery_channels": [
+          "secure_message",
+          "email_notification"
+        ]
+      },
+      "expected_output": {
+        "session_id": "f4136da6-25dc-464b-b50c-8f02a5cc1ca3",
+        "status": "issued",
+        "submitted": false,
+        "credit_pull_authorized": false,
+        "save_and_continue": true,
+        "deliveries": [
+          {
+            "channel": "secure_message",
+            "status": "delivered"
+          },
+          {
+            "channel": "email_notification",
+            "status": "delivered",
+            "masked_destination": "j***@outlook.com"
+          }
+        ]
+      },
+      "state_effect": "self_service_session_issued",
+      "source_label": "provide the secure card-application tool",
+      "source_event_index": 54
+    },
+    {
+      "call_id": "bc-010",
+      "name": "search_knowledge_base",
+      "arguments": {
+        "query": "What information appears in an adverse-action decision notice and can phone agents override underwriting?"
+      },
+      "expected_output": {
+        "record_id": "204dbd70-136e-4b56-9036-cf148e95a870",
+        "effective_at": "2026-07-01",
+        "decision_notice": {
+          "explains_factors": true,
+          "may_include_reconsideration_contact": true
+        },
+        "phone_agent_can_override_underwriting": false
+      },
+      "state_effect": "read_only",
+      "source_label": "retrieve decision-notice and underwriting guidance",
+      "source_event_index": 60
+    },
+    {
+      "call_id": "bc-011",
+      "name": "search_knowledge_base",
+      "arguments": {
+        "query": "How should an applicant interpret the monthly housing payment field?"
+      },
+      "expected_output": {
+        "record_id": "4a2df74d-36c6-4669-8ad0-c71d09611681",
+        "effective_at": "2026-07-01",
+        "guidance": "Enter the amount the applicant is personally responsible for each month and follow the field instructions."
+      },
+      "state_effect": "read_only",
+      "source_label": "retrieve application housing-payment field guidance",
+      "source_event_index": 68
+    },
+    {
+      "call_id": "bc-012",
+      "name": "search_knowledge_base",
+      "arguments": {
+        "query": "How should salary and freelance income be reported in the card application?"
+      },
+      "expected_output": {
+        "record_id": "2adb7239-a280-4c4f-8e5f-1755aa55c925",
+        "effective_at": "2026-07-01",
+        "guidance": "Report income the applicant can reasonably access and verify, consistent with the application disclosure."
+      },
+      "state_effect": "read_only",
+      "source_label": "retrieve application income-field guidance",
+      "source_event_index": 72
+    },
+    {
+      "call_id": "bc-013",
+      "name": "get_secure_self_service_session",
+      "arguments": {
+        "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+        "session_id": "f4136da6-25dc-464b-b50c-8f02a5cc1ca3"
+      },
+      "expected_output": {
+        "session_id": "f4136da6-25dc-464b-b50c-8f02a5cc1ca3",
+        "status": "open_not_submitted",
+        "submitted": false,
+        "resume_supported": true,
+        "save_and_continue": true,
+        "credit_pull_authorized": false
+      },
+      "state_effect": "read_only",
+      "source_label": "review whether the application session can be saved and resumed",
+      "source_event_index": 76
+    },
+    {
+      "call_id": "bc-014",
+      "name": "search_knowledge_base",
+      "arguments": {
+        "query": "After a profile email change, what happens to the login identifier and future notice routing?"
+      },
+      "expected_output": {
+        "record_id": "f603e573-6b4f-4f50-a390-b18c917712a9",
+        "effective_at": "2026-07-01",
+        "login_identifier_may_remain_same": true,
+        "future_notices_use_primary_email": true,
+        "unexpected_prompt_guidance": "Use the secure banking site rather than an unexpected message link."
+      },
+      "state_effect": "read_only",
+      "source_label": "retrieve login-identifier and notification-routing guidance",
+      "source_event_index": 85
+    }
+  ]
+}

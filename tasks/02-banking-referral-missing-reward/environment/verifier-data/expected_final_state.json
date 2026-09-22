@@ -1,0 +1,92 @@
+{
+  "_comment": [
+    "State the recorded conversation must leave behind. Asserted as a subset:",
+    "every field here must be present with this value, and the database may know",
+    "more. Only fields the recorded tool results revealed are asserted.",
+    "",
+    "_key_columns declares how each table is addressed, so a row is identified by",
+    "a stable business key rather than by position in the snapshot.",
+    "",
+    "The three mutations this conversation makes are a verification record scoped",
+    "to the open referral case, a referral-status tracker session issued against",
+    "ce7d58b0-b5fc-42cb-a6e0-7a57929e1205, and an email notification telling the customer a secure message is",
+    "waiting. The referral itself is asserted unchanged: the reward has not",
+    "posted, the agent cannot make it post, and a run that quietly advanced the",
+    "qualification stage to close the call would fail here.",
+    "",
+    "self_service_sessions.status is asserted as either value on purpose. Opening",
+    "the session happens in online banking, which no tool can observe, so the",
+    "handler writes 'issued' -> 'open_not_submitted' the first time the session is",
+    "read. Nothing requires that read: an agent that confirms the tracker it just",
+    "issued and one that does not have both handled the call correctly, and pinning",
+    "either value would make this assertion depend on the route after all."
+  ],
+  "_key_columns": {
+    "identity_verifications": "verification_id",
+    "self_service_sessions": "session_id",
+    "notifications": "notification_id",
+    "referrals": "referral_id"
+  },
+  "identity_verifications": {
+    "05f09e63-bd3c-4a75-813f-5429ac6d685c": {
+      "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+      "status": "verified",
+      "required_methods": [
+        "billing_zip",
+        "birth_month_day"
+      ],
+      "matched_methods": [
+        "billing_zip",
+        "birth_month_day"
+      ],
+      "verified_at": "2026-08-28T09:09:00-04:00",
+      "time_asserted": true
+    }
+  },
+  "self_service_sessions": {
+    "b549b0e6-fced-4596-8794-db42a62476a6": {
+      "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+      "workflow": "referral_status",
+      "resource_id": "ce7d58b0-b5fc-42cb-a6e0-7a57929e1205",
+      "status": {
+        "_any_of": [
+          "issued",
+          "open_not_submitted"
+        ]
+      },
+      "submitted": false,
+      "resume_supported": true,
+      "visible_stages": [
+        "invite",
+        "approval",
+        "qualification",
+        "reward_posting"
+      ],
+      "claim_tracked": false,
+      "save_and_continue": null,
+      "credit_pull_authorized": null
+    }
+  },
+  "notifications": {
+    "4f70ccca-a2a3-4b99-ae66-cfb9d0e975c8": {
+      "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+      "related_resource_id": "b549b0e6-fced-4596-8794-db42a62476a6",
+      "channel": "email",
+      "template": "secure_message_waiting",
+      "status": "sent",
+      "masked_destination": "d***@gmail.com",
+      "contains_working_secure_link": false
+    }
+  },
+  "referrals": {
+    "ce7d58b0-b5fc-42cb-a6e0-7a57929e1205": {
+      "referring_customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+      "invited_at_display": "August 2",
+      "invited_channel": "email",
+      "invited_masked": "a-brooks\u2026",
+      "application_status": "approved",
+      "qualification_status": "purchase_pending",
+      "offer": "$100 statement credit"
+    }
+  }
+}

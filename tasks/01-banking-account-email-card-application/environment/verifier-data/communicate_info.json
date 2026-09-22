@@ -1,0 +1,129 @@
+{
+  "_comment": [
+    "Facts a correct handling of this call has to reach the caller. End-state",
+    "checking cannot see any of them: the bank's records are byte-identical",
+    "whether or not the agent quoted the annual fee, answered the checked-bag",
+    "question honestly, or admitted that no phone agent can promise approval, and",
+    "this call is handled badly if those go unsaid.",
+    "",
+    "Each entry is satisfied when any one of its surface forms appears in the",
+    "agent's utterances, matched case-insensitively with whitespace collapsed.",
+    "",
+    "A form that is a single number or a single word is matched on boundaries; a",
+    "form of two or more words is matched as a plain substring. That is why bare",
+    "figures like '15' are listed: '15' will find \"15 USD\", \"15.00 dollars\" and",
+    "\"a total of 15\", but will not match '$150', so an agent that quotes the wrong",
+    "amount gets no credit. Bare words are fenced for the same reason - 'two' must",
+    "not be found inside 'network'. Anchors are only ever the whole value: 'five'",
+    "is not listed for 95, since \"five business days\" would then satisfy a fee.",
+    "The alternatives exist so an agent is not failed for saying 'ninety-five",
+    "dollars' instead of '$95'. Every form is a distinctive multi-word phrase or",
+    "a specific figure; nothing here would match an arbitrary transcript.",
+    "",
+    "Requirements already asserted against the database are deliberately not",
+    "repeated. The new address landing on both the primary and the notification",
+    "field, the verification record, the confirmed trusted channel and the",
+    "application session reaching open_not_submitted are all checked as state, so",
+    "restating them here would only double-count them."
+  ],
+  "required": [
+    {
+      "id": "annual_fee_of_chosen_card",
+      "why": "the caller is applying for Summit Journey and the annual fee is the recurring charge he takes on by submitting; it is published in the product catalog and he has no other way to learn it on this call",
+      "any_of": [
+        "$95",
+        "95 dollars",
+        "95-dollar",
+        "95 dollar",
+        "ninety-five dollars",
+        "ninety five dollars",
+        "95"
+      ]
+    },
+    {
+      "id": "welcome_offer_points",
+      "why": "the welcome bonus is the reason he is choosing between the two cards, and the size of it is a published term he is entitled to hear rather than discover after applying",
+      "any_of": [
+        "40,000 points",
+        "40000 points",
+        "40,000 bonus points",
+        "forty thousand points",
+        "40k points"
+      ]
+    },
+    {
+      "id": "welcome_offer_spend_condition",
+      "why": "the bonus is conditional on a spend threshold inside a fixed window; quoting the reward without the condition he has to meet to earn it misrepresents the offer",
+      "any_of": [
+        "$3,000",
+        "$3000",
+        "3,000 dollars",
+        "3000 dollars",
+        "three thousand dollars",
+        "3,000 in eligible purchases",
+        "3,000 in purchases",
+        "3,000",
+        "3000"
+      ]
+    },
+    {
+      "id": "no_automatic_checked_bag",
+      "why": "he asked directly whether Summit Reserve includes a free checked bag and the catalog says it does not; letting him believe otherwise would have him pick a $395 card for a benefit it does not carry",
+      "any_of": [
+        "not automatically provide a free checked bag",
+        "does not automatically provide a free checked bag",
+        "doesn't automatically provide a free checked bag",
+        "not automatically include a free checked bag",
+        "does not automatically include a free checked bag",
+        "doesn't automatically include a free checked bag",
+        "no automatic free checked bag",
+        "not an automatic free checked bag",
+        "free checked bag is not automatic",
+        "free checked bag isn't automatic",
+        "no guaranteed free checked bag",
+        "free checked bag is not guaranteed",
+        "doesn't come with a free checked bag",
+        "does not come with a free checked bag"
+      ]
+    },
+    {
+      "id": "approval_not_guaranteed",
+      "why": "he is being handed an application and is entitled to know that submitting it is not the same as being approved, and that nobody on the phone can decide or move the underwriting outcome",
+      "any_of": [
+        "approval is not guaranteed",
+        "approval isn't guaranteed",
+        "approval is never guaranteed",
+        "cannot promise approval",
+        "can't promise approval",
+        "cannot guarantee approval",
+        "can't guarantee approval",
+        "cannot guarantee you will be approved",
+        "cannot override the underwriting",
+        "cannot override underwriting",
+        "can't override the underwriting",
+        "can't override underwriting",
+        "no phone agent can override"
+      ]
+    },
+    {
+      "id": "customer_completes_the_application",
+      "why": "the application is his to fill in and the agent will not touch his income or housing figures; if he expects the agent to complete it for him he waits for something that is never going to happen",
+      "any_of": [
+        "cannot choose or alter the financial information",
+        "can't choose or alter the financial information",
+        "cannot fill in your financial information",
+        "can't fill in your financial information",
+        "cannot enter your financial information",
+        "can't enter your financial information",
+        "cannot complete the application for you",
+        "can't complete the application for you",
+        "cannot fill out the application for you",
+        "can't fill out the application for you",
+        "the application is completed by you",
+        "application is yours to complete",
+        "you complete the application yourself",
+        "you fill the application in yourself"
+      ]
+    }
+  ]
+}

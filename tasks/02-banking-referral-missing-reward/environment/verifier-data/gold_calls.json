@@ -1,0 +1,199 @@
+{
+  "conversation_id": "banking-referral-missing-reward",
+  "domain": "banking",
+  "scenario_time": "2026-08-28T09:08:03-04:00",
+  "calls": [
+    {
+      "call_id": "br-001",
+      "name": "lookup_customer",
+      "arguments": {
+        "email": "daniel.brooks17@gmail.com"
+      },
+      "expected_output": {
+        "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+        "match": "unique",
+        "required_verification_methods": [
+          "billing_zip",
+          "birth_month_day"
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "find the customer by email",
+      "source_event_index": 8
+    },
+    {
+      "call_id": "br-002",
+      "name": "get_current_time",
+      "arguments": {},
+      "expected_output": {
+        "status": "available",
+        "timestamp": "2026-08-28T09:09:00-04:00",
+        "timezone": "America/New_York"
+      },
+      "state_effect": "read_only",
+      "source_label": "retrieve the current time for verification records",
+      "source_event_index": 10
+    },
+    {
+      "call_id": "br-003",
+      "name": "verify_customer_identity",
+      "arguments": {
+        "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+        "billing_zip": "27609",
+        "birth_month_day": "October 12",
+        "verified_at": "2026-08-28T09:09:00-04:00"
+      },
+      "expected_output": {
+        "verification_id": "05f09e63-bd3c-4a75-813f-5429ac6d685c",
+        "status": "verified",
+        "matched_methods": [
+          "billing_zip",
+          "birth_month_day"
+        ],
+        "verified_at": "2026-08-28T09:09:00-04:00"
+      },
+      "state_effect": "identity_verified",
+      "source_label": "validate the supplied identity factors",
+      "source_event_index": 20
+    },
+    {
+      "call_id": "br-004",
+      "name": "get_referrals",
+      "arguments": {
+        "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d"
+      },
+      "expected_output": {
+        "referrals": [
+          {
+            "referral_id": "ce7d58b0-b5fc-42cb-a6e0-7a57929e1205",
+            "invited_at": "August 2",
+            "invited_contact": {
+              "channel": "email",
+              "masked": "a-brooks…"
+            },
+            "application_status": "approved",
+            "qualification_status": "purchase_pending",
+            "offer": "$100 statement credit",
+            "reference_code": "RF8241"
+          }
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "retrieve referrals created by the customer",
+      "source_event_index": 25
+    },
+    {
+      "call_id": "br-005",
+      "name": "search_knowledge_base",
+      "arguments": {
+        "query": "referral qualifying purchase rules and reward posting time"
+      },
+      "expected_output": {
+        "record_id": "10b2dc73-a682-4061-b3e6-96e0b2ea4eab",
+        "effective_at": "2026-07-01",
+        "qualifying_purchase_window_days": 90,
+        "posting_window": "up to two billing cycles after qualifying purchase posts",
+        "excluded": [
+          "cash advances",
+          "balance transfers",
+          "fees",
+          "returned purchases"
+        ],
+        "ordinary_retail_purchase": "eligible_if_posted_in_window_and_not_returned",
+        "purchase_pending_meanings": [
+          "qualifying purchase has not posted",
+          "referral match is processing",
+          "reward has not reached posting stage"
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "review referral qualification and reward-posting terms",
+      "source_event_index": 32
+    },
+    {
+      "call_id": "br-006",
+      "name": "search_knowledge_base",
+      "arguments": {
+        "query": "offer amount and deadline for referral RF8241"
+      },
+      "expected_output": {
+        "record_id": "dab2da6a-4343-4ea3-9b0d-df98a0c96360",
+        "effective_at": "2026-08-02",
+        "offer": "$100 statement credit",
+        "deadline_status": "not_passed",
+        "exact_deadline": "available_in_tracker"
+      },
+      "state_effect": "read_only",
+      "source_label": "confirm the referral offer and deadline",
+      "source_event_index": 39
+    },
+    {
+      "call_id": "br-007",
+      "name": "create_secure_self_service_session",
+      "arguments": {
+        "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+        "workflow": "referral_status",
+        "resource_id": "ce7d58b0-b5fc-42cb-a6e0-7a57929e1205",
+        "delivery_channels": [
+          "secure_message"
+        ]
+      },
+      "expected_output": {
+        "session_id": "b549b0e6-fced-4596-8794-db42a62476a6",
+        "status": "issued",
+        "submitted": false,
+        "visible_stages": [
+          "invite",
+          "approval",
+          "qualification",
+          "reward_posting"
+        ],
+        "deliveries": [
+          {
+            "channel": "secure_message",
+            "status": "delivered"
+          }
+        ]
+      },
+      "state_effect": "self_service_session_issued",
+      "source_label": "send the referral-status self-service tracker",
+      "source_event_index": 45
+    },
+    {
+      "call_id": "br-008",
+      "name": "send_secure_notification",
+      "arguments": {
+        "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+        "related_resource_id": "b549b0e6-fced-4596-8794-db42a62476a6",
+        "channel": "email",
+        "template": "secure_message_waiting"
+      },
+      "expected_output": {
+        "notification_id": "4f70ccca-a2a3-4b99-ae66-cfb9d0e975c8",
+        "status": "sent",
+        "masked_destination": "d***@gmail.com",
+        "contains_working_secure_link": false
+      },
+      "state_effect": "notification_sent",
+      "source_label": "customer asks for email notification; agent says Done",
+      "source_event_index": 54
+    },
+    {
+      "call_id": "br-009",
+      "name": "search_knowledge_base",
+      "arguments": {
+        "query": "Referral matching when invitation and application emails differ; duplicate application guidance"
+      },
+      "expected_output": {
+        "record_id": "888435a5-5535-4cf4-acf8-be056a7fc41e",
+        "effective_at": "2026-07-01",
+        "email_mismatch_effect": "may delay automated matching",
+        "approved_status_meaning": "application is associated to the referral",
+        "reapplication_guidance": "do not reapply; use the referred customer's secure account for card questions"
+      },
+      "state_effect": "read_only",
+      "source_label": "retrieve email-mismatch and duplicate-application guidance",
+      "source_event_index": 62
+    }
+  ]
+}

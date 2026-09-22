@@ -1,0 +1,216 @@
+{
+  "conversation_id": "retail-refund-bank-fee",
+  "domain": "retail",
+  "scenario_time": "2026-08-27T13:05:00-04:00",
+  "calls": [
+    {
+      "call_id": "rr-001",
+      "name": "get_order",
+      "arguments": {
+        "order_reference": "ending-5624",
+        "customer_email": "teddy.torrez@harbormail.com",
+        "include": [
+          "items",
+          "payments",
+          "refunds"
+        ]
+      },
+      "expected_output": {
+        "order_reference": "ending-5624",
+        "customer": {
+          "display_name": "Teddy Torrez",
+          "verified_email": "t***@harbormail.com"
+        },
+        "items": [
+          {
+            "item_reference": "standing-desk-converter-black",
+            "name": "black standing desk converter",
+            "total_after_tax": 186.42,
+            "currency": "USD"
+          }
+        ],
+        "payments": [
+          {
+            "type": "gift_card",
+            "amount": 40,
+            "currency": "USD"
+          },
+          {
+            "type": "debit",
+            "amount": 146.42,
+            "currency": "USD"
+          }
+        ],
+        "refunds": [
+          {
+            "return_reference": "ending-9182",
+            "return_status": "complete",
+            "accepted_at": "Eastwood store",
+            "accepted_age_days": 9,
+            "inventory_disposition": "restocked"
+          }
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "open the order record",
+      "source_event_index": 10
+    },
+    {
+      "call_id": "rr-002",
+      "name": "get_order",
+      "arguments": {
+        "order_reference": "ending-5624",
+        "customer_email": "teddy.torrez@harbormail.com",
+        "include": [
+          "payments",
+          "refunds"
+        ]
+      },
+      "expected_output": {
+        "order_reference": "ending-5624",
+        "payments": [
+          {
+            "type": "gift_card",
+            "amount": 40,
+            "currency": "USD"
+          },
+          {
+            "type": "debit",
+            "amount": 146.42,
+            "currency": "USD",
+            "original_card_last4": "2047"
+          }
+        ],
+        "refunds": [
+          {
+            "tender_type": "gift_card",
+            "amount": 40,
+            "currency": "USD",
+            "status": "issued_available"
+          },
+          {
+            "tender_type": "debit",
+            "amount": 146.42,
+            "currency": "USD",
+            "status": "submitted_no_settlement_confirmation",
+            "original_card_last4": "2047",
+            "initiation_source": "store_register"
+          }
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "review the refund payment details",
+      "source_event_index": 20
+    },
+    {
+      "call_id": "rr-003",
+      "name": "get_order",
+      "arguments": {
+        "order_reference": "ending-5624",
+        "customer_email": "teddy.torrez@harbormail.com",
+        "include": [
+          "payments",
+          "refunds"
+        ]
+      },
+      "expected_output": {
+        "order_reference": "ending-5624",
+        "refunds": [
+          {
+            "tender_type": "gift_card",
+            "amount": 40,
+            "available_balance": 40,
+            "currency": "USD",
+            "status": "active",
+            "used": false,
+            "delivery": "digital_gift_card_number_in_email"
+          }
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "check the refunded gift-card balance",
+      "source_event_index": 43
+    },
+    {
+      "call_id": "rr-004",
+      "name": "open_refund_trace",
+      "arguments": {
+        "order_reference": "ending-5624",
+        "return_reference": "ending-9182",
+        "payment_reference": "card-ending-2047",
+        "amount": 146.42
+      },
+      "expected_output": {
+        "case_id": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+        "status": "open",
+        "review_window_business_days": [
+          3,
+          5
+        ],
+        "duplicate_refund_blocked": true,
+        "return_evidence_attached": true,
+        "case_number": "WST735204"
+      },
+      "state_effect": "refund_trace_opened",
+      "source_label": "open a refund payment trace",
+      "source_event_index": 48
+    },
+    {
+      "call_id": "rr-005",
+      "name": "update_case",
+      "arguments": {
+        "case_id": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+        "note": "Customer reports card ending 2047 was replaced by card ending 8163 and believes both map to the same checking account; external bank-account status is not verified by Westline."
+      },
+      "expected_output": {
+        "status": "note_added",
+        "visible_to_next_reviewer": true
+      },
+      "state_effect": "case_note_added",
+      "source_label": "record the customer's card-replacement report without asserting external bank state",
+      "source_event_index": 50
+    },
+    {
+      "call_id": "rr-006",
+      "name": "send_case_notification",
+      "arguments": {
+        "case_id": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+        "channel": "email",
+        "destination_source": "order_contact",
+        "template": "refund_trace_confirmation"
+      },
+      "expected_output": {
+        "notification_id": "43e020c5-a9da-4175-aec7-5989435d95a6",
+        "status": "sent",
+        "masked_destination": "t***@harbormail.com",
+        "case_id": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+        "included_fields": [
+          "amount",
+          "masked_original_payment_reference",
+          "review_window",
+          "case_number"
+        ],
+        "case_number": "WST735204"
+      },
+      "state_effect": "notification_sent",
+      "source_label": "send the requested refund-trace confirmation email",
+      "source_event_index": 55
+    },
+    {
+      "call_id": "rr-007",
+      "name": "update_case",
+      "arguments": {
+        "case_id": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+        "note": "Customer reports an overdraft fee while expecting the refund; supporting statement may be reviewed after trace outcome."
+      },
+      "expected_output": {
+        "status": "note_added",
+        "visible_to_next_reviewer": true,
+        "fee_reimbursement_approved": false
+      },
+      "state_effect": "case_note_added",
+      "source_label": "add the bank-fee note to the case",
+      "source_event_index": 61
+    }
+  ]
+}

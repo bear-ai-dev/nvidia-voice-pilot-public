@@ -1,0 +1,91 @@
+{
+  "_comment": [
+    "State the recorded conversation must leave behind. Asserted as a subset:",
+    "every field here must be present with this value, and the database may know",
+    "more. Only fields the recorded tool results revealed are asserted.",
+    "",
+    "_key_columns declares how each table is addressed, so a row is identified by",
+    "a stable business key rather than by position in the snapshot.",
+    "",
+    "The four mutations this conversation makes are a verification record scoped",
+    "to the open email-change case, a trusted-channel confirmation that reached",
+    "'verified', the profile's new address on both the primary and the",
+    "notification field, and a card-application session that was issued and then",
+    "read as opened. Nothing else about the estate may have moved.",
+    "",
+    "self_service_sessions.status is asserted as either value on purpose. Opening",
+    "the session happens in online banking, which no tool can observe, so the",
+    "handler writes 'issued' -> 'open_not_submitted' the first time the session is",
+    "read. Nothing requires that read: an agent that confirms the tracker it just",
+    "issued and one that does not have both handled the call correctly, and pinning",
+    "either value would make this assertion depend on the route after all."
+  ],
+  "_key_columns": {
+    "customers": "customer_id",
+    "identity_verifications": "verification_id",
+    "channel_confirmations": "confirmation_id",
+    "self_service_sessions": "session_id"
+  },
+  "_forced_read_fields": {
+    "channel_confirmations.status": "update_customer_email refuses unless the confirmation is already verified, and only get_trusted_channel_confirmation moves it there, so every route that successfully changes the address has necessarily polled. The fixed value is a precondition of the email change rather than a record of an optional look, which is why it is asserted exactly while the same column is read-volatile for the damage check: a stranger's confirmation may be read freely, but this customer's must be verified.",
+    "channel_confirmations.verified_at": "Stamped by the same forced read, from the channel's own recorded completion time or the frozen scenario clock, so it is deterministic for every route that gets far enough to change the address."
+  },
+  "customers": {
+    "4d6679ca-bcef-4893-81bf-488f66c8c666": {
+      "full_name": "Johnny Monroe",
+      "primary_email": "johnny.monroe.travel@outlook.com",
+      "notification_email": "johnny.monroe.travel@outlook.com",
+      "login_identifier_kind": "username",
+      "required_verification_methods": [
+        "billing_zip",
+        "mobile_last4"
+      ]
+    }
+  },
+  "identity_verifications": {
+    "613f42b7-69cd-4767-bf41-9a9db63ff731": {
+      "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+      "status": "verified",
+      "required_methods": [
+        "billing_zip",
+        "mobile_last4"
+      ],
+      "matched_methods": [
+        "billing_zip",
+        "mobile_last4"
+      ],
+      "verified_at": "2026-08-27T10:46:31-04:00",
+      "time_asserted": false
+    }
+  },
+  "channel_confirmations": {
+    "a241c1d7-d6c0-4489-9406-65a28d3bca66": {
+      "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+      "channel_id": "279561c9-f2ce-4402-a23a-2e19316678b3",
+      "purpose": "email_change",
+      "masked_destination": "***-***-1251",
+      "status": "verified",
+      "verified_at": "2026-08-27T10:48:39-04:00",
+      "verification_id": "613f42b7-69cd-4767-bf41-9a9db63ff731"
+    }
+  },
+  "self_service_sessions": {
+    "f4136da6-25dc-464b-b50c-8f02a5cc1ca3": {
+      "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+      "workflow": "card_application",
+      "resource_id": "c6c675e6-0faf-4004-a5de-881eaaa805b7",
+      "status": {
+        "_any_of": [
+          "issued",
+          "open_not_submitted"
+        ]
+      },
+      "submitted": false,
+      "resume_supported": true,
+      "save_and_continue": true,
+      "credit_pull_authorized": false,
+      "claim_tracked": false,
+      "claim_id": null
+    }
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "_comment": [
+    "Facts a correct handling of this call has to reach the caller. End-state",
+    "checking cannot see any of them: the card ends up active with the review",
+    "lifted, the hold approved and a travel note on file whether or not the agent",
+    "warned that the line only stretches so far or that the note guarantees",
+    "nothing. He is standing at a hotel desk about to have the card run again, so",
+    "what he is told is what determines whether the next attempt works.",
+    "",
+    "Each entry is satisfied when any one of its surface forms appears in the",
+    "agent's utterances, matched case-insensitively with whitespace collapsed.",
+    "",
+    "A form that is a single number or a single word is matched on boundaries; a",
+    "form of two or more words is matched as a plain substring. That is why bare",
+    "figures like '15' are listed: '15' will find \"15 USD\", \"15.00 dollars\" and",
+    "\"a total of 15\", but will not match '$150', so an agent that quotes the wrong",
+    "amount gets no credit. Bare words are fenced for the same reason - 'two' must",
+    "not be found inside 'network'. Anchors are only ever the whole value: 'five'",
+    "is not listed for 95, since \"five business days\" would then satisfy a fee.",
+    "The alternatives exist so an agent is not failed for saying 'nine hundred and",
+    "twelve dollars' instead of '$912'. Every form is a distinctive multi-word",
+    "phrase or a specific figure; nothing here would match an arbitrary",
+    "transcript.",
+    "",
+    "Requirements already asserted against the database are deliberately not",
+    "repeated: the review being lifted, the card returning to active, the hold",
+    "being re-presented, the resulting available credit and the travel notice",
+    "existing are all checked as state."
+  ],
+  "required": [
+    {
+      "id": "available_credit_amount",
+      "why": "everything else in this call turns on the size of the line; he is about to authorise a hotel stay and cannot judge whether the next attempt will clear without knowing what is actually available",
+      "any_of": [
+        "$912",
+        "912 dollars",
+        "912 dollar",
+        "nine hundred and twelve dollars",
+        "nine hundred twelve dollars",
+        "912"
+      ]
+    },
+    {
+      "id": "hotel_holds_can_exceed_the_room_total",
+      "why": "he is about to tell the front desk to run 840 again, and hotels routinely authorise above the room rate for incidentals; without that warning he thinks the number he was quoted is the number that gets charged",
+      "any_of": [
+        "more than the room total",
+        "more than the total room charge",
+        "more than the room rate",
+        "above the room total",
+        "above the room rate",
+        "more than the cost of the room",
+        "more than just the room",
+        "on top of the room rate",
+        "on top of the room total",
+        "extra for incidentals",
+        "hold for incidentals on top"
+      ]
+    },
+    {
+      "id": "hold_must_fit_the_available_credit",
+      "why": "the whole authorisation has to be covered by the remaining line or it fails outright; this is the rule that decides whether his next attempt goes through, and it is the one thing he can act on by asking the desk what they are about to run",
+      "any_of": [
+        "a larger hold may not",
+        "a larger hold might not",
+        "a bigger hold may not",
+        "a bigger hold might not",
+        "larger hold would not fit",
+        "larger hold won't fit",
+        "will not fit inside your available credit",
+        "won't fit inside your available credit",
+        "would not fit within your available credit",
+        "has to cover the full authorization",
+        "have to cover the full authorization",
+        "must cover the full authorization",
+        "has to cover the whole authorization",
+        "needs to cover the whole hold",
+        "has to cover the entire hold"
+      ]
+    },
+    {
+      "id": "no_authorization_guarantee",
+      "why": "he is being handed a lifted block and a travel note and will reasonably read both as a promise that the card now works; neither guarantees any particular purchase is approved, and saying so is the one honest limit available in this call",
+      "any_of": [
+        "does not guarantee every purchase",
+        "doesn't guarantee every purchase",
+        "does not guarantee that every purchase",
+        "does not guarantee approval",
+        "doesn't guarantee approval",
+        "is not a guarantee of approval",
+        "isn't a guarantee of approval",
+        "no guarantee every purchase will be approved",
+        "cannot guarantee every transaction",
+        "can't guarantee every transaction",
+        "cannot promise every purchase will go through",
+        "can't promise every purchase will go through",
+        "does not guarantee the card will be approved"
+      ]
+    },
+    {
+      "id": "hold_stays_pending_after_checkout",
+      "why": "the 840 hold will sit against his line for days after he leaves, and he is travelling; if he assumes it clears at checkout he will plan spending he does not have",
+      "any_of": [
+        "pending for a few days after checkout",
+        "pending for a few days after you check out",
+        "pending for several days after checkout",
+        "pending for a few days after check-out",
+        "stay pending for a few days",
+        "remain pending for a few days",
+        "sit pending for a few days",
+        "still be pending for a few days",
+        "a few days after you check out",
+        "a few days after checkout"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1674 @@
+{
+  "schema_version": "0.2.0",
+  "registry_name": "banking",
+  "registry_version": "0.5.0",
+  "compatibility": "custom_tau_style_not_literal_tau_registry",
+  "design_note": "Banking registry typed for deterministic mock implementation from this file alone. Every result schema is closed (additionalProperties: false) and typed from the union of observed tool outputs across the four banking conversations plus policy vocabulary. Session, challenge-delivery, and notification statuses are enumerated from policy states plus observed values; the backend reports the opened-but-not-yet-submitted session state as 'open_not_submitted'. Identity-verification factors form one closed enum shared by lookup and verification results. Every monetary amount carries an explicit USD currency sibling, and temporal fields carry date or date-time formats. search_knowledge_base returns exactly one versioned record whose optional content fields are the typed union of every observed knowledge payload. Failure or unavailable states not enumerated here surface as tool errors rather than result payloads.",
+  "tools": [
+    {
+      "name": "lookup_customer",
+      "description": "Find one banking customer using a stable customer identifier or verified profile attribute. At least one identifier parameter must be supplied; no parameter is individually required because different lookups legitimately use different identifiers. Precedence when multiple are supplied: account_id, then email, then full_name, with billing_zip, card_last4, and account_match used as corroborating attributes to narrow to exactly one profile.",
+      "parameters": {
+        "type": "object",
+        "description": "At least one identifier property must be supplied. Precedence: account_id, then email, then full_name; billing_zip, card_last4, and account_match narrow the match.",
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "description": "Customer account identifier."
+          },
+          "full_name": {
+            "type": "string",
+            "description": "Customer full name."
+          },
+          "email": {
+            "type": "string",
+            "description": "Email on the profile.",
+            "format": "email"
+          },
+          "account_match": {
+            "type": "string",
+            "description": "Trusted calling-channel match when available.",
+            "enum": [
+              "caller_phone"
+            ]
+          },
+          "billing_zip": {
+            "type": "string",
+            "description": "Billing ZIP collected for the lookup or verification."
+          },
+          "card_last4": {
+            "type": "string",
+            "description": "Last four card digits collected for the lookup or verification.",
+            "pattern": "^[0-9]{4}$"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Stable customer identifier.",
+            "format": "uuid"
+          },
+          "match": {
+            "type": "string",
+            "description": "Lookup outcome. 'unique' means exactly one profile matched; a lookup that cannot resolve one profile surfaces as a tool error."
+          },
+          "full_name": {
+            "type": "string",
+            "description": "Customer display name."
+          },
+          "caller_phone_match": {
+            "type": "boolean",
+            "description": "Whether the trusted calling channel matched the resolved profile."
+          },
+          "required_verification_methods": {
+            "type": "array",
+            "description": "Identity-verification factors this profile requires before account-specific work.",
+            "items": {
+              "type": "string",
+              "description": "Verification factor.",
+              "enum": [
+                "caller_phone",
+                "billing_zip",
+                "mobile_last4",
+                "card_last4",
+                "birth_month_day"
+              ]
+            }
+          },
+          "trusted_channels": {
+            "type": "array",
+            "description": "Trusted contact channels on the profile, with masked destinations.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "channel_id": {
+                  "type": "string",
+                  "description": "Stable trusted-channel identifier.",
+                  "format": "uuid"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Channel type.",
+                  "enum": [
+                    "sms",
+                    "secure_message"
+                  ]
+                },
+                "masked_destination": {
+                  "type": "string",
+                  "description": "Masked destination, e.g. '***-***-1251'."
+                }
+              },
+              "required": [
+                "channel_id",
+                "type",
+                "masked_destination"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "account_id": {
+            "type": "string",
+            "description": "Customer-facing account reference supplied for lookup; distinct from the internal customer UUID."
+          }
+        },
+        "required": [
+          "customer_id",
+          "match"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_current_time",
+      "description": "Return the authoritative current timestamp for an audit or verification record.",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Whether authoritative time was available.",
+            "enum": [
+              "available",
+              "unavailable"
+            ]
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "RFC 3339 timestamp; present when status is 'available'.",
+            "format": "date-time"
+          },
+          "timezone": {
+            "type": "string",
+            "description": "Authoritative IANA timezone, e.g. 'America/New_York'; present when status is 'available'."
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "verify_customer_identity",
+      "description": "Validate supplied non-secret identity factors against the resolved profile and return a scoped verification record. Collecting or naming factors alone never establishes success.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Resolved customer identifier.",
+            "format": "uuid"
+          },
+          "billing_zip": {
+            "type": "string",
+            "description": "Billing ZIP supplied by the customer."
+          },
+          "mobile_last4": {
+            "type": "string",
+            "description": "Last four digits of the registered mobile number.",
+            "pattern": "^[0-9]{4}$"
+          },
+          "card_last4": {
+            "type": "string",
+            "description": "Last four digits of the card used as a permitted verification factor.",
+            "pattern": "^[0-9]{4}$"
+          },
+          "birth_month_day": {
+            "type": "string",
+            "description": "Customer-supplied birth month and day, without requiring the full date, as '<Month> <day>' (for example 'October 12').",
+            "pattern": "^(January|February|March|April|May|June|July|August|September|October|November|December) (0?[1-9]|[12][0-9]|3[01])$"
+          },
+          "verified_at": {
+            "type": "string",
+            "description": "Annotation-supplied observation timestamp taken from a prior get_current_time result. Informational only; the backend's own record time is authoritative, not this value.",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "customer_id"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "verification_id": {
+            "type": "string",
+            "description": "Scoped verification record.",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "description": "Verification outcome. Only 'verified' establishes a verified customer; unsuccessful attempts surface as tool errors or a non-'verified' status."
+          },
+          "matched_methods": {
+            "type": "array",
+            "description": "Verification factors that matched the profile.",
+            "items": {
+              "type": "string",
+              "description": "Verification factor.",
+              "enum": [
+                "caller_phone",
+                "billing_zip",
+                "mobile_last4",
+                "card_last4",
+                "birth_month_day"
+              ]
+            }
+          },
+          "verified_at": {
+            "type": "string",
+            "description": "Backend verification timestamp when available.",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "verification_id",
+          "status",
+          "matched_methods"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "start_trusted_channel_confirmation",
+      "description": "Send a purpose-bound confirmation challenge to an already trusted masked channel. The agent must not request or place the secret response in ordinary tool arguments.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Resolved customer identifier.",
+            "format": "uuid"
+          },
+          "purpose": {
+            "type": "string",
+            "description": "Confirmation purpose.",
+            "enum": [
+              "email_change"
+            ]
+          },
+          "channel": {
+            "type": "string",
+            "description": "Trusted channel to use.",
+            "enum": [
+              "sms",
+              "secure_message"
+            ]
+          },
+          "verification_id": {
+            "type": "string",
+            "description": "Active identity-verification record.",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "customer_id",
+          "purpose",
+          "channel",
+          "verification_id"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "confirmation_id": {
+            "type": "string",
+            "description": "Purpose-bound confirmation record.",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "description": "Challenge delivery state. Delivery alone never proves successful confirmation.",
+            "enum": [
+              "requested",
+              "sent",
+              "delivered"
+            ]
+          },
+          "masked_destination": {
+            "type": "string",
+            "description": "Masked trusted destination."
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "Expiration time when available.",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "confirmation_id",
+          "status",
+          "masked_destination"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_trusted_channel_confirmation",
+      "description": "Read the current state of a purpose-bound trusted-channel challenge without receiving or exposing the secret response.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Resolved customer identifier.",
+            "format": "uuid"
+          },
+          "confirmation_id": {
+            "type": "string",
+            "description": "Confirmation record returned when the challenge was started.",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "customer_id",
+          "confirmation_id"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "confirmation_id": {
+            "type": "string",
+            "description": "Purpose-bound confirmation record.",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "description": "Current challenge state. Only 'verified' proves successful confirmation; 'sent' and 'delivered' mean the customer has not completed the secure step.",
+            "enum": [
+              "sent",
+              "delivered",
+              "verified",
+              "expired"
+            ]
+          },
+          "verified_at": {
+            "type": "string",
+            "description": "Confirmation time; present when status is 'verified'.",
+            "format": "date-time"
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "Expiration time when available.",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "confirmation_id",
+          "status"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "update_customer_email",
+      "description": "Change the email on a verified customer profile after the required confirmation flow succeeds.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Resolved customer identifier.",
+            "format": "uuid"
+          },
+          "new_email": {
+            "type": "string",
+            "description": "New customer email.",
+            "format": "email"
+          },
+          "verification_id": {
+            "type": "string",
+            "description": "Active identity-verification record.",
+            "format": "uuid"
+          },
+          "confirmation_id": {
+            "type": "string",
+            "description": "Successful trusted-channel confirmation record.",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "customer_id",
+          "new_email",
+          "verification_id",
+          "confirmation_id"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Mutation outcome; 'updated' on success. Failed mutations surface as tool errors."
+          },
+          "primary_email": {
+            "type": "string",
+            "description": "New primary email.",
+            "format": "email"
+          },
+          "notification_email": {
+            "type": "string",
+            "description": "Current notification email after the change.",
+            "format": "email"
+          },
+          "login_identifier_changed": {
+            "type": "boolean",
+            "description": "Whether the login identifier changed."
+          },
+          "transition_security_notices": {
+            "type": "array",
+            "description": "Addresses that receive the transition security notice.",
+            "items": {
+              "type": "string",
+              "description": "Notice destination.",
+              "enum": [
+                "old_email",
+                "new_email"
+              ]
+            }
+          }
+        },
+        "required": [
+          "status",
+          "primary_email"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "search_knowledge_base",
+      "description": "Search external, versioned product and process documentation that is not already included in the system policy. The backend selects the retrieval method and returns exactly one versioned record; which optional content fields are present depends on the record.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Plain-language question for external product or process documentation."
+          },
+          "as_of": {
+            "type": "string",
+            "description": "Optional authoritative date or timestamp for time-sensitive terms."
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "record_id": {
+            "type": "string",
+            "description": "Versioned external knowledge record.",
+            "format": "uuid"
+          },
+          "effective_at": {
+            "type": "string",
+            "description": "Effective date of this record version.",
+            "format": "date"
+          },
+          "retrieved_at": {
+            "type": "string",
+            "description": "Retrieval timestamp when available.",
+            "format": "date-time"
+          },
+          "matches": {
+            "type": "array",
+            "description": "Card products matching a product-comparison query.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "product_id": {
+                  "type": "string",
+                  "description": "Stable product identifier.",
+                  "format": "uuid"
+                },
+                "product": {
+                  "type": "string",
+                  "description": "Product display name."
+                },
+                "annual_fee": {
+                  "type": "number",
+                  "description": "Annual fee amount.",
+                  "minimum": 0
+                },
+                "annual_fee_currency": {
+                  "type": "string",
+                  "description": "Currency for annual_fee.",
+                  "enum": [
+                    "USD"
+                  ]
+                },
+                "foreign_transaction_fee": {
+                  "type": "boolean",
+                  "description": "Whether the product charges a foreign-transaction fee."
+                },
+                "lounge_membership": {
+                  "type": "boolean",
+                  "description": "Whether the product includes lounge membership."
+                }
+              },
+              "required": [
+                "product_id",
+                "product"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "offers": {
+            "type": "array",
+            "description": "Current welcome offers for a welcome-offer query.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "product_id": {
+                  "type": "string",
+                  "description": "Stable product identifier.",
+                  "format": "uuid"
+                },
+                "product": {
+                  "type": "string",
+                  "description": "Product display name."
+                },
+                "points": {
+                  "type": "integer",
+                  "description": "Welcome-offer points.",
+                  "minimum": 0
+                },
+                "spend": {
+                  "type": "number",
+                  "description": "Required spend amount.",
+                  "minimum": 0
+                },
+                "spend_currency": {
+                  "type": "string",
+                  "description": "Currency for spend.",
+                  "enum": [
+                    "USD"
+                  ]
+                },
+                "days": {
+                  "type": "integer",
+                  "description": "Days allowed to meet the required spend.",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "product_id",
+                "product"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "offers_can_change": {
+            "type": "boolean",
+            "description": "Whether the listed offers can change."
+          },
+          "approval_guaranteed": {
+            "type": "boolean",
+            "description": "Whether approval is guaranteed (always false in observed records)."
+          },
+          "airline_incidental_credit": {
+            "type": "boolean",
+            "description": "Whether the product carries an airline incidental credit."
+          },
+          "automatic_free_checked_bag": {
+            "type": "boolean",
+            "description": "Whether a free checked bag is automatic."
+          },
+          "airline_specific_rules_apply": {
+            "type": "boolean",
+            "description": "Whether airline-specific rules apply to the benefit."
+          },
+          "decision_notice": {
+            "type": "object",
+            "description": "What an adverse-action decision notice contains.",
+            "properties": {
+              "explains_factors": {
+                "type": "boolean",
+                "description": "Whether the notice explains decision factors."
+              },
+              "may_include_reconsideration_contact": {
+                "type": "boolean",
+                "description": "Whether the notice may include a reconsideration contact."
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          },
+          "phone_agent_can_override_underwriting": {
+            "type": "boolean",
+            "description": "Whether phone agents can override underwriting decisions."
+          },
+          "guidance": {
+            "type": "string",
+            "description": "Field-specific or process guidance text."
+          },
+          "login_identifier_may_remain_same": {
+            "type": "boolean",
+            "description": "Whether the login identifier may remain unchanged after an email change."
+          },
+          "future_notices_use_primary_email": {
+            "type": "boolean",
+            "description": "Whether future notices route to the primary email."
+          },
+          "unexpected_prompt_guidance": {
+            "type": "string",
+            "description": "Guidance for unexpected prompts, messages, or links."
+          },
+          "incidental_holds_may_exceed_room_total": {
+            "type": "boolean",
+            "description": "Whether hotel incidental holds may exceed the room total."
+          },
+          "available_credit_must_cover_full_authorization": {
+            "type": "boolean",
+            "description": "Whether available credit must cover the full authorization."
+          },
+          "authorization_guaranteed": {
+            "type": "boolean",
+            "description": "Whether future authorization is guaranteed."
+          },
+          "pending_duration": {
+            "type": "string",
+            "description": "How long an authorization may remain pending."
+          },
+          "qualifying_purchase_window_days": {
+            "type": "integer",
+            "description": "Days allowed for the referral qualifying purchase.",
+            "minimum": 0
+          },
+          "posting_window": {
+            "type": "string",
+            "description": "Reward posting window description."
+          },
+          "excluded": {
+            "type": "array",
+            "description": "Transaction types excluded from qualification.",
+            "items": {
+              "type": "string",
+              "description": "Excluded transaction type."
+            }
+          },
+          "ordinary_retail_purchase": {
+            "type": "string",
+            "description": "Eligibility rule for an ordinary retail purchase."
+          },
+          "purchase_pending_meanings": {
+            "type": "array",
+            "description": "Possible meanings of a purchase-pending qualification state.",
+            "items": {
+              "type": "string",
+              "description": "Meaning of the pending state."
+            }
+          },
+          "offer": {
+            "type": "string",
+            "description": "Offer terms as published, e.g. '$100 statement credit'."
+          },
+          "deadline_status": {
+            "type": "string",
+            "description": "Whether the offer deadline has passed, e.g. 'not_passed'."
+          },
+          "exact_deadline": {
+            "type": "string",
+            "description": "Where or how the exact deadline is available, e.g. 'available_in_tracker'."
+          },
+          "email_mismatch_effect": {
+            "type": "string",
+            "description": "Effect of an invitation/application email mismatch on referral matching."
+          },
+          "approved_status_meaning": {
+            "type": "string",
+            "description": "Meaning of an approved referral application status."
+          },
+          "reapplication_guidance": {
+            "type": "string",
+            "description": "Guidance about duplicate or repeat applications."
+          },
+          "steps": {
+            "type": "array",
+            "description": "Ordered procedure steps.",
+            "items": {
+              "type": "string",
+              "description": "Procedure step."
+            }
+          },
+          "posted_charge_can_be_erased": {
+            "type": "boolean",
+            "description": "Whether a posted charge can simply be erased outside the dispute process."
+          },
+          "provisional_credit_guaranteed": {
+            "type": "boolean",
+            "description": "Whether provisional credit is guaranteed."
+          },
+          "investigation_timing_basis": {
+            "type": "string",
+            "description": "What investigation timing depends on, e.g. 'transaction_type'."
+          },
+          "post_submit_outputs": {
+            "type": "array",
+            "description": "What the customer receives after submitting a dispute.",
+            "items": {
+              "type": "string",
+              "description": "Post-submission output."
+            }
+          },
+          "unused_unsubmitted_session_waives_future_rights": {
+            "type": "boolean",
+            "description": "Whether leaving a dispute session unsubmitted waives future dispute rights."
+          }
+        },
+        "required": [
+          "record_id",
+          "effective_at"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_card_account",
+      "description": "Retrieve card status, available credit, recent authorizations, declines, restrictions, and travel notices in one account read.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Resolved customer identifier.",
+            "format": "uuid"
+          },
+          "card_last4": {
+            "type": "string",
+            "description": "Last four card digits.",
+            "pattern": "^[0-9]{4}$"
+          },
+          "include": {
+            "type": "array",
+            "description": "Requested account sections.",
+            "items": {
+              "type": "string",
+              "description": "Account section.",
+              "enum": [
+                "status",
+                "available_credit",
+                "authorizations",
+                "declines",
+                "restrictions",
+                "travel_notices"
+              ]
+            },
+            "minItems": 0
+          }
+        },
+        "required": [
+          "customer_id"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Customer identifier.",
+            "format": "uuid"
+          },
+          "card_last4": {
+            "type": "string",
+            "description": "Card last four.",
+            "pattern": "^[0-9]{4}$"
+          },
+          "status": {
+            "type": "string",
+            "description": "Card status; present when the 'status' section is requested.",
+            "enum": [
+              "active",
+              "temporarily_restricted"
+            ]
+          },
+          "reported_lost": {
+            "type": "boolean",
+            "description": "Whether the card was reported lost."
+          },
+          "payment_status": {
+            "type": "string",
+            "description": "Payment standing of the account, e.g. 'current'."
+          },
+          "available_credit": {
+            "type": "number",
+            "description": "Available credit amount; present when the 'available_credit' section is requested.",
+            "minimum": 0
+          },
+          "available_credit_currency": {
+            "type": "string",
+            "description": "Currency for available_credit.",
+            "enum": [
+              "USD"
+            ]
+          },
+          "authorizations": {
+            "type": "array",
+            "description": "Recent approved authorizations; present when requested.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "transaction_id": {
+                  "type": "string",
+                  "description": "Stable transaction identifier.",
+                  "format": "uuid"
+                },
+                "merchant": {
+                  "type": "string",
+                  "description": "Merchant name."
+                },
+                "merchant_location": {
+                  "type": "string",
+                  "description": "Merchant location when available."
+                },
+                "amount": {
+                  "type": "number",
+                  "description": "Authorization amount.",
+                  "minimum": 0
+                },
+                "currency": {
+                  "type": "string",
+                  "description": "Currency for amount.",
+                  "enum": [
+                    "USD"
+                  ]
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Authorization state, e.g. 'approved'."
+                },
+                "occurred_at": {
+                  "type": "string",
+                  "description": "Authorization time when available.",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "transaction_id",
+                "merchant",
+                "amount",
+                "currency",
+                "status"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "declines": {
+            "type": "array",
+            "description": "Recent declined attempts; present when requested.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "transaction_id": {
+                  "type": "string",
+                  "description": "Stable transaction identifier.",
+                  "format": "uuid"
+                },
+                "merchant": {
+                  "type": "string",
+                  "description": "Merchant name."
+                },
+                "merchant_location": {
+                  "type": "string",
+                  "description": "Merchant location when available."
+                },
+                "amount": {
+                  "type": "number",
+                  "description": "Attempted amount.",
+                  "minimum": 0
+                },
+                "currency": {
+                  "type": "string",
+                  "description": "Currency for amount.",
+                  "enum": [
+                    "USD"
+                  ]
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Decline state, e.g. 'declined'."
+                },
+                "reason": {
+                  "type": "string",
+                  "description": "Decline reason code when available, e.g. 'travel_review' or 'prior_review_open'."
+                }
+              },
+              "required": [
+                "transaction_id",
+                "merchant",
+                "amount",
+                "currency"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "restrictions": {
+            "type": "array",
+            "description": "Card restrictions; present when requested.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "restriction_id": {
+                  "type": "string",
+                  "description": "Stable restriction identifier.",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Restriction state; 'open' while active."
+                },
+                "linked_transaction_ids": {
+                  "type": "array",
+                  "description": "Transactions linked to the restriction.",
+                  "items": {
+                    "type": "string",
+                    "description": "Transaction identifier.",
+                    "format": "uuid"
+                  }
+                }
+              },
+              "required": [
+                "restriction_id",
+                "status"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "travel_notices": {
+            "type": "array",
+            "description": "Travel notices on the card; present when requested.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "notice_id": {
+                  "type": "string",
+                  "description": "Travel-notice identifier.",
+                  "format": "uuid"
+                },
+                "destinations": {
+                  "type": "array",
+                  "description": "Travel destinations.",
+                  "items": {
+                    "type": "string",
+                    "description": "City, region, or country."
+                  }
+                },
+                "return_date": {
+                  "type": "string",
+                  "description": "Stated return date.",
+                  "format": "date"
+                },
+                "authorization_guaranteed": {
+                  "type": "boolean",
+                  "description": "Whether the notice guarantees authorization."
+                }
+              },
+              "required": [
+                "notice_id"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "customer_id",
+          "card_last4"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "resolve_card_restriction",
+      "description": "Remove a temporary card restriction after the customer confirms the triggering activity.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Resolved customer identifier.",
+            "format": "uuid"
+          },
+          "card_last4": {
+            "type": "string",
+            "description": "Last four card digits.",
+            "pattern": "^[0-9]{4}$"
+          },
+          "restriction_id": {
+            "type": "string",
+            "description": "Restriction to resolve.",
+            "format": "uuid"
+          },
+          "confirmed_transaction_ids": {
+            "type": "array",
+            "description": "Transactions the customer confirmed.",
+            "items": {
+              "type": "string",
+              "description": "Transaction identifier.",
+              "format": "uuid"
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "customer_id",
+          "restriction_id",
+          "confirmed_transaction_ids"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Restriction outcome; 'removed' on success. Failed removals surface as tool errors."
+          },
+          "card_status": {
+            "type": "string",
+            "description": "Resulting card status.",
+            "enum": [
+              "active",
+              "temporarily_restricted"
+            ]
+          },
+          "effective_at": {
+            "type": "string",
+            "description": "Mutation time when available.",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "status",
+          "card_status"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "create_travel_notice",
+      "description": "Add a travel notice without promising that every future authorization will be approved.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Resolved customer identifier.",
+            "format": "uuid"
+          },
+          "card_last4": {
+            "type": "string",
+            "description": "Last four card digits.",
+            "pattern": "^[0-9]{4}$"
+          },
+          "destinations": {
+            "type": "array",
+            "description": "Travel destinations.",
+            "items": {
+              "type": "string",
+              "description": "City, region, or country."
+            },
+            "minItems": 1
+          },
+          "return_date": {
+            "type": "string",
+            "description": "Customer-stated return date as YYYY-MM-DD.",
+            "format": "date"
+          }
+        },
+        "required": [
+          "customer_id",
+          "destinations",
+          "return_date"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Creation outcome; 'created' on success. Failed creations surface as tool errors."
+          },
+          "notice_id": {
+            "type": "string",
+            "description": "Travel-notice identifier.",
+            "format": "uuid"
+          },
+          "authorization_guaranteed": {
+            "type": "boolean",
+            "description": "Whether the notice guarantees authorization."
+          }
+        },
+        "required": [
+          "status",
+          "authorization_guaranteed"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_referrals",
+      "description": "Retrieve referral invitations, offer terms, qualification state, and posting state without exposing the referred person's private transactions.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Referring customer identifier.",
+            "format": "uuid"
+          },
+          "referral_id": {
+            "type": "string",
+            "description": "Optional referral identifier.",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "customer_id"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "referrals": {
+            "type": "array",
+            "description": "Referral records for the referring customer.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "referral_id": {
+                  "type": "string",
+                  "description": "Stable referral identifier.",
+                  "format": "uuid"
+                },
+                "invited_at": {
+                  "type": "string",
+                  "description": "Invitation date as displayed to the customer, e.g. 'August 2'."
+                },
+                "invited_contact": {
+                  "type": "object",
+                  "description": "Masked contact the invitation was sent to.",
+                  "properties": {
+                    "channel": {
+                      "type": "string",
+                      "description": "Invitation channel.",
+                      "enum": [
+                        "email",
+                        "sms"
+                      ]
+                    },
+                    "masked": {
+                      "type": "string",
+                      "description": "Masked contact value."
+                    }
+                  },
+                  "required": [
+                    "channel",
+                    "masked"
+                  ],
+                  "additionalProperties": false
+                },
+                "application_status": {
+                  "type": "string",
+                  "description": "Referred application state, e.g. 'approved'."
+                },
+                "qualification_status": {
+                  "type": "string",
+                  "description": "Qualification state, e.g. 'purchase_pending'."
+                },
+                "offer": {
+                  "type": "string",
+                  "description": "Offer terms as displayed, e.g. '$100 statement credit'."
+                },
+                "reference_code": {
+                  "type": "string",
+                  "description": "Customer-facing referral reference code; distinct from the internal referral UUID."
+                }
+              },
+              "required": [
+                "referral_id",
+                "application_status",
+                "qualification_status",
+                "offer",
+                "reference_code"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "referrals"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_credit_card_transactions",
+      "description": "Retrieve candidate credit-card transactions for a verified customer using amount, descriptor, date, or card filters.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Resolved customer identifier.",
+            "format": "uuid"
+          },
+          "card_last4": {
+            "type": "string",
+            "description": "Optional last four card digits.",
+            "pattern": "^[0-9]{4}$"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Optional exact transaction amount.",
+            "minimum": 0
+          },
+          "descriptor_contains": {
+            "type": "string",
+            "description": "Optional descriptor text."
+          },
+          "posted_date": {
+            "type": "string",
+            "description": "Optional posted date or customer-relative date."
+          }
+        },
+        "required": [
+          "customer_id"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "transactions": {
+            "type": "array",
+            "description": "Candidate transactions matching the filters.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "transaction_id": {
+                  "type": "string",
+                  "description": "Stable transaction identifier.",
+                  "format": "uuid"
+                },
+                "card_last4": {
+                  "type": "string",
+                  "description": "Card the transaction posted to.",
+                  "pattern": "^[0-9]{4}$"
+                },
+                "amount": {
+                  "type": "number",
+                  "description": "Posted amount.",
+                  "minimum": 0
+                },
+                "currency": {
+                  "type": "string",
+                  "description": "Currency for the monetary amounts in this record.",
+                  "enum": [
+                    "USD"
+                  ]
+                },
+                "category": {
+                  "type": "string",
+                  "description": "Merchant or transaction category, e.g. 'online marketplace'."
+                },
+                "preceded_by_authorization_amount": {
+                  "type": "number",
+                  "description": "Amount of the small pre-authorization that preceded this charge, in the same currency.",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "transaction_id",
+                "amount",
+                "currency"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "transactions"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "create_secure_self_service_session",
+      "description": "Issue a secure customer-controlled workflow session. Issuing a session does not submit an application or claim.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Resolved customer identifier.",
+            "format": "uuid"
+          },
+          "workflow": {
+            "type": "string",
+            "description": "Self-service workflow.",
+            "enum": [
+              "card_application",
+              "referral_status",
+              "transaction_dispute"
+            ]
+          },
+          "resource_id": {
+            "type": "string",
+            "description": "Related product, referral, or transaction identifier.",
+            "format": "uuid"
+          },
+          "delivery_channels": {
+            "type": "array",
+            "description": "Authorized delivery channels.",
+            "items": {
+              "type": "string",
+              "description": "Delivery channel.",
+              "enum": [
+                "secure_message",
+                "email_notification"
+              ]
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "customer_id",
+          "workflow",
+          "resource_id",
+          "delivery_channels"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "description": "Session identifier.",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "description": "Issued-session state. Issuance is distinct from delivery and from the customer's later open/save/submit actions.",
+            "enum": [
+              "requested",
+              "issued"
+            ]
+          },
+          "submitted": {
+            "type": "boolean",
+            "description": "Whether the customer submitted the workflow."
+          },
+          "credit_pull_authorized": {
+            "type": "boolean",
+            "description": "Whether a credit pull has been authorized (card_application workflow)."
+          },
+          "save_and_continue": {
+            "type": "boolean",
+            "description": "Whether the customer can save and continue later (card_application workflow)."
+          },
+          "visible_stages": {
+            "type": "array",
+            "description": "Stages visible in the tracker (referral_status workflow).",
+            "items": {
+              "type": "string",
+              "description": "Tracker stage.",
+              "enum": [
+                "invite",
+                "approval",
+                "qualification",
+                "reward_posting"
+              ]
+            }
+          },
+          "claim_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Claim reference; null until the customer submits (transaction_dispute workflow).",
+            "format": "uuid"
+          },
+          "access_location": {
+            "type": "string",
+            "description": "Where the customer accesses the session, e.g. 'online_banking'."
+          },
+          "display_label": {
+            "type": "string",
+            "description": "Label the customer sees for the session."
+          },
+          "allowed_customer_actions": {
+            "type": "array",
+            "description": "Actions the customer may take inside the session (transaction_dispute workflow).",
+            "items": {
+              "type": "string",
+              "description": "Customer action.",
+              "enum": [
+                "review",
+                "submit",
+                "close_page"
+              ]
+            }
+          },
+          "deliveries": {
+            "type": "array",
+            "description": "Per-channel delivery results for the issued session.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "channel": {
+                  "type": "string",
+                  "description": "Delivery channel.",
+                  "enum": [
+                    "secure_message",
+                    "email_notification"
+                  ]
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Delivery state for this channel.",
+                  "enum": [
+                    "sent",
+                    "delivered"
+                  ]
+                },
+                "masked_destination": {
+                  "type": "string",
+                  "description": "Masked destination when the channel has one."
+                }
+              },
+              "required": [
+                "channel",
+                "status"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "Expiration time when available.",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "session_id",
+          "status"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_secure_self_service_session",
+      "description": "Read whether an issued self-service session is open, saved, submitted, expired, or closed.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Resolved customer identifier.",
+            "format": "uuid"
+          },
+          "session_id": {
+            "type": "string",
+            "description": "Self-service session identifier.",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "customer_id",
+          "session_id"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "description": "Session identifier.",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "description": "Current session state. 'open_not_submitted' is the opened-but-not-yet-submitted state; 'issued' means not yet opened.",
+            "enum": [
+              "issued",
+              "open_not_submitted",
+              "saved",
+              "submitted",
+              "expired",
+              "closed"
+            ]
+          },
+          "submitted": {
+            "type": "boolean",
+            "description": "Whether the customer submitted the workflow."
+          },
+          "resume_supported": {
+            "type": "boolean",
+            "description": "Whether the customer can resume the session."
+          },
+          "save_and_continue": {
+            "type": "boolean",
+            "description": "Whether the customer can save and continue later (card_application workflow)."
+          },
+          "credit_pull_authorized": {
+            "type": "boolean",
+            "description": "Whether a credit pull has been authorized (card_application workflow)."
+          },
+          "claim_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Claim reference; null until the customer submits (transaction_dispute workflow).",
+            "format": "uuid"
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "Expiration time when available.",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "session_id",
+          "status"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "send_secure_notification",
+      "description": "Send a notification that points the customer to a secure in-account resource without placing a working secure link in ordinary email.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Resolved customer identifier.",
+            "format": "uuid"
+          },
+          "related_resource_id": {
+            "type": "string",
+            "description": "Secure resource identifier.",
+            "format": "uuid"
+          },
+          "channel": {
+            "type": "string",
+            "description": "Notification channel.",
+            "enum": [
+              "email",
+              "sms"
+            ]
+          },
+          "template": {
+            "type": "string",
+            "description": "Approved notification template identifier."
+          }
+        },
+        "required": [
+          "customer_id",
+          "related_resource_id",
+          "channel",
+          "template"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "notification_id": {
+            "type": "string",
+            "description": "Notification identifier.",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "description": "Notification delivery state.",
+            "enum": [
+              "requested",
+              "sent",
+              "delivered"
+            ]
+          },
+          "masked_destination": {
+            "type": "string",
+            "description": "Masked destination."
+          },
+          "contains_working_secure_link": {
+            "type": "boolean",
+            "description": "Whether the ordinary notification contains a working secure link (always false by policy)."
+          }
+        },
+        "required": [
+          "notification_id",
+          "status"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "transfer_to_specialist",
+      "description": "Transfer the conversation with a concise reason and context summary when policy or tooling requires a specialist.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Why the transfer is required."
+          },
+          "summary": {
+            "type": "string",
+            "description": "Context already collected so the customer does not repeat it."
+          }
+        },
+        "required": [
+          "reason",
+          "summary"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Transfer state."
+          },
+          "transfer_id": {
+            "type": "string",
+            "description": "Transfer identifier.",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "additionalProperties": false
+      }
+    }
+  ]
+}

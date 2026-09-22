@@ -1,0 +1,849 @@
+{
+  "schema_version": "0.2.0",
+  "registry_name": "pharmacy",
+  "registry_version": "0.4.0",
+  "compatibility": "custom_tau_style_not_literal_tau_registry",
+  "design_note": "Deterministic-mock pharmacy registry: every result schema is closed (additionalProperties: false) and fully typed from observed trajectory outputs; the policy's prescription lifecycle (received -> claim_pending -> claim_rejected/claim_paid -> awaiting_pharmacist_verification -> ready_for_pickup -> picked_up/transferred/cancelled/expired) is expressed as the closed workflow_status enum shared by reads and claim submissions; local counter hours use an HH:MM pattern with an IANA timezone; copays carry an explicit USD currency tag. Pharmacy deliberately has no standalone identity-verification tool: name-plus-date-of-birth resolution via lookup_patient is this domain's verification tier by design, not an omission.",
+  "tools": [
+    {
+      "name": "lookup_patient",
+      "description": "Resolve one pharmacy patient after collecting the required identity attributes.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "full_name": {
+            "type": "string",
+            "description": "Patient full name."
+          },
+          "date_of_birth": {
+            "type": "string",
+            "format": "date",
+            "description": "Patient date of birth (YYYY-MM-DD)."
+          }
+        },
+        "required": [
+          "full_name",
+          "date_of_birth"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "patient_id": {
+            "type": "string",
+            "description": "Patient identifier.",
+            "format": "uuid"
+          },
+          "match": {
+            "type": "string",
+            "description": "Identity-resolution outcome.",
+            "enum": [
+              "unique",
+              "not_found",
+              "multiple_matches"
+            ]
+          },
+          "verified_notification_destinations": {
+            "type": "array",
+            "description": "Verified, masked contact destinations usable for ready alerts.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "destination_id": {
+                  "type": "string",
+                  "description": "Stable verified destination identifier.",
+                  "format": "uuid"
+                },
+                "channel": {
+                  "type": "string",
+                  "description": "Contact channel.",
+                  "enum": [
+                    "sms",
+                    "phone",
+                    "email"
+                  ]
+                },
+                "masked_destination": {
+                  "type": "string",
+                  "description": "Masked rendering of the destination for speech."
+                },
+                "verified": {
+                  "type": "boolean",
+                  "description": "Whether the destination is verified."
+                }
+              },
+              "required": [
+                "destination_id",
+                "channel",
+                "masked_destination",
+                "verified"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "patient_id",
+          "match"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_prescription",
+      "description": "Retrieve the single most recent active prescription for a resolved patient, with its workflow, claim, queue, and notification status. When medication_name is provided, returns the most recent active prescription matching that medication; supplying medication_name is recommended whenever the patient may have multiple active prescriptions.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "patient_id": {
+            "type": "string",
+            "description": "Resolved patient identifier.",
+            "format": "uuid"
+          },
+          "medication_name": {
+            "type": "string",
+            "description": "Medication name or description used to select among multiple active prescriptions."
+          }
+        },
+        "required": [
+          "patient_id"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "prescription_id": {
+            "type": "string",
+            "description": "Prescription identifier.",
+            "format": "uuid"
+          },
+          "medication_id": {
+            "type": "string",
+            "description": "Canonical medication identifier.",
+            "format": "uuid"
+          },
+          "medication_name": {
+            "type": "string",
+            "description": "Display name of the medication."
+          },
+          "received_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the prescription was received, in the fill store's local timezone."
+          },
+          "prescription_valid": {
+            "type": "boolean",
+            "description": "Whether the prescription itself is valid, independent of claim status."
+          },
+          "workflow_status": {
+            "type": "string",
+            "description": "Current prescription lifecycle state per policy.",
+            "enum": [
+              "received",
+              "claim_pending",
+              "claim_rejected",
+              "claim_paid",
+              "awaiting_pharmacist_verification",
+              "ready_for_pickup",
+              "picked_up",
+              "transferred",
+              "cancelled",
+              "expired"
+            ]
+          },
+          "customer_facing_status": {
+            "type": "string",
+            "description": "Simplified status label shown to the patient in the app; coarser than workflow_status.",
+            "enum": [
+              "processing",
+              "ready",
+              "picked_up"
+            ]
+          },
+          "fill_store": {
+            "type": "object",
+            "description": "Store currently holding the fill.",
+            "properties": {
+              "store_id": {
+                "type": "string",
+                "description": "Stable store identifier.",
+                "format": "uuid"
+              },
+              "display_name": {
+                "type": "string",
+                "description": "Store display name."
+              },
+              "counter_closes_at": {
+                "type": "string",
+                "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+                "description": "Local time the pharmacy counter closes today (HH:MM, 24-hour)."
+              },
+              "front_store_closes_later": {
+                "type": "boolean",
+                "description": "Whether the front store stays open after the pharmacy counter closes."
+              }
+            },
+            "required": [
+              "store_id",
+              "display_name",
+              "counter_closes_at",
+              "front_store_closes_later"
+            ],
+            "additionalProperties": false
+          },
+          "claim": {
+            "type": "object",
+            "description": "Latest payer-claim state for this prescription.",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Payer-claim status.",
+                "enum": [
+                  "not_submitted",
+                  "pending",
+                  "paid",
+                  "rejected"
+                ]
+              },
+              "reason": {
+                "type": "string",
+                "description": "Payer rejection reason; present only when status is rejected.",
+                "enum": [
+                  "refill_too_soon",
+                  "not_covered",
+                  "prior_authorization_required",
+                  "plan_inactive"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ],
+            "additionalProperties": false
+          },
+          "queue": {
+            "type": "object",
+            "description": "Operational fill-queue state.",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Queue state.",
+                "enum": [
+                  "blocked_by_claim",
+                  "active",
+                  "completed"
+                ]
+              },
+              "position": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Exact queue position when available."
+              },
+              "estimated_minutes": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Estimated minutes to completion; an estimate, not a guarantee."
+              }
+            },
+            "required": [
+              "status"
+            ],
+            "additionalProperties": false
+          },
+          "notification": {
+            "type": "object",
+            "description": "Ready-alert configuration.",
+            "properties": {
+              "ready_alert_destination_id": {
+                "type": "string",
+                "description": "Verified destination identifier currently set for ready alerts.",
+                "format": "uuid"
+              }
+            },
+            "required": [
+              "ready_alert_destination_id"
+            ],
+            "additionalProperties": false
+          },
+          "payment_options": {
+            "type": "array",
+            "description": "Payment options currently eligible for this prescription.",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "prescription_id",
+          "medication_id",
+          "medication_name",
+          "received_at",
+          "prescription_valid",
+          "workflow_status",
+          "customer_facing_status",
+          "fill_store",
+          "claim",
+          "queue",
+          "notification",
+          "payment_options"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "request_claim_override",
+      "description": "Request a payer decision for an eligible prescription-claim exception; the payer may require the patient to participate.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "prescription_id": {
+            "type": "string",
+            "description": "Prescription identifier.",
+            "format": "uuid"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Override reason.",
+            "enum": [
+              "lost_medication",
+              "vacation_supply",
+              "dose_change",
+              "other"
+            ]
+          },
+          "urgency_context": {
+            "type": "string",
+            "description": "Relevant timing supplied by the patient."
+          }
+        },
+        "required": [
+          "prescription_id",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "override_id": {
+            "type": "string",
+            "description": "Override identifier.",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "description": "Payer decision on the override request.",
+            "enum": [
+              "approved",
+              "approved_one_time",
+              "pending_patient_participation",
+              "denied"
+            ]
+          }
+        },
+        "required": [
+          "override_id",
+          "status"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "submit_prescription_claim",
+      "description": "Submit or rerun a prescription claim after any required override is approved.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "prescription_id": {
+            "type": "string",
+            "description": "Prescription identifier.",
+            "format": "uuid"
+          },
+          "override_id": {
+            "type": "string",
+            "description": "Approved override identifier, when applicable.",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "prescription_id"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "claim_status": {
+            "type": "string",
+            "description": "Payer-claim outcome for this submission.",
+            "enum": [
+              "pending",
+              "paid",
+              "rejected"
+            ]
+          },
+          "copay": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Patient copay amount; present only on a paid claim."
+          },
+          "currency": {
+            "type": "string",
+            "description": "Currency of the copay amount.",
+            "enum": [
+              "USD"
+            ]
+          },
+          "next_workflow_status": {
+            "type": "string",
+            "description": "Prescription lifecycle state entered after this claim result, per policy.",
+            "enum": [
+              "received",
+              "claim_pending",
+              "claim_rejected",
+              "claim_paid",
+              "awaiting_pharmacist_verification",
+              "ready_for_pickup",
+              "picked_up",
+              "transferred",
+              "cancelled",
+              "expired"
+            ]
+          },
+          "queue": {
+            "type": "object",
+            "description": "Operational fill-queue state after the claim result.",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Queue state.",
+                "enum": [
+                  "blocked_by_claim",
+                  "active",
+                  "completed"
+                ]
+              },
+              "position": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Exact queue position when available."
+              },
+              "estimated_minutes": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Estimated minutes to completion; an estimate, not a guarantee."
+              }
+            },
+            "required": [
+              "status"
+            ],
+            "additionalProperties": false
+          },
+          "payment_options": {
+            "type": "array",
+            "description": "Payment options eligible after this claim result.",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "claim_status",
+          "next_workflow_status",
+          "queue"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_store_inventory",
+      "description": "Check medication inventory at a specific pharmacy without reserving or transferring it.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "Pharmacy location identifier.",
+            "format": "uuid"
+          },
+          "medication_id": {
+            "type": "string",
+            "description": "Medication/product identifier.",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "store_id",
+          "medication_id"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "store_id": {
+            "type": "string",
+            "description": "Store identifier.",
+            "format": "uuid"
+          },
+          "medication_id": {
+            "type": "string",
+            "description": "Medication identifier.",
+            "format": "uuid"
+          },
+          "in_stock": {
+            "type": "boolean",
+            "description": "Inventory state at the time of the check."
+          },
+          "reserved": {
+            "type": "boolean",
+            "description": "Whether inventory was reserved; always false for this read-only check."
+          }
+        },
+        "required": [
+          "store_id",
+          "medication_id",
+          "in_stock",
+          "reserved"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "search_pharmacy_locations",
+      "description": "Discover pharmacy locations and verified local hours before naming an alternate store or evaluating pickup timing.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "origin_store_id": {
+            "type": "string",
+            "description": "Current fill-store identifier when known.",
+            "format": "uuid"
+          },
+          "open_after_local_time": {
+            "type": "string",
+            "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+            "description": "Optional local time (HH:MM, 24-hour) the counter must remain open after."
+          },
+          "query": {
+            "type": "string",
+            "description": "Optional customer-supplied location or store-name query."
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "locations": {
+            "type": "array",
+            "description": "Matching pharmacy locations with verified local hours.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "store_id": {
+                  "type": "string",
+                  "description": "Stable store identifier.",
+                  "format": "uuid"
+                },
+                "display_name": {
+                  "type": "string",
+                  "description": "Store display name."
+                },
+                "address": {
+                  "type": "string",
+                  "description": "Street address when available."
+                },
+                "counter_closes_at": {
+                  "type": "string",
+                  "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+                  "description": "Local time the pharmacy counter closes today (HH:MM, 24-hour)."
+                },
+                "front_store_closes_at": {
+                  "type": "string",
+                  "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+                  "description": "Local time the front store closes today (HH:MM, 24-hour), when it differs from the counter."
+                },
+                "timezone": {
+                  "type": "string",
+                  "description": "IANA timezone of the store's local hours, e.g. America/Chicago."
+                },
+                "services": {
+                  "type": "array",
+                  "description": "Available services at this location, when returned.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "store_id",
+                "display_name",
+                "counter_closes_at",
+                "timezone"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "locations"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "request_prescription_transfer",
+      "description": "Request transfer of a prescription after explicit patient authorization; a request does not imply completion.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "prescription_id": {
+            "type": "string",
+            "description": "Prescription identifier.",
+            "format": "uuid"
+          },
+          "destination_store_id": {
+            "type": "string",
+            "description": "Destination pharmacy identifier returned by location search.",
+            "format": "uuid"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Patient-provided transfer reason."
+          },
+          "patient_authorized": {
+            "type": "boolean",
+            "description": "Whether the patient explicitly authorized this transfer request."
+          }
+        },
+        "required": [
+          "prescription_id",
+          "destination_store_id",
+          "patient_authorized"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Transfer-request state; only accepted or completed indicate the transfer will happen or has happened.",
+            "enum": [
+              "requested",
+              "pending_pharmacist_review",
+              "accepted",
+              "completed",
+              "rejected"
+            ]
+          },
+          "source_store_id": {
+            "type": "string",
+            "description": "Store currently holding the fill."
+          },
+          "destination_store_id": {
+            "type": "string",
+            "description": "Requested destination store.",
+            "format": "uuid"
+          },
+          "original_fill_active": {
+            "type": "boolean",
+            "description": "Whether the original fill remains active at the source store."
+          }
+        },
+        "required": [
+          "status",
+          "destination_store_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "update_prescription",
+      "description": "Update operational prescription fields such as priority context or notification channel; this cannot bypass pharmacist verification.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "prescription_id": {
+            "type": "string",
+            "description": "Prescription identifier.",
+            "format": "uuid"
+          },
+          "priority_reason": {
+            "type": "string",
+            "description": "Optional operational priority context."
+          },
+          "notification_channel": {
+            "type": "string",
+            "description": "Optional ready-alert channel.",
+            "enum": [
+              "sms",
+              "phone",
+              "email"
+            ]
+          },
+          "notification_destination_id": {
+            "type": "string",
+            "description": "Stable verified destination identifier returned by a prior patient or prescription read.",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "prescription_id"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Update outcome.",
+            "enum": [
+              "updated",
+              "rejected"
+            ]
+          },
+          "updated_fields": {
+            "type": "array",
+            "description": "Operational fields changed by this update.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "priority_reason",
+                "notification_channel",
+                "notification_destination"
+              ]
+            }
+          },
+          "notification": {
+            "type": "object",
+            "description": "Ready-alert configuration after the update; present when notification fields changed.",
+            "properties": {
+              "ready_alert": {
+                "type": "string",
+                "description": "Ready-alert state.",
+                "enum": [
+                  "enabled",
+                  "disabled"
+                ]
+              },
+              "destination_id": {
+                "type": "string",
+                "description": "Verified destination identifier now set for ready alerts.",
+                "format": "uuid"
+              },
+              "masked_destination": {
+                "type": "string",
+                "description": "Masked rendering of the destination for speech."
+              },
+              "verified": {
+                "type": "boolean",
+                "description": "Whether the destination is verified."
+              }
+            },
+            "required": [
+              "ready_alert",
+              "destination_id",
+              "masked_destination",
+              "verified"
+            ],
+            "additionalProperties": false
+          },
+          "queue": {
+            "type": "object",
+            "description": "Operational queue state after the update.",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Queue state.",
+                "enum": [
+                  "blocked_by_claim",
+                  "active",
+                  "completed"
+                ]
+              },
+              "position": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Exact queue position when available."
+              },
+              "estimated_minutes": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Estimated minutes to completion; an estimate, not a guarantee."
+              },
+              "pharmacist_verification_required": {
+                "type": "boolean",
+                "description": "Whether pharmacist verification is still required before readiness."
+              },
+              "priority_note": {
+                "type": "string",
+                "description": "Whether an operational priority note is attached.",
+                "enum": [
+                  "present",
+                  "absent"
+                ]
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "status",
+          "updated_fields"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "transfer_to_specialist",
+      "description": "Transfer the conversation with a concise reason and context summary when policy or tooling requires a specialist.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Why the transfer is required."
+          },
+          "summary": {
+            "type": "string",
+            "description": "Context already collected so the customer does not repeat it."
+          }
+        },
+        "required": [
+          "reason",
+          "summary"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Transfer state.",
+            "enum": [
+              "initiated",
+              "failed"
+            ]
+          },
+          "transfer_id": {
+            "type": "string",
+            "description": "Transfer identifier when the transfer was initiated.",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "additionalProperties": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,199 @@
+{
+  "conversation_id": "pharmacy-travel-refill",
+  "domain": "pharmacy",
+  "scenario_time": "2026-08-27T18:12:00-05:00",
+  "calls": [
+    {
+      "call_id": "ph-001",
+      "name": "lookup_patient",
+      "arguments": {
+        "full_name": "Miles Carter",
+        "date_of_birth": "1988-06-14"
+      },
+      "expected_output": {
+        "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
+        "match": "unique",
+        "verified_notification_destinations": [
+          {
+            "destination_id": "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e",
+            "channel": "sms",
+            "masked_destination": "***-***-on-file",
+            "verified": true
+          }
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "patient lookup implied before prescription retrieval",
+      "source_event_index": 5
+    },
+    {
+      "call_id": "ph-002",
+      "name": "get_prescription",
+      "arguments": {
+        "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
+        "medication_name": "albuterol inhaler"
+      },
+      "expected_output": {
+        "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+        "medication_id": "9dcd4906-4db3-4290-bccd-afde111823cb",
+        "medication_name": "albuterol inhaler",
+        "received_at": "2026-08-27T10:42:00-05:00",
+        "prescription_valid": true,
+        "workflow_status": "claim_rejected",
+        "fill_store": {
+          "store_id": "8e22d41d-843c-4e73-95c0-3c9877366ba9",
+          "display_name": "Oak Street Pharmacy",
+          "counter_closes_at": "19:00",
+          "front_store_closes_later": true
+        },
+        "claim": {
+          "status": "rejected",
+          "reason": "refill_too_soon"
+        },
+        "customer_facing_status": "processing",
+        "queue": {
+          "status": "blocked_by_claim"
+        },
+        "notification": {
+          "ready_alert_destination_id": "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e"
+        },
+        "payment_options": [
+          "pay_at_pickup"
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "open the prescription record",
+      "source_event_index": 11
+    },
+    {
+      "call_id": "ph-003",
+      "name": "request_claim_override",
+      "arguments": {
+        "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+        "reason": "lost_medication",
+        "urgency_context": "Patient leaves town on the morning of 2026-08-28 and needs the inhaler on the evening of 2026-08-27"
+      },
+      "expected_output": {
+        "override_id": "9e90544a-3497-4aee-a1f0-4437d4f4684c",
+        "status": "approved_one_time"
+      },
+      "state_effect": "payer_override_approved",
+      "source_label": "contact the insurance plan for an override",
+      "source_event_index": 25
+    },
+    {
+      "call_id": "ph-004",
+      "name": "submit_prescription_claim",
+      "arguments": {
+        "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+        "override_id": "9e90544a-3497-4aee-a1f0-4437d4f4684c"
+      },
+      "expected_output": {
+        "claim_status": "paid",
+        "copay": 15,
+        "currency": "USD",
+        "next_workflow_status": "awaiting_pharmacist_verification",
+        "queue": {
+          "status": "active",
+          "position": 1,
+          "estimated_minutes": 30
+        },
+        "payment_options": [
+          "app_prepay_if_offered_when_ready",
+          "pay_15_at_pickup"
+        ]
+      },
+      "state_effect": "claim_accepted",
+      "source_label": "rerun the insurance claim",
+      "source_event_index": 28
+    },
+    {
+      "call_id": "ph-005",
+      "name": "update_prescription",
+      "arguments": {
+        "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+        "priority_reason": "traveling on 2026-08-28; waiting for pickup on the evening of 2026-08-27"
+      },
+      "expected_output": {
+        "status": "updated",
+        "updated_fields": [
+          "priority_reason"
+        ],
+        "queue": {
+          "status": "active",
+          "pharmacist_verification_required": true,
+          "estimated_minutes": 30
+        }
+      },
+      "state_effect": "prescription_priority_context_updated",
+      "source_label": "add a travel-priority note",
+      "source_event_index": 39
+    },
+    {
+      "call_id": "ph-006",
+      "name": "search_pharmacy_locations",
+      "arguments": {
+        "origin_store_id": "8e22d41d-843c-4e73-95c0-3c9877366ba9",
+        "open_after_local_time": "19:00"
+      },
+      "expected_output": {
+        "locations": [
+          {
+            "store_id": "155059ca-b6aa-4372-b0af-86c2d681c393",
+            "display_name": "Park Avenue",
+            "counter_closes_at": "21:00",
+            "timezone": "America/Chicago"
+          }
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "search nearby Oak Street locations with counters open after 19:00",
+      "source_event_index": 44
+    },
+    {
+      "call_id": "ph-007",
+      "name": "get_store_inventory",
+      "arguments": {
+        "store_id": "155059ca-b6aa-4372-b0af-86c2d681c393",
+        "medication_id": "9dcd4906-4db3-4290-bccd-afde111823cb"
+      },
+      "expected_output": {
+        "store_id": "155059ca-b6aa-4372-b0af-86c2d681c393",
+        "medication_id": "9dcd4906-4db3-4290-bccd-afde111823cb",
+        "in_stock": true,
+        "reserved": false
+      },
+      "state_effect": "read_only",
+      "source_label": "check alternate pharmacy inventory",
+      "source_event_index": 47
+    },
+    {
+      "call_id": "ph-008",
+      "name": "update_prescription",
+      "arguments": {
+        "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+        "notification_channel": "sms",
+        "notification_destination_id": "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e"
+      },
+      "expected_output": {
+        "status": "updated",
+        "updated_fields": [
+          "notification_channel",
+          "notification_destination"
+        ],
+        "notification": {
+          "ready_alert": "enabled",
+          "destination_id": "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e",
+          "masked_destination": "***-***-on-file",
+          "verified": true
+        },
+        "queue": {
+          "priority_note": "present"
+        }
+      },
+      "state_effect": "notification_preference_updated",
+      "source_label": "update the prescription notification",
+      "source_event_index": 51
+    }
+  ]
+}

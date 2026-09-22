@@ -1,0 +1,108 @@
+{
+  "_comment": [
+    "State the recorded conversation must leave behind. Asserted as a subset:",
+    "every field here must be present with this value, and the database may know",
+    "more. Only fields the recorded tool results revealed, or state that follows",
+    "necessarily from them, are asserted.",
+    "",
+    "_key_columns declares how each table is addressed, so a row is identified by",
+    "a stable business key rather than by position in the snapshot. case_note_log",
+    "is a view that gives a single-column key to a table whose primary key is a",
+    "pair.",
+    "",
+    "The two refunds are asserted unchanged. Policy forbids raising a second",
+    "refund while a trace is open, so a correct handling of this call leaves the",
+    "money exactly where it was and records why.",
+    "",
+    "This document is read by both layers and everything in it has to be an",
+    "outcome rather than a route. section_read_log is therefore not asserted",
+    "here, although the recording drives it to three reads on each of the two",
+    "sections: reads_served counts how many times the agent looked, which is the",
+    "one thing the grading layer must not score. The conformance layer already",
+    "pins the read cursor far harder than an assertion could, because each depth",
+    "returns a different payload and the replay is byte-exact, so a cursor that",
+    "advanced wrongly fails env_check.sh on the wire.",
+    "",
+    "The confirmation's status is asserted, but as a set rather than as one",
+    "value. A notification's delivery state is collected by looking at it: a",
+    "get_order that includes 'notifications' runs _advance_notification and moves",
+    "the message on to the next receipt, so an agent that checks whether its own",
+    "email went out would fail a single-valued assertion for reading. The",
+    "refund_trace_confirmation template hands the message over as 'sent' and its",
+    "delivery progression ends at 'delivered', so those two are the whole of what",
+    "a correct run can leave behind and either of them is accepted. The set still",
+    "asserts something real: it says a message actually went out and that it did",
+    "not fail, which is what the caller was promised, while saying nothing about",
+    "how many times anybody looked at it.",
+    "",
+    "status_index is not asserted. It is a bare read counter with no outcome",
+    "meaning, and it is one of the two columns the damage policy drops from the",
+    "row hash for exactly that reason."
+  ],
+  "_key_columns": {
+    "cases": "case_number",
+    "case_note_log": "note_key",
+    "notifications": "notification_id",
+    "id_allocator": "entity_type",
+    "orders": "order_reference"
+  },
+  "cases": {
+    "b0fee5fa-0534-4c47-a42a-b3a252106888": {
+      "order_reference": "5820465624",
+      "customer_id": "customer-teddy-torrez",
+      "case_type": "refund_trace",
+      "status": "open",
+      "reason": "missing_refund",
+      "review_window_min_days": 3,
+      "review_window_max_days": 5,
+      "duplicate_refund_blocked": true,
+      "return_evidence_attached": true,
+      "return_reference": "5820469182",
+      "payment_reference": "card-ending-2047",
+      "amount_under_review": 146.42,
+      "replacement_created": false,
+      "fee_reimbursement_approved": false
+    }
+  },
+  "case_note_log": {
+    "b0fee5fa-0534-4c47-a42a-b3a252106888#1": {
+      "case_number": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+      "note": "Customer reports card ending 2047 was replaced by card ending 8163 and believes both map to the same checking account; external bank-account status is not verified by Westline.",
+      "visible_to_next_reviewer": true
+    },
+    "b0fee5fa-0534-4c47-a42a-b3a252106888#2": {
+      "case_number": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+      "note": "Customer reports an overdraft fee while expecting the refund; supporting statement may be reviewed after trace outcome.",
+      "topic": "bank_fee",
+      "visible_to_next_reviewer": true
+    }
+  },
+  "notifications": {
+    "43e020c5-a9da-4175-aec7-5989435d95a6": {
+      "case_number": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+      "order_reference": "5820465624",
+      "channel": "email",
+      "template": "refund_trace_confirmation",
+      "message_type": "refund_trace_confirmation",
+      "status": {
+        "_any_of": [
+          "sent",
+          "delivered"
+        ]
+      },
+      "masked_destination": "t***@harbormail.com",
+      "included_fields": [
+        "amount",
+        "masked_original_payment_reference",
+        "review_window",
+        "case_number"
+      ]
+    }
+  },
+  "orders": {
+    "5820465624": {
+      "customer_id": "customer-teddy-torrez",
+      "fulfillment_status": "delivered"
+    }
+  }
+}

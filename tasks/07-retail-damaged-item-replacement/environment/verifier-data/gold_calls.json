@@ -1,0 +1,221 @@
+{
+  "conversation_id": "retail-damaged-item-replacement",
+  "domain": "retail",
+  "scenario_time": "2026-08-26T11:20:00-04:00",
+  "calls": [
+    {
+      "call_id": "rd-001",
+      "name": "get_order",
+      "arguments": {
+        "order_reference": "ending-4086",
+        "customer_email": "ethan.patel@northmail.com",
+        "include": [
+          "items",
+          "eligible_resolutions",
+          "cases"
+        ]
+      },
+      "expected_output": {
+        "order_reference": "ending-4086",
+        "customer": {
+          "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+          "display_name": "Ethan Patel",
+          "verified_email": "e***@northmail.com"
+        },
+        "items": [
+          {
+            "item_reference": "coffee-maker-matte-black-12-cup",
+            "name": "12-cup coffee maker",
+            "variant": "matte black"
+          }
+        ],
+        "cases": [
+          {
+            "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+            "order_reference": "ending-7319",
+            "item": "blue noise-canceling headphones",
+            "status": "open",
+            "preferences": {
+              "pickup": "West 23rd Street pickup counter"
+            },
+            "case_number": "WST481662"
+          }
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "open the order record",
+      "source_event_index": 10
+    },
+    {
+      "call_id": "rd-002",
+      "name": "get_order",
+      "arguments": {
+        "order_reference": "ending-4086",
+        "customer_email": "ethan.patel@northmail.com",
+        "include": [
+          "eligible_resolutions"
+        ]
+      },
+      "expected_output": {
+        "order_reference": "ending-4086",
+        "eligible_resolutions": [
+          {
+            "type": "replacement",
+            "preserves_original_price": true,
+            "return_required": false,
+            "photo_required": false,
+            "optional_photo_upload_available": true,
+            "photo_upload_blocks_fulfillment": false,
+            "estimated_delivery": "Thursday end of day",
+            "default_fulfillment": "home_address_on_order"
+          },
+          {
+            "type": "refund"
+          }
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "review return and replacement options",
+      "source_event_index": 19
+    },
+    {
+      "call_id": "rd-003",
+      "name": "get_product",
+      "arguments": {
+        "product_reference": "coffee-maker-matte-black-12-cup",
+        "include_inventory": true
+      },
+      "expected_output": {
+        "product_reference": "coffee-maker-matte-black-12-cup",
+        "variant": {
+          "name": "12-cup coffee maker",
+          "color": "matte black"
+        },
+        "inventory": {
+          "in_stock": true
+        }
+      },
+      "state_effect": "read_only",
+      "source_label": "check replacement inventory",
+      "source_event_index": 24
+    },
+    {
+      "call_id": "rd-004",
+      "name": "create_replacement_order",
+      "arguments": {
+        "order_reference": "ending-4086",
+        "item_references": [
+          "coffee-maker-matte-black-12-cup"
+        ],
+        "reason": "damaged",
+        "fulfillment_method": "ship_to_address",
+        "fulfillment_location": "home_address_on_order",
+        "customer_authorized": true
+      },
+      "expected_output": {
+        "replacement_order_reference": "ending-8821",
+        "status": "created",
+        "balance_due": 0,
+        "currency": "USD",
+        "fulfillment": {
+          "method": "ship_to_address",
+          "location": "home_address_on_order",
+          "estimated_delivery": "Thursday end of day",
+          "estimate_guaranteed": false,
+          "distribution_center": "Edison",
+          "distribution_center_status": "provisional_until_shipped",
+          "tracking_notifications": true
+        },
+        "return_disposition": {
+          "return_required": false,
+          "disposition": "discard_or_recycle",
+          "safety": "do_not_power_on"
+        },
+        "notification": {
+          "status": "queued",
+          "optional_photo_link": true,
+          "photo_link_section": "later_in_email"
+        }
+      },
+      "state_effect": "replacement_order_created",
+      "source_label": "create the replacement order",
+      "source_event_index": 32
+    },
+    {
+      "call_id": "rd-005",
+      "name": "get_order",
+      "arguments": {
+        "order_reference": "ending-8821",
+        "customer_email": "ethan.patel@northmail.com",
+        "include": [
+          "notifications"
+        ]
+      },
+      "expected_output": {
+        "order_reference": "ending-8821",
+        "notifications": [
+          {
+            "type": "replacement_confirmation",
+            "status": "sent",
+            "subject_prefix": "Your Westline replacement",
+            "optional_photo_link": true,
+            "photo_link_section": "later_in_email"
+          }
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "refresh replacement-email delivery status",
+      "source_event_index": 52
+    },
+    {
+      "call_id": "rd-006",
+      "name": "lookup_customer",
+      "arguments": {
+        "email": "ethan.patel@northmail.com"
+      },
+      "expected_output": {
+        "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+        "match": "unique",
+        "display_name": "Ethan Patel",
+        "recent_orders": [
+          {
+            "order_reference": "ending-7319",
+            "item": "blue noise-canceling headphones",
+            "open_case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+            "open_case_number": "WST481662"
+          }
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "resolve the separate headphones order before reading its case",
+      "source_event_index": 58
+    },
+    {
+      "call_id": "rd-007",
+      "name": "get_order",
+      "arguments": {
+        "order_reference": "ending-7319",
+        "customer_email": "ethan.patel@northmail.com",
+        "include": [
+          "cases"
+        ]
+      },
+      "expected_output": {
+        "order_reference": "ending-7319",
+        "cases": [
+          {
+            "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+            "type": "delivery_trace",
+            "status": "open",
+            "carrier_response": "none",
+            "deadline": "18:00 today",
+            "case_number": "WST481662"
+          }
+        ]
+      },
+      "state_effect": "read_only",
+      "source_label": "review the existing missing-package trace",
+      "source_event_index": 60
+    }
+  ]
+}

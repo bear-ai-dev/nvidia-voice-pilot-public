@@ -82,6 +82,20 @@ All annotated transcripts are under [conversations/](conversations/):
 - Retail: [damaged-item replacement](conversations/retail-damaged-item-replacement/transcripts/annotated-transcript.json), [missing package](conversations/retail-missing-package/transcripts/annotated-transcript.json), and [refund bank fee](conversations/retail-refund-bank-fee/transcripts/annotated-transcript.json)
 - Telecom: [data-usage cleanup](conversations/telecom-data-usage-cleanup/transcripts/annotated-transcript.json)
 
+## Runnable SQL environments
+
+The first ten conversations also have executable RL environments under
+`tasks/`. Each task starts PostgreSQL with substantial deterministic seed data
+and serves the recorded domain tools as real database-backed operations.
+
+Environment conformance and agent grading are intentionally separate. The
+conformance suite replays the recorded calls to verify byte-exact tool results.
+The grader instead checks the final database outcome, rejects collateral changes
+outside the task's allowed work area, and verifies that the agent communicated
+the required facts. A different valid tool path can therefore receive full
+credit. See [tasks/README.md](tasks/README.md) and
+[docs/SQL_ENVS.md](docs/SQL_ENVS.md).
+
 ## 2. Per-domain tool registries
 
 The tool registry for each domain is located at

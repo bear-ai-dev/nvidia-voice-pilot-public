@@ -1,0 +1,789 @@
+{
+  "schema_version": "0.2.0",
+  "registry_name": "telecom",
+  "registry_version": "0.4.0",
+  "compatibility": "custom_tau_style_not_literal_tau_registry",
+  "design_note": "ClearWave Mobile carrier-support registry, implementable as a deterministic mock over a fixed customer store: account, usage, billing, offer, and paid add-on operations are backend tools; customer-guided device settings, app-level usage screens, and speed tests remain spoken customer actions with no tool. The lookup_customer -> verify_customer_identity sequence is intentional two-step verification, not redundancy: the lookup resolves a candidate record and reports which identity factors verification requires, and the verify call re-submits those collected factors so the mock can gate every protected read and mutation on the returned verification_id and its access_scope. Sectioned reads (get_customer_account.include, get_customer_bills.include) return only the requested sections, so section-specific result fields are optional and present only when their section was requested. get_line_data_usage with window=\"custom\" requires window_start and window_end per those parameter descriptions; the other windows derive their bounds server-side. Identity strings follow the on-call spoken representations: 10-digit dashed US mobile numbers and long-form month-name dates of birth. All money amounts carry an ISO 4217 currency sibling, and all temporal fields are ISO 8601 date-times.",
+  "tools": [
+    {
+      "name": "lookup_customer",
+      "description": "Resolve one telecom customer using the mobile number and identity attributes collected on the call.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "mobile_number": {
+            "type": "string",
+            "description": "Mobile number on the account, as a 10-digit US number with dashes (e.g. 404-555-0176).",
+            "pattern": "^[0-9]{3}-[0-9]{3}-[0-9]{4}$"
+          },
+          "full_name": {
+            "type": "string",
+            "description": "Customer full name."
+          },
+          "date_of_birth": {
+            "type": "string",
+            "description": "Customer date of birth in long form: full month name, day, year (e.g. November 22, 1991).",
+            "pattern": "^(January|February|March|April|May|June|July|August|September|October|November|December) [0-9]{1,2}, [0-9]{4}$"
+          }
+        },
+        "required": [
+          "mobile_number",
+          "full_name",
+          "date_of_birth"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Candidate customer identifier. Present when match is \"unique\".",
+            "format": "uuid"
+          },
+          "match": {
+            "type": "string",
+            "description": "Lookup outcome. A unique match identifies a candidate record but does not authorize disclosure.",
+            "enum": [
+              "unique",
+              "multiple",
+              "none"
+            ]
+          },
+          "required_verification_factors": {
+            "type": "array",
+            "description": "Identity factors verify_customer_identity requires for this record. Present when match is \"unique\".",
+            "items": {
+              "type": "string",
+              "enum": [
+                "mobile_number",
+                "full_name",
+                "date_of_birth"
+              ]
+            }
+          }
+        },
+        "required": [
+          "match"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "verify_customer_identity",
+      "description": "Validate the collected telecom identity factors and return a scoped verification record before protected account access.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Resolved customer identifier.",
+            "format": "uuid"
+          },
+          "mobile_number": {
+            "type": "string",
+            "description": "Customer-supplied mobile number, as a 10-digit US number with dashes (e.g. 404-555-0176).",
+            "pattern": "^[0-9]{3}-[0-9]{3}-[0-9]{4}$"
+          },
+          "full_name": {
+            "type": "string",
+            "description": "Customer full name."
+          },
+          "date_of_birth": {
+            "type": "string",
+            "description": "Customer date of birth in long form: full month name, day, year (e.g. November 22, 1991).",
+            "pattern": "^(January|February|March|April|May|June|July|August|September|October|November|December) [0-9]{1,2}, [0-9]{4}$"
+          }
+        },
+        "required": [
+          "customer_id",
+          "mobile_number",
+          "full_name",
+          "date_of_birth"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "verification_id": {
+            "type": "string",
+            "description": "Verification record identifier. Cite on every subsequent protected read or mutation.",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "description": "Verification outcome. Protected access is permitted only on \"verified\".",
+            "enum": [
+              "verified",
+              "failed",
+              "inconclusive"
+            ]
+          },
+          "matched_factors": {
+            "type": "array",
+            "description": "Identity factors that matched the stored record.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "mobile_number",
+                "full_name",
+                "date_of_birth"
+              ]
+            }
+          },
+          "access_scope": {
+            "type": "array",
+            "description": "Account sections this verification authorizes.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "lines",
+                "devices",
+                "plans",
+                "usage",
+                "billing"
+              ]
+            }
+          },
+          "verified_at": {
+            "type": "string",
+            "description": "Verification time (ISO 8601 date-time).",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "verification_id",
+          "status",
+          "matched_factors",
+          "access_scope",
+          "verified_at"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_customer_account",
+      "description": "Retrieve selected line, device, and plan sections for a resolved telecom customer.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Resolved customer identifier.",
+            "format": "uuid"
+          },
+          "include": {
+            "type": "array",
+            "description": "Account sections to retrieve.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "lines",
+                "devices",
+                "plans"
+              ]
+            },
+            "minItems": 1
+          },
+          "verification_id": {
+            "type": "string",
+            "description": "Successful identity-verification record.",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "customer_id",
+          "include",
+          "verification_id"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Customer identifier.",
+            "format": "uuid"
+          },
+          "lines": {
+            "type": "array",
+            "description": "Mobile lines on the account. Present when \"lines\" was requested.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "line_id": {
+                  "type": "string",
+                  "description": "Phone-line identifier.",
+                  "format": "uuid"
+                },
+                "masked_mobile_number": {
+                  "type": "string",
+                  "description": "Masked mobile number showing only the last four digits.",
+                  "pattern": "^\\*{3}-\\*{3}-[0-9]{4}$"
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Line status.",
+                  "enum": [
+                    "active",
+                    "suspended",
+                    "disconnected",
+                    "pending"
+                  ]
+                },
+                "billing_cycle_id": {
+                  "type": "string",
+                  "description": "Current billing-cycle identifier for the line.",
+                  "format": "uuid"
+                }
+              },
+              "required": [
+                "line_id",
+                "masked_mobile_number",
+                "status",
+                "billing_cycle_id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "devices": {
+            "type": "array",
+            "description": "Devices assigned to the account's lines. Present when \"devices\" was requested.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "device_id": {
+                  "type": "string",
+                  "description": "Device identifier.",
+                  "format": "uuid"
+                },
+                "model": {
+                  "type": "string",
+                  "description": "Device model name."
+                },
+                "line_id": {
+                  "type": "string",
+                  "description": "Line the device is assigned to.",
+                  "format": "uuid"
+                },
+                "provisioning_status": {
+                  "type": "string",
+                  "description": "Carrier provisioning status of the device."
+                }
+              },
+              "required": [
+                "device_id",
+                "model",
+                "line_id",
+                "provisioning_status"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "plans": {
+            "type": "array",
+            "description": "Plans assigned to the account's lines. Present when \"plans\" was requested.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "plan_id": {
+                  "type": "string",
+                  "description": "Plan identifier.",
+                  "format": "uuid"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Plan display name."
+                },
+                "line_id": {
+                  "type": "string",
+                  "description": "Line the plan is assigned to.",
+                  "format": "uuid"
+                }
+              },
+              "required": [
+                "plan_id",
+                "name",
+                "line_id"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "customer_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_line_data_usage",
+      "description": "Read carrier-recorded usage and remaining high-speed data for one line and billing-cycle window.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "line_id": {
+            "type": "string",
+            "description": "Resolved phone-line identifier.",
+            "format": "uuid"
+          },
+          "window": {
+            "type": "string",
+            "description": "Usage window to inspect.",
+            "enum": [
+              "current_billing_cycle",
+              "last_24_hours",
+              "custom"
+            ]
+          },
+          "window_start": {
+            "type": "string",
+            "description": "Start of the custom usage window (ISO 8601 date-time). Required when window is \"custom\"; omit for the predefined windows.",
+            "format": "date-time"
+          },
+          "window_end": {
+            "type": "string",
+            "description": "End of the custom usage window (ISO 8601 date-time). Required when window is \"custom\"; omit for the predefined windows.",
+            "format": "date-time"
+          },
+          "verification_id": {
+            "type": "string",
+            "description": "Successful identity-verification record.",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "line_id",
+          "window",
+          "verification_id"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "line_id": {
+            "type": "string",
+            "description": "Line identifier.",
+            "format": "uuid"
+          },
+          "billing_cycle_id": {
+            "type": "string",
+            "description": "Billing-cycle identifier.",
+            "format": "uuid"
+          },
+          "measurement_source": {
+            "type": "string",
+            "description": "Measurement source. Carrier metering reports aggregate line usage only.",
+            "enum": [
+              "carrier_metering"
+            ]
+          },
+          "window_start": {
+            "type": "string",
+            "description": "Start of the measured window (ISO 8601 date-time).",
+            "format": "date-time"
+          },
+          "window_end": {
+            "type": "string",
+            "description": "End of the measured window (ISO 8601 date-time).",
+            "format": "date-time"
+          },
+          "used_gigabytes": {
+            "type": "number",
+            "description": "Data used in the window, in gigabytes.",
+            "minimum": 0
+          },
+          "remaining_high_speed_gigabytes": {
+            "type": "number",
+            "description": "Remaining high-speed data in the current billing cycle, in gigabytes.",
+            "minimum": 0
+          },
+          "app_attribution_available": {
+            "type": "boolean",
+            "description": "Whether carrier metering identifies per-application usage."
+          },
+          "as_of": {
+            "type": "string",
+            "description": "Measurement read time (ISO 8601 date-time).",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "line_id",
+          "billing_cycle_id",
+          "measurement_source",
+          "window_start",
+          "window_end",
+          "used_gigabytes",
+          "remaining_high_speed_gigabytes",
+          "app_attribution_available",
+          "as_of"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_customer_bills",
+      "description": "Retrieve current billing-cycle dates, overage charges, and post-allowance plan behavior.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Resolved customer identifier.",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "description": "Which bill to read.",
+            "enum": [
+              "current",
+              "historical"
+            ]
+          },
+          "include": {
+            "type": "array",
+            "description": "Bill sections to retrieve.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "cycle",
+                "charges",
+                "overages",
+                "plan_behavior"
+              ]
+            },
+            "minItems": 1
+          },
+          "verification_id": {
+            "type": "string",
+            "description": "Successful identity-verification record.",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "customer_id",
+          "status",
+          "include",
+          "verification_id"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "bill_id": {
+            "type": "string",
+            "description": "Bill identifier.",
+            "format": "uuid"
+          },
+          "billing_cycle_id": {
+            "type": "string",
+            "description": "Billing-cycle identifier.",
+            "format": "uuid"
+          },
+          "cycle_start": {
+            "type": "string",
+            "description": "Billing-cycle start (ISO 8601 date-time). Present when \"cycle\" was requested.",
+            "format": "date-time"
+          },
+          "cycle_end": {
+            "type": "string",
+            "description": "Billing-cycle end (ISO 8601 date-time). Present when \"cycle\" was requested.",
+            "format": "date-time"
+          },
+          "cycle_resets_in_days": {
+            "type": "integer",
+            "description": "Whole days until the cycle resets. Present when \"cycle\" was requested.",
+            "minimum": 0
+          },
+          "overage_charge": {
+            "type": "number",
+            "description": "Current overage amount in the currency field. Present when \"charges\" or \"overages\" was requested.",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "description": "ISO 4217 currency code for monetary amounts on this bill. Present alongside overage_charge.",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "after_high_speed_allowance": {
+            "type": "string",
+            "description": "Plan behavior after the high-speed allowance is exhausted. Present when \"plan_behavior\" was requested.",
+            "enum": [
+              "speed_reduced",
+              "overage_billed"
+            ]
+          },
+          "as_of": {
+            "type": "string",
+            "description": "Bill read time (ISO 8601 date-time).",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "bill_id",
+          "billing_cycle_id",
+          "as_of"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "add_data_addon",
+      "description": "Activate one current eligible data add-on after explicit customer authorization, using the stable offer ID rather than reconstructed price fields.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "line_id": {
+            "type": "string",
+            "description": "Resolved phone-line identifier.",
+            "format": "uuid"
+          },
+          "offer_id": {
+            "type": "string",
+            "description": "Eligible offer identifier returned by the offer lookup.",
+            "format": "uuid"
+          },
+          "customer_authorized": {
+            "type": "boolean",
+            "description": "Whether the customer explicitly approved the returned data amount, price, currency, and billing timing."
+          }
+        },
+        "required": [
+          "line_id",
+          "offer_id",
+          "customer_authorized"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "transaction_id": {
+            "type": "string",
+            "description": "Add-on transaction identifier.",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "description": "Transaction status. Only \"active\" is a successful terminal status.",
+            "enum": [
+              "pending",
+              "active",
+              "failed",
+              "reversed"
+            ]
+          },
+          "offer_id": {
+            "type": "string",
+            "description": "Selected offer identifier.",
+            "format": "uuid"
+          },
+          "effective_at": {
+            "type": "string",
+            "description": "Time the add-on takes effect (ISO 8601 date-time).",
+            "format": "date-time"
+          },
+          "bill_reference": {
+            "type": "string",
+            "description": "Bill the charge is applied to."
+          },
+          "charged_price": {
+            "type": "number",
+            "description": "Charged amount in the currency field.",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "description": "ISO 4217 currency code of the charged amount.",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "added_high_speed_gigabytes": {
+            "type": "number",
+            "description": "High-speed data added, in gigabytes.",
+            "minimum": 0
+          },
+          "remaining_high_speed_gigabytes": {
+            "type": "number",
+            "description": "Updated high-speed balance after the add-on, in gigabytes.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "transaction_id",
+          "status",
+          "offer_id",
+          "effective_at",
+          "bill_reference",
+          "charged_price",
+          "currency",
+          "added_high_speed_gigabytes",
+          "remaining_high_speed_gigabytes"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_data_addon_offers",
+      "description": "Return current eligible high-speed data offers for a verified line before any price is quoted or add-on is submitted.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "line_id": {
+            "type": "string",
+            "description": "Resolved line identifier.",
+            "format": "uuid"
+          },
+          "verification_id": {
+            "type": "string",
+            "description": "Successful identity-verification record.",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "line_id",
+          "verification_id"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "line_id": {
+            "type": "string",
+            "description": "Line identifier.",
+            "format": "uuid"
+          },
+          "offers": {
+            "type": "array",
+            "description": "Current add-on offers for the line. State the data amount, price, currency, billing timing, and effective timing exactly as returned before seeking authorization.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "offer_id": {
+                  "type": "string",
+                  "description": "Stable offer identifier to submit with add_data_addon.",
+                  "format": "uuid"
+                },
+                "eligibility_status": {
+                  "type": "string",
+                  "description": "Whether this line may purchase the offer. Only \"eligible\" offers may be quoted or submitted.",
+                  "enum": [
+                    "eligible",
+                    "ineligible"
+                  ]
+                },
+                "data_gigabytes": {
+                  "type": "number",
+                  "description": "High-speed data included in the add-on, in gigabytes.",
+                  "minimum": 0
+                },
+                "price": {
+                  "type": "number",
+                  "description": "Price in the currency field.",
+                  "minimum": 0
+                },
+                "currency": {
+                  "type": "string",
+                  "description": "ISO 4217 currency code of the price.",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "billing_timing": {
+                  "type": "string",
+                  "description": "When the charge is billed.",
+                  "enum": [
+                    "next_bill",
+                    "immediate"
+                  ]
+                },
+                "effective_timing": {
+                  "type": "string",
+                  "description": "When the added data becomes usable.",
+                  "enum": [
+                    "immediate",
+                    "next_cycle"
+                  ]
+                },
+                "expires_at": {
+                  "type": "string",
+                  "description": "Time the offer expires (ISO 8601 date-time). Do not quote or submit an expired offer.",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "offer_id",
+                "eligibility_status",
+                "data_gigabytes",
+                "price",
+                "currency",
+                "billing_timing",
+                "effective_timing",
+                "expires_at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "as_of": {
+            "type": "string",
+            "description": "Offer read time (ISO 8601 date-time).",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "line_id",
+          "offers",
+          "as_of"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "transfer_to_specialist",
+      "description": "Transfer the conversation with a concise reason and context summary when policy or tooling requires a specialist.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Why the transfer is required."
+          },
+          "summary": {
+            "type": "string",
+            "description": "Context already collected so the customer does not repeat it."
+          }
+        },
+        "required": [
+          "reason",
+          "summary"
+        ],
+        "additionalProperties": false
+      },
+      "result_schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Transfer outcome. Tell the customer the transfer happened only on \"accepted\".",
+            "enum": [
+              "accepted",
+              "failed"
+            ]
+          },
+          "transfer_id": {
+            "type": "string",
+            "description": "Transfer identifier. Present when the transfer is accepted.",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "additionalProperties": false
+      }
+    }
+  ]
+}
