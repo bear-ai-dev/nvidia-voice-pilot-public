@@ -51,6 +51,9 @@ field_of() {
 printf 'task\tconformance\tcalls\toracle\tfacts\tsaid\tdamage\tidle\n' > "$RESULTS"
 overall=0
 
+# A grader fixed in some tasks and not others would score them differently.
+"$HERE/check_shared_files.sh" || overall=1
+
 for task_dir in $(select_tasks "$@"); do
     slug=$(basename "$task_dir")
     image="voice-env-${slug}:verify"
