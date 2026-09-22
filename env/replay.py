@@ -103,7 +103,8 @@ def main(argv: list[str]) -> int:
     failed = 0
     for conversation_id in argv or conversations_with_db():
         problems = check_conversation(conversation_id)
-        problems += check_task(conversation_id) if not problems else []
+        if not problems:
+            problems += check_task(conversation_id)
         calls = len(recorded_calls(conversation_id))
         print(f"{conversation_id:44} {'PASS' if not problems else 'FAIL'} ({calls} calls)")
         for problem in problems:

@@ -113,11 +113,13 @@ def row_changes(before: dict, after: dict) -> list[dict]:
             old, new = old_rows.get(key), new_rows.get(key)
             if old == new:
                 continue
-            kind = "inserted" if old is None else "deleted" if new is None else "updated"
-            columns = sorted(
-                c for c in set(old or {}) | set(new or {})
-                if (old or {}).get(c) != (new or {}).get(c)
-            ) if kind == "updated" else []
+            if old is None:
+                kind, columns = "inserted", []
+            elif new is None:
+                kind, columns = "deleted", []
+            else:
+                kind = "updated"
+                columns = sorted(c for c in set(old) | set(new) if old.get(c) != new.get(c))
             changes.append({"table": table, "key": key, "kind": kind,
                             "columns": columns, "before": old, "after": new})
     return changes

@@ -19,7 +19,7 @@ import argparse
 import json
 import os
 
-from evaluate import communicate_checks, evaluate, find_task, recorded_trajectory, run
+from evaluate import communicate_checks, evaluate, find_task, load_tasks, recorded_trajectory, run
 from runtime import ROOT, load_json
 
 
@@ -30,7 +30,7 @@ def touched_rows(db_before: dict, steps: list) -> dict[str, dict]:
         for table, read in step.reads.items():
             # An unfiltered query is a walk over the whole table: shown as a scan.
             keys = set(read["keys"]).union(*(q["matched"] for q in read["queries"] if q["where"]))
-            for key in keys:
+            for key in sorted(keys):
                 if key in db_before.get(table, {}):
                     shown.setdefault(table, {})[key] = db_before[table][key]
         for change in step.writes:
@@ -112,7 +112,7 @@ def main() -> None:
     parser.add_argument("conversations", nargs="*")
     parser.add_argument("--out", default=os.path.join(ROOT, "demo", "traces"))
     args = parser.parse_args()
-    ids = args.conversations or [t["id"] for t in __import__("evaluate").load_tasks()]
+    ids = args.conversations or [t["id"] for t in load_tasks()]
     os.makedirs(args.out, exist_ok=True)
     for conversation_id in ids:
         trace = build(conversation_id)

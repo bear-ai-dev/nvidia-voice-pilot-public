@@ -27,9 +27,6 @@ import os
 
 from runtime import ROOT, Environment, load_json
 
-REWARD_TYPES = ("DB", "COMMUNICATE")
-
-
 def load_tasks(domain: str | None = None) -> list[dict]:
     domains = [domain] if domain else sorted(os.listdir(os.path.join(ROOT, "domains")))
     tasks = []
@@ -54,11 +51,11 @@ def recorded_trajectory(conversation_id: str) -> list[dict]:
     path = os.path.join(ROOT, "conversations", conversation_id, "transcripts",
                         "annotated-transcript.json")
     recording = load_json(path)
-    items = [i for i in recording["responses_create_params"]["input"]
+    inputs = recording["responses_create_params"]["input"]
+    items = [i for i in inputs
              if i.get("role") != "system" and i.get("type") != "function_call_output"]
     outputs = {i["call_id"]: json.loads(i["output"])
-               for i in recording["responses_create_params"]["input"]
-               if i.get("type") == "function_call_output"}
+               for i in inputs if i.get("type") == "function_call_output"}
     metadata = recording["event_metadata"]
     if len(items) != len(metadata):
         raise ValueError(f"{conversation_id}: {len(items)} events but {len(metadata)} metadata rows")
