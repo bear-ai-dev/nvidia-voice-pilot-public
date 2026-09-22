@@ -553,8 +553,8 @@ forms are fenced while multi-word forms stay plain substrings:
 
 | Form shape | Matched as | Reason |
 |---|---|---|
-| single number, e.g. `15`, `$62`, `11.8` | not adjacent to another digit, and not followed by a decimal carrying a non-zero | `$15` finds `$15.00` but not `$150` or `$15.09` |
-| single word, e.g. `fifteen` | word boundaries | `two` must not be found inside `network` |
+| single number, e.g. `15`, `$62`, `11.8` | not adjacent to another digit, not followed by a decimal carrying a non-zero, and not part of a time, date or ordinal | `$15` finds `$15.00` but not `$150`, `$15.09`, `10:15`, `8/15`, `August 15` or `the 15th` |
+| single word, e.g. `fifteen` | word boundaries, and not inside a number-word compound | `two` must not be found inside `network`, nor `forty` inside `forty-five` |
 | two or more words, e.g. `90-day`, `too soon` | plain substring | several are deliberate stems: `90-day` has to find "90-days" |
 
 Two rules govern when a bare figure may be added at all, and both exist because a

@@ -131,13 +131,23 @@ bucks" and "a total of 15" without anyone predicting each one — on a dozen
 plausible renderings of the pharmacy copay, the phrase list matched four and the
 bare figure takes it to twelve. Bare forms are fenced so they cannot credit a
 *different* figure: a number must not sit against another digit or a non-zero
-decimal, so `$15` finds `$15.00` but not `$150` or `$15.09`, and a bare word gets
-word boundaries so `two` is not found inside `network`. Multi-word forms stay
+decimal, so `$15` finds `$15.00` but not `$150` or `$15.09`; nor may it be part of
+a clock time, date or ordinal, so `15` is not found in "10:15", "8/15", "August
+15" or "the 15th"; and a bare word gets word boundaries so `two` is not found
+inside `network`, nor `forty` inside "forty-five". Typographic apostrophes and
+dashes are folded to ASCII first, so "can’t" and "3–5" match their forms. Multi-word forms stay
 plain substrings, because several are deliberate stems — `90-day` has to match
 "90-days". Anchors are only ever the whole value and only for a single value of
 ten or more, since `five` would otherwise let "five business days" satisfy a $95
 fee. `check_communication_matching.py` enforces this, importing the live matcher
-so it cannot drift and trying 184 wrong figures across the ten tasks.
+so it cannot drift, trying wrong figures, figures inside times and dates, and
+typographic renderings of every form across the ten tasks.
+
+What the matcher cannot do is notice a contradiction. It checks that each
+required fact was said, not that nothing wrong was said alongside it, so a
+transcript that quotes both the right fee and a wrong one for the same card still
+passes. Catching that needs a judgement about which card a figure refers to,
+which substring matching cannot make.
 
 The run's speech arrives at `/workspace/transcript.txt`, which is agent-writable,
 or at `$AGENT_TRANSCRIPT` if a harness puts it elsewhere. Plain text is read
