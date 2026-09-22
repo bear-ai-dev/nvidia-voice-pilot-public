@@ -47,8 +47,19 @@ DEFAULT_BASE = os.environ.get("TOOL_SERVER_URL", statecheck.DEFAULT_BASE)
 DEFAULT_TRANSCRIPT = os.environ.get("AGENT_TRANSCRIPT", "/workspace/transcript.txt")
 
 
+# Transcripts from LLMs and speech recognisers often use typographic
+# punctuation, while the required forms are written in ASCII: without this,
+# "can’t promise approval" would not match "can't promise approval".
+TYPOGRAPHIC = str.maketrans({
+    "\u2018": "'", "\u2019": "'", "\u201a": "'", "\u201b": "'", "\u02bc": "'",
+    "\u201c": '"', "\u201d": '"', "\u201e": '"',
+    "\u2010": "-", "\u2011": "-", "\u2012": "-", "\u2013": "-", "\u2014": "-",
+    "\u2212": "-",
+})
+
+
 def normalize(text: str) -> str:
-    return re.sub(r"\s+", " ", text).strip().lower()
+    return re.sub(r"\s+", " ", text.translate(TYPOGRAPHIC)).strip().lower()
 
 
 def read_transcript(path: str) -> tuple[str, str]:
@@ -102,8 +113,11 @@ def read_transcript(path: str) -> tuple[str, str]:
 
 # A form is "bare" when it is a single number or a single word. Bare numbers are
 # compared by numeric value rather than as substrings: the required 95 may match
-# 95.00, but must not match 950, 95,000, 95k, 1.95, or 95.09. Bare words use word
-# boundaries so 'two' is not found inside 'network'. Multi-word forms remain
+# 95.00, but must not match 950, 95,000, 95k, 1.95, or 95.09. Nor may it match a
+# number that is part of a clock time, a date or an ordinal - the 15 in 10:15,
+# 8/15, "august 15" or "the 15th" is not a $15 copay. Bare words use word
+# boundaries so 'two' is not found inside 'network', and a number word is not
+# found inside a compound such as 'forty-five'. Multi-word forms remain
 # substrings because several are deliberate stems - '90-day' is there to match
 # both "90-day window" and "90-days".
 BARE_NUMBER = re.compile(
@@ -111,14 +125,22 @@ BARE_NUMBER = re.compile(
 )
 BARE_WORD = re.compile(r"^[a-z]+$")
 NUMBER_TOKEN = re.compile(
-    r"(?<![\w.,+\-])"
+    r"(?<![\w.,+\-])(?<!\d:)(?<!\d/)"
     r"(?P<currency>[$€£])?"
     r"(?P<number>(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?(?:e[+\-]?\d+)?)"
-    r"(?!\d|,\d|\.\d)",
+    r"(?!\d|,\d|\.\d|:\d|/\d)",
     re.IGNORECASE,
 )
 MAGNITUDE_SUFFIX = re.compile(
     r"\s*(?:[kmb]|hundred|thousand|million|billion)\b", re.IGNORECASE
+)
+ORDINAL_SUFFIX = re.compile(r"(?:st|nd|rd|th)\b")
+MONTH_BEFORE = re.compile(
+    r"\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.? $"
+)
+NUMBER_WORD_COMPOUND = re.compile(
+    r"-(?:one|two|three|four|five|six|seven|eight|nine"
+    r"|first|second|third|fourth|fifth|sixth|seventh|eighth|ninth)\b"
 )
 
 
@@ -159,14 +181,21 @@ def form_matcher(form: str):
                     continue
                 if MAGNITUDE_SUFFIX.match(text, candidate.end()):
                     continue
+                if ORDINAL_SUFFIX.match(text, candidate.end()):
+                    continue
+                if MONTH_BEFORE.search(text, max(0, start - 12), start):
+                    continue
                 return True
             return False
 
         return matches_number
 
     if BARE_WORD.fullmatch(form):
-        pattern = re.compile(r"\b" + re.escape(form) + r"\b")
-        return lambda text: pattern.search(text) is not None
+        pattern = re.compile(r"(?<!-)\b" + re.escape(form) + r"\b")
+        return lambda text: any(
+            not NUMBER_WORD_COMPOUND.match(text, m.end())
+            for m in pattern.finditer(text)
+        )
     return lambda text: form in text
 
 

@@ -20,7 +20,9 @@ graders rather than reimplementing it, so it cannot drift from what is scored.
 
     ./check_communication_matching.py
 
-Exit status is 0 only when no requirement accepts a wrong figure.
+Exit status is 0 only when no requirement accepts a wrong figure, a figure
+inside a time, date or ordinal, or a number-word compound, and every form still
+matches when written with typographic apostrophes and dashes.
 """
 from __future__ import annotations
 
@@ -179,8 +181,37 @@ def main() -> int:
                             f"{entry['id']}: bare figure {figure!r} does not match "
                             f"its own plain use in {said!r}"
                         )
+            # Loose in context: the figure inside a clock time, a date or an
+            # ordinal is a different fact. The 15 in 10:15 is not a $15 copay.
+            for figure in bare:
+                number = figure.lstrip("$€£")
+                for said in (f"we open at 10:{number} today", f"on the {number}th",
+                             f"that was on august {number}", f"it is due 8/{number}"):
+                    if grade.form_matcher(figure)(grade.normalize(said)):
+                        problems.append(
+                            f"{entry['id']}: bare figure {figure!r} wrongly matched "
+                            f"inside {said!r}"
+                        )
             if not bare:
                 skipped.append((entry["id"], sorted(str(v) for v in vals)))
+
+        # Every requirement, numeric or not: smart punctuation from an LLM or a
+        # speech recogniser must not turn a correct utterance into a miss, and a
+        # number word must not be found inside a compound such as forty-five.
+        for entry in required:
+            for form in entry["any_of"]:
+                typographic = form.replace("'", "\u2019").replace("-", "\u2013")
+                if typographic != form and not grade.form_matcher(
+                        grade.normalize(form))(grade.normalize(f"so, {typographic}, ok")):
+                    problems.append(
+                        f"{entry['id']}: {form!r} misses its typographic "
+                        f"rendering {typographic!r}"
+                    )
+                if grade.BARE_WORD.fullmatch(grade.normalize(form)) and grade.form_matcher(
+                        grade.normalize(form))(f"about {grade.normalize(form)}-five"):
+                    problems.append(
+                        f"{entry['id']}: bare word {form!r} matched inside a compound"
+                    )
 
         note = f" ({len(skipped)} without a bare figure, by design)" if skipped else ""
         if problems:
