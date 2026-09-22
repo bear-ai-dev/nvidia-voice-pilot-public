@@ -215,6 +215,28 @@ The distribution counts each speech event once from the timestamped
 `event_metadata` copy, rather than double-counting the mirrored message-level
 annotations.
 
+## 8. Runnable tau2 environments
+
+Ten of the conversations also ship as runnable environments in tau2-bench's
+shape, so an agent can be simulated through the same call and scored the way
+Tau-voice scores it:
+
+- `conversations/<conversation-id>/state/db.json` and `db_after.json`: the
+  full backend before and after the recorded tool calls, as JSON. Unlike the
+  reconstructed `initial_state.json` above, this is every table the tools read,
+  including other customers such as a second person with the caller's name.
+- `domains/<domain>/tools.py`: tools that read and write that database. Every
+  argument is checked against the domain's `tool_registry.json`, and every
+  recorded call returns exactly its recorded output.
+- `domains/<domain>/tasks.json`: one tau2 task per conversation, with user
+  simulator instructions, the reference actions, the facts the agent must say,
+  and behaviour assertions for an LLM judge. Reward is DB x COMMUNICATE.
+
+Run `python3 env/replay.py` to check every conversation end to end. The
+[environment guide](env/README.md) covers the layout, scoring and how to drive
+an environment from an agent loop, and `demo/index.html` replays each call with
+its audio, tool calls and database changes.
+
 ## Known behavioral exception
 
 In `banking-account-email-card-application` the enacted agent asks the

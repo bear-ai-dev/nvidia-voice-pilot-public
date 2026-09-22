@@ -5,3 +5,6 @@
 __pycache__/
 *.py[cod]
 *.partial
+
+# Demo audio is derived from conversations/*/audio/full.wav by demo/build.sh
+demo/audio
