@@ -31,7 +31,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import psycopg2
 
 import schema
-from db import NotFound, ToolRefusal, all_rows, transaction
+from db import NotFound, ToolRefusal, all_rows, transaction, unkeyed_snapshot_tables
 from tools import HANDLERS, WRITE_TOOLS
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -258,6 +258,12 @@ def main() -> None:
     missing = sorted(set(TOOL_SCHEMAS) - set(HANDLERS))
     if missing:
         print(f"fatal: registry tools without handlers: {missing}", file=sys.stderr)
+        raise SystemExit(1)
+
+    unkeyed = unkeyed_snapshot_tables(SNAPSHOT_TABLES)
+    if unkeyed:
+        print(f"fatal: snapshot keys no unique index guarantees: {unkeyed}",
+              file=sys.stderr)
         raise SystemExit(1)
 
     token = secrets.token_hex(24)

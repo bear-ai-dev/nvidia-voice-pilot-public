@@ -83,10 +83,11 @@ CREATE TABLE airport_area_links (
     ground_access_minutes INTEGER NOT NULL,
     -- Emission and recommendation order; 1 is the recommended airport.
     proximity_rank        INTEGER NOT NULL CHECK (proximity_rank >= 1),
-    PRIMARY KEY (area_id, airport_code)
+    PRIMARY KEY (area_id, airport_code),
+    -- The snapshot addresses rows by (area_id, proximity_rank), so it must be
+    -- unique or two rows would share one digest entry in the damage check.
+    UNIQUE (area_id, proximity_rank)
 );
-
-CREATE INDEX airport_area_links_area ON airport_area_links (area_id, proximity_rank);
 
 -- One row per scheduled segment. Connecting itineraries are built from these in
 -- connecting_itinerary_segments, so a connection's price and elapsed time are

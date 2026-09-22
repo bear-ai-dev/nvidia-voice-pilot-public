@@ -103,6 +103,45 @@ def allocate_id(cur, entity_type: str, scope: str = "") -> str:
     return row["template"].format(n=row["issued"])
 
 
+def unkeyed_snapshot_tables(snapshot_tables: list[tuple[str, str]]) -> list[str]:
+    """Snapshot tables whose key columns no primary key or unique index guarantees.
+
+    The grading layer addresses snapshot rows by these columns and digests them
+    into a dict, so a key two rows can share would silently merge them, and a
+    damaged row could hide behind its twin. Views carry no indexes of their own
+    and are keyed on their base table's primary key, so only tables are checked.
+    """
+    with transaction() as cur:
+        tables = {row["relname"] for row in all_rows(cur, """
+            SELECT c.relname
+              FROM pg_class c
+              JOIN pg_namespace n ON n.oid = c.relnamespace AND n.nspname = 'public'
+             WHERE c.relkind IN ('r', 'p')
+        """)}
+        rows = all_rows(cur, """
+            SELECT c.relname AS table_name,
+                   array_agg(a.attname::text) AS columns
+              FROM pg_index i
+              JOIN pg_class c ON c.oid = i.indrelid
+              JOIN pg_namespace n ON n.oid = c.relnamespace AND n.nspname = 'public'
+              CROSS JOIN LATERAL unnest(i.indkey) AS k(attnum)
+              JOIN pg_attribute a ON a.attrelid = c.oid AND a.attnum = k.attnum
+             WHERE i.indisunique
+             GROUP BY c.relname, i.indexrelid
+        """)
+    unique: dict[str, list[set[str]]] = {}
+    for row in rows:
+        unique.setdefault(row["table_name"], []).append(set(row["columns"]))
+    unkeyed = []
+    for table, order_by in snapshot_tables:
+        if table not in tables:
+            continue
+        key = {column.strip() for column in order_by.split(",")}
+        if not any(columns <= key for columns in unique.get(table, [])):
+            unkeyed.append(f"{table}({order_by})")
+    return unkeyed
+
+
 class ToolRefusal(Exception):
     """A domain precondition was not met. Surfaces as HTTP 409."""
 

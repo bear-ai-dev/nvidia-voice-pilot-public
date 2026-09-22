@@ -345,6 +345,9 @@ CREATE TABLE eligible_resolutions (
     estimated_delivery_display     TEXT,
     default_fulfillment            TEXT,
     PRIMARY KEY (order_reference, resolution_type),
+    -- The snapshot addresses rows by (order_reference, position), so it must be
+    -- unique or two rows would share one digest entry in the damage check.
+    UNIQUE (order_reference, position),
     CHECK ((estimated_delivery_on IS NULL) = (estimated_delivery_display IS NULL))
 );
 
