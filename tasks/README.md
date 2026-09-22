@@ -87,9 +87,11 @@ control that now catches that.
   compared byte for byte.
 - **No collateral damage.** A row the agent inserted, deleted, or modified *that
   the gold path left untouched* is damage. Rows the gold path also touched are the
-  agent's legitimate work area, governed by the required facts instead. So
+  agent's work area: each may end as it started (the required facts decide whether
+  that was enough) or as the gold path left it, but not as a third value. So
   reaching the right outcome by a different route is free, while cancelling an
-  unrelated customer's order is not.
+  unrelated customer's order, or delivering the application to the address the
+  caller cannot reach, is not.
 
 Damage is judged against `verifier-data/state_digest.json`, a per-row hash of the
 initial state and of the gold end state. τ-bench uses a hash of the whole

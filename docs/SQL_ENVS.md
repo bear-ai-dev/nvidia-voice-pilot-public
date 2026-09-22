@@ -422,16 +422,13 @@ control fails rather than the defect going unnoticed.
 
 ### Known limits of the damage check
 
-Two, both inherent to defining the work area as "rows the gold path touched"
-rather than defects to be fixed:
-
-- **Shared rows are unprotected.** An agent that damages *only* rows already
-  inside the work area is not caught, because those rows are governed by the
-  required-facts assertion instead. In `09-airline-*` a booking made for an
-  unrelated customer on the same two flights decrements the same
-  `flight_availability` rows the gold path decremented, and those two decrements
-  are not flagged — five other rows caught that particular case, but the general
-  hole is real.
+- **Shared rows are held to two states, not one.** A row inside the work area may
+  end as it started or as the gold path left it; any third value is damage. In
+  `09-airline-*` a booking made for an unrelated customer on the same two flights
+  decrements the same `flight_availability` rows the gold path decremented, and
+  the doubled decrement is now flagged on those rows too. What is still not caught
+  is an agent that leaves a work-area row as it started when the outcome needed it
+  changed, unless a required fact asserts that column.
 - **Wholesale exclusion hides inserts.** Covered above; prefer
   `read_volatile_columns`. Where a table must still be excluded, check whether a
   child table catches what the parent cannot, and say so in the task README
@@ -458,12 +455,15 @@ holding a per-row hash of the initial state and of the gold end state:
 Damage is then defined per row rather than over the whole database:
 
 > A row is damage when the agent inserted, deleted, or modified it **and the gold
-> path left it untouched.**
+> path left it untouched**, or when the gold path did touch it and the agent left
+> it **in neither the initial nor the gold state.**
 
-Rows the gold path also touched are the agent's legitimate work area and are
-governed by the required-facts assertion instead, so an agent that reaches the
-right outcome by a different route is not penalised for the route. Rows nothing
-was supposed to touch are held to the initial state.
+Rows the gold path also touched are the agent's work area, so an agent that
+reaches the right outcome by a different route is not penalised for the route.
+But the work area is not a free zone: a column the required facts happen not to
+assert, such as the masked destination a secure session was delivered to, still
+has to end where the gold path left it. Rows nothing was supposed to touch are
+held to the initial state.
 
 Three exclusions are declared in `verifier-data/grading.json`, in decreasing
 order of bluntness. Prefer the narrowest one that works.

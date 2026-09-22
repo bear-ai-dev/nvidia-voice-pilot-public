@@ -334,13 +334,12 @@ single-layer verifier it was not measurable at all.
 The meddling control is the one the required-facts assertion cannot catch on its
 own. Booking Aiko Achebe — a real customer with a real card on file, on the same
 Phoenix–Reagan pair — leaves all 71 facts true and all six things still said, and
-scores zero on five damaged rows: the reservation, its traveller, its tender, the
-view over that tender, and the pool code it consumed. It also demonstrates the
-known limit `docs/SQL_ENVS.md` records: the two `flight_availability` decrements
-that booking made are *not* flagged, because the gold path decremented the same
-two rows and they are therefore inside the work area. Five other rows caught this
-particular case; the hole is real, and a side effect confined entirely to shared
-rows would go unseen.
+scores zero on seven damaged rows: the reservation, its traveller, its tender, the
+view over that tender, the pool code it consumed, and the two `flight_availability`
+rows. Those two are inside the work area, because the gold path decremented them
+too, but the extra booking leaves them at a count that is neither the initial one
+nor the gold path's, which the damage check treats as damage. A side effect
+confined entirely to shared rows is therefore caught as well.
 
 The last control is the one that establishes the conformance layer is worth
 running, and it also shows the two layers are independent in the direction that

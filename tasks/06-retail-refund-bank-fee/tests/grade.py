@@ -17,10 +17,12 @@ db_reward is 1.0 when both of these hold:
   No damage        no row outside the gold path's work area differs from the
                    initial state. A row is damage when the agent inserted,
                    deleted or modified it and the gold path left it untouched.
-                   Rows the gold path also touched are the agent's legitimate
-                   work area and are governed by the required facts instead, so
-                   reaching the right outcome by a different route is not
-                   penalised.
+                   Rows the gold path also touched are the agent's work area:
+                   the agent may leave one as it started or end it as the gold
+                   path did, so reaching the right outcome by a different route
+                   is not penalised, but writing a third value into one is
+                   damage too. That catches a wrong value in a column the
+                   required facts do not assert.
 
 communicate_reward is 1.0 when every entry in communicate_info.json is satisfied
 by the agent's utterances. End-state checking cannot see the part of these
@@ -217,7 +219,9 @@ def check_communication(transcript: str, required: list[dict]) -> list[dict]:
 
 
 def find_damage(now: dict, digest: dict, policy: dict) -> list[dict]:
-    """Rows the agent changed that the gold path left untouched."""
+    """Rows the agent changed that the gold path left untouched, and rows in the
+    gold path's work area that the agent left in neither the initial nor the gold
+    state."""
     initial = digest["initial"]
     gold = digest["gold_final"]
     ignore = set(policy.get("ignore_tables", []))
@@ -231,17 +235,24 @@ def find_damage(now: dict, digest: dict, policy: dict) -> list[dict]:
         after = now.get(table, {})
         gold_after = gold.get(table, {})
 
-        # Everything the gold path touched is the agent's work area; the
-        # required-facts assertion governs it, not this check.
+        # Everything the gold path touched is the agent's work area. Leaving a
+        # row there as it started is the required facts' business, not damage,
+        # and ending it as the gold path did is the point. Anything else means
+        # the agent wrote a value nobody asked for: a session delivered to the
+        # address the caller cannot reach, or a seat count decremented twice.
         gold_touched = {
             key for key in set(before) | set(gold_after)
             if before.get(key) != gold_after.get(key)
         }
 
         for key in sorted(set(before) | set(after)):
-            if key in gold_touched or before.get(key) == after.get(key):
+            if key in gold_touched:
+                if after.get(key) in (before.get(key), gold_after.get(key)):
+                    continue
+                kind = "diverged from the gold path"
+            elif before.get(key) == after.get(key):
                 continue
-            if key not in before:
+            elif key not in before:
                 if table in append_ok:
                     continue
                 kind = "inserted"
@@ -310,7 +321,7 @@ def main() -> None:
     lines.append(f"required facts:  {matched}/{checked}")
     for error in state_errors:
         lines.append(f"  FACT {error}")
-    lines.append(f"collateral damage: {len(damage)} row(s) the gold path never touched")
+    lines.append(f"collateral damage: {len(damage)} row(s) changed beyond what the gold path did")
     for row in damage[:20]:
         lines.append(f"  DAMAGE {row['table']}[{row['row']}] {row['kind']}")
     if len(damage) > 20:
