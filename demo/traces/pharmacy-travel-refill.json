@@ -728,7 +728,7 @@
       "status": "approved_one_time",
       "urgency_context": "Patient leaves town on the morning of 2026-08-28 and needs the inhaler on the evening of 2026-08-27",
       "requested_at": "2026-08-27T18:12:00-05:00",
-      "consumed_at": "2026-08-27T18:12:00-05:00"
+      "consumed_at": null
      }
     }
    ]
@@ -901,7 +901,7 @@
       "pharmacist_verification_required": true,
       "position": 1,
       "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
-      "priority_note": "present",
+      "priority_note": "absent",
       "status": "active"
      }
     },
@@ -941,7 +941,7 @@
       "fill_store_id": "8e22d41d-843c-4e73-95c0-3c9877366ba9",
       "last_fill_date": "2026-08-05",
       "medication_id": "9dcd4906-4db3-4290-bccd-afde111823cb",
-      "notification_channel": "sms",
+      "notification_channel": null,
       "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
       "payment_options": [
        "app_prepay_if_offered_when_ready",
@@ -950,9 +950,9 @@
       "prescriber": "Dr. Elena Vasquez",
       "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
       "prescription_valid": true,
-      "priority_reason": "traveling on 2026-08-28; waiting for pickup on the evening of 2026-08-27",
+      "priority_reason": null,
       "quantity": "1 inhaler (8.5 g)",
-      "ready_alert": "enabled",
+      "ready_alert": null,
       "ready_alert_destination_id": "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e",
       "received_at": "2026-08-27T10:42:00-05:00",
       "refills_remaining": 3,
@@ -1183,7 +1183,7 @@
       "fill_store_id": "8e22d41d-843c-4e73-95c0-3c9877366ba9",
       "last_fill_date": "2026-08-05",
       "medication_id": "9dcd4906-4db3-4290-bccd-afde111823cb",
-      "notification_channel": "sms",
+      "notification_channel": null,
       "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
       "payment_options": [
        "app_prepay_if_offered_when_ready",
@@ -1194,7 +1194,7 @@
       "prescription_valid": true,
       "priority_reason": "traveling on 2026-08-28; waiting for pickup on the evening of 2026-08-27",
       "quantity": "1 inhaler (8.5 g)",
-      "ready_alert": "enabled",
+      "ready_alert": null,
       "ready_alert_destination_id": "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e",
       "received_at": "2026-08-27T10:42:00-05:00",
       "refills_remaining": 3,

@@ -679,7 +679,7 @@
      "after": {
       "card_id": "card-colin-6148",
       "section": "declines",
-      "reads_served": 2,
+      "reads_served": 1,
       "last_seen_seq": 574
      }
     }
@@ -965,8 +965,8 @@
      "after": {
       "card_id": "card-colin-6148",
       "section": "authorizations",
-      "reads_served": 2,
-      "last_seen_seq": 652
+      "reads_served": 1,
+      "last_seen_seq": 575
      }
     },
     {

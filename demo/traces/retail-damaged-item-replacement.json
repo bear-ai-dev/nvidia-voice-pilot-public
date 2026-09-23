@@ -637,7 +637,7 @@
      },
      "after": {
       "order_reference": "5820454086",
-      "reads_served": 2,
+      "reads_served": 1,
       "section": "eligible_resolutions"
      }
     }
@@ -1150,8 +1150,8 @@
       "template": "replacement_confirmation",
       "message_type": "replacement_confirmation",
       "masked_destination": "e***@northmail.com",
-      "status": "sent",
-      "status_index": 1,
+      "status": "queued",
+      "status_index": 0,
       "status_progression": [
        "queued",
        "sent",

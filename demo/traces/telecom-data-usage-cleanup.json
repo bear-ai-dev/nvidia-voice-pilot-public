@@ -1477,7 +1477,7 @@
       "tool_name": "get_customer_bills"
      },
      "after": {
-      "calls_served": 2,
+      "calls_served": 1,
       "default_step_seconds": 30,
       "tool_name": "get_customer_bills"
      }

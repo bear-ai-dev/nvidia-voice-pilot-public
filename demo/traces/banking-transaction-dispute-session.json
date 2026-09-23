@@ -904,7 +904,7 @@
       "customer_id": "4e8c3a97-e6ad-4737-aede-c8acd4993277",
       "workflow": "transaction_dispute",
       "resource_id": "b2047621-d2c7-437c-bb56-c81a700e2099",
-      "status": "open_not_submitted",
+      "status": "issued",
       "submitted": false,
       "resume_supported": true,
       "save_and_continue": null,
@@ -921,7 +921,7 @@
       "visible_stages": null,
       "customer_opens": true,
       "issued_at": "2026-02-25T16:20:00-05:00",
-      "opened_at": "2026-02-25T16:20:00-05:00",
+      "opened_at": null,
       "expires_at": null
      }
     },

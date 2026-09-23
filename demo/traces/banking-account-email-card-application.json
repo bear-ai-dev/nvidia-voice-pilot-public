@@ -931,8 +931,8 @@
       "confirmation_id": "a241c1d7-d6c0-4489-9406-65a28d3bca66",
       "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
       "purpose": "email_change",
-      "status": "verified",
-      "verified_at": "2026-08-27T10:48:39-04:00",
+      "status": "sent",
+      "verified_at": null,
       "sent_at": "2026-08-27T10:46:31-04:00",
       "channel_id": "279561c9-f2ce-4402-a23a-2e19316678b3",
       "masked_destination": "***-***-1251",
@@ -1613,7 +1613,7 @@
       "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
       "workflow": "card_application",
       "resource_id": "c6c675e6-0faf-4004-a5de-881eaaa805b7",
-      "status": "open_not_submitted",
+      "status": "issued",
       "submitted": false,
       "resume_supported": true,
       "save_and_continue": true,
@@ -1626,7 +1626,7 @@
       "visible_stages": null,
       "customer_opens": true,
       "issued_at": "2026-08-27T10:46:31-04:00",
-      "opened_at": "2026-08-27T10:46:31-04:00",
+      "opened_at": null,
       "expires_at": null
      }
     },

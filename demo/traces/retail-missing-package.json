@@ -567,7 +567,7 @@
      },
      "after": {
       "order_reference": "5820447319",
-      "reads_served": 2,
+      "reads_served": 1,
       "section": "carrier_scans"
      }
     }
@@ -989,7 +989,7 @@
       "deadline_at": "2026-08-26T22:00:00+00:00",
       "carrier_may_contact_customer": true,
       "replacement_created": false,
-      "requested_resolution": "replacement",
+      "requested_resolution": "undecided",
       "needed_by": "2026-08-27",
       "approval_required": true,
       "approval_channel": "trace_notification",
@@ -1430,8 +1430,8 @@
       "template": "delivery_trace_confirmation",
       "message_type": "delivery_trace_confirmation",
       "masked_destination": "e***@northmail.com",
-      "status": "delivered",
-      "status_index": 1,
+      "status": "sent",
+      "status_index": 0,
       "status_progression": [
        "sent",
        "delivered"

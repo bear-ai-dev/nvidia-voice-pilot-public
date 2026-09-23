@@ -619,7 +619,7 @@
      },
      "after": {
       "order_reference": "5820465624",
-      "reads_served": 3,
+      "reads_served": 1,
       "section": "payments"
      }
     },
@@ -637,7 +637,7 @@
      },
      "after": {
       "order_reference": "5820465624",
-      "reads_served": 3,
+      "reads_served": 1,
       "section": "refunds"
      }
     }
@@ -851,7 +851,7 @@
      },
      "after": {
       "order_reference": "5820465624",
-      "reads_served": 3,
+      "reads_served": 2,
       "section": "payments"
      }
     },
@@ -869,7 +869,7 @@
      },
      "after": {
       "order_reference": "5820465624",
-      "reads_served": 3,
+      "reads_served": 2,
       "section": "refunds"
      }
     }

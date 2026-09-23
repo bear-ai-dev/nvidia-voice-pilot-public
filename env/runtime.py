@@ -120,8 +120,10 @@ def row_changes(before: dict, after: dict) -> list[dict]:
             else:
                 kind = "updated"
                 columns = sorted(c for c in set(old) | set(new) if old.get(c) != new.get(c))
-            changes.append({"table": table, "key": key, "kind": kind,
-                            "columns": columns, "before": old, "after": new})
+            # Snapshots, not references: the live row keeps changing on later
+            # calls, and a step must record the row as this call left it.
+            changes.append({"table": table, "key": key, "kind": kind, "columns": columns,
+                            "before": copy.deepcopy(old), "after": copy.deepcopy(new)})
     return changes
 
 
