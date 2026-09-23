@@ -5,7 +5,8 @@ that its task file scores the recording the way tau2 would.
 For every conversation with a db.json, replay the tool calls recorded in its
 annotated transcript against the domain's tools and require:
 
-  1. every call succeeds and returns exactly the recorded output,
+  1. every call succeeds and returns exactly the recorded output, which also
+     satisfies the tool's result_schema in the registry,
   2. the database afterwards equals state/db_after.json, the end state the
      original PostgreSQL backend reached on the same calls,
 
@@ -28,6 +29,7 @@ import os
 import sys
 
 from evaluate import evaluate, find_task, recorded_trajectory
+import schema
 from runtime import ROOT, Environment, load_json, row_changes
 
 
@@ -65,6 +67,11 @@ def check_conversation(conversation_id: str) -> list[str]:
             problems.append(f"{call['call_id']} {call['name']}: output differs\n"
                             f"      recorded {canonical(call['output'])[:400]}\n"
                             f"      got      {canonical(step.output)[:400]}")
+        else:
+            violations = schema.validate(step.output, env.schemas[call["name"]]["result_schema"])
+            if violations:
+                problems.append(f"{call['call_id']} {call['name']}: output breaks the "
+                                f"result_schema: {violations[:3]}")
     expected = load_json(os.path.join(ROOT, "conversations", conversation_id, "state", "db_after.json"))
     for change in row_changes(expected, env.db)[:10]:
         problems.append(f"end state: {change['table']}[{change['key']}] {change['kind']} "
