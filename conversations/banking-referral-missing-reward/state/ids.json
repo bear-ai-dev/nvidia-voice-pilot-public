@@ -1,0 +1,11 @@
+{
+ "identity_verification": [
+  "05f09e63-bd3c-4a75-813f-5429ac6d685c"
+ ],
+ "notification": [
+  "4f70ccca-a2a3-4b99-ae66-cfb9d0e975c8"
+ ],
+ "self_service_session": [
+  "b549b0e6-fced-4596-8794-db42a62476a6"
+ ]
+}

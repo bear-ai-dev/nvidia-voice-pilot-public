@@ -54,17 +54,12 @@
       ],
       "authorizations": [
         {
-          "transaction_id": "131fc14b-fc2e-4ec9-ad07-248d01f7d54b",
-          "merchant": "Logan Airport",
-          "amount": 32,
-          "status": "approved",
-          "occurred_at": "2026-08-28T08:05:00-04:00"
-        },
-        {
           "transaction_id": "f96da295-2259-4311-b31d-661ab6053092",
           "merchant": "Harbor View Hotel",
+          "merchant_location": "Portland, Maine",
           "amount": 840,
-          "status": "approved"
+          "status": "approved",
+          "occurred_at": "2026-08-28T14:33:49-04:00"
         }
       ],
       "restrictions": [

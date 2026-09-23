@@ -200,7 +200,7 @@
       {
         "type": "function_call_output",
         "call_id": "br-003",
-        "output": "\n\n{\"verification_id\":\"05f09e63-bd3c-4a75-813f-5429ac6d685c\",\"status\":\"verified\",\"matched_methods\":[\"billing_zip\",\"birth_month_day\"],\"verified_at\":\"2026-08-28T09:09:00-04:00\"}"
+        "output": "\n\n{\"verification_id\":\"05f09e63-bd3c-4a75-813f-5429ac6d685c\",\"status\":\"verified\",\"matched_methods\":[\"billing_zip\",\"birth_month_day\"],\"verified_at\":\"2026-08-28T09:10:13-04:00\"}"
       },
       {
         "id": "msg_0001_0015",

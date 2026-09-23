@@ -1,0 +1,96 @@
+[
+ {
+  "event_id": "logan-authorization-clears",
+  "at_seconds": 200,
+  "actor": "card_network",
+  "description": "The $32 Logan Airport authorization from this morning clears: the posted charge is written to the ledger and the hold is released.",
+  "changes": [
+   {
+    "op": "insert",
+    "table": "transactions",
+    "row": {
+     "transaction_id": "3d0fd4dd-bd1d-5697-b5cf-288ade0f1427",
+     "record_seq": 652,
+     "card_id": "card-colin-6148",
+     "kind": "posted",
+     "merchant_key": "logan",
+     "merchant": "Logan Airport",
+     "merchant_location": null,
+     "descriptor": "LOGAN AIRPORT F&B",
+     "category": "travel",
+     "amount": 32.0,
+     "currency": "USD",
+     "status": "posted",
+     "reason": null,
+     "settlement_state": "settled",
+     "occurred_at": "2026-08-28T08:05:00-04:00",
+     "posted_date": "2026-08-28",
+     "resource_label": "transaction ending 0005",
+     "short_ref": "0005",
+     "linked_transaction_id": null,
+     "retry_of_transaction_id": null
+    }
+   },
+   {
+    "op": "update",
+    "table": "transactions",
+    "key": "131fc14b-fc2e-4ec9-ad07-248d01f7d54b",
+    "set": {
+     "settlement_state": "released",
+     "linked_transaction_id": "3d0fd4dd-bd1d-5697-b5cf-288ade0f1427"
+    }
+   }
+  ]
+ },
+ {
+  "event_id": "hotel-retries-authorization",
+  "at_seconds": 229,
+  "actor": "merchant",
+  "description": "Harbor View Hotel runs the $840 authorization again once the card is active; it is approved and holds $840 of available credit.",
+  "when": [
+   {
+    "table": "card_accounts",
+    "key": "card-colin-6148",
+    "equals": {
+     "status": "active"
+    }
+   }
+  ],
+  "changes": [
+   {
+    "op": "insert",
+    "table": "transactions",
+    "row": {
+     "transaction_id": "f96da295-2259-4311-b31d-661ab6053092",
+     "record_seq": 653,
+     "card_id": "card-colin-6148",
+     "kind": "authorization",
+     "merchant_key": "hotel",
+     "merchant": "Harbor View Hotel",
+     "merchant_location": "Portland, Maine",
+     "descriptor": "HARBOR VIEW HTL",
+     "category": "lodging",
+     "amount": 840.0,
+     "currency": "USD",
+     "status": "approved",
+     "reason": null,
+     "settlement_state": "pending",
+     "occurred_at": "$now",
+     "posted_date": null,
+     "resource_label": null,
+     "short_ref": null,
+     "linked_transaction_id": null,
+     "retry_of_transaction_id": "5af2030f-3fad-402f-a1de-23501596194a"
+    }
+   },
+   {
+    "op": "update",
+    "table": "card_accounts",
+    "key": "card-colin-6148",
+    "set": {
+     "available_credit": 72.0
+    }
+   }
+  ]
+ }
+]

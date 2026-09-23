@@ -3,11 +3,18 @@
 Ported from the PostgreSQL tool server in PR #17. Each tool is (db, args) -> result
 and may mutate db in place; see env/toolkit.py for the row layout and helpers.
 
-Tools hold domain logic only. Every identifier, masked destination, amount,
-status, product term, and timestamp that appears in a result is read from the
-database or derived from a column by a stated rule, never generated at random or
-taken from wall time, so a result is reproducible and an operator can explain any
-value by pointing at a row.
+Tools hold domain logic only. Every masked destination, amount, status, and
+product term that appears in a result is read from the database or derived from a
+column by a stated rule. A new record's identifier comes from the environment's
+seeded generator (toolkit.new_id) and its timestamps from the call clock
+(toolkit.now), the way a real service reads its id generator and its clock, so a
+replay is still reproducible.
+
+Reads never write. What other people do while the call is in progress (the
+customer entering a code or opening a link, a merchant retrying a charge, an
+authorization clearing) is not a side effect of any tool: each conversation lists
+those as scheduled events in state/events.json, applied by the runtime at their
+own time.
 
 The original server ran on a database created with the C.UTF-8 locale, so text
 compares and sorts by code point, which is how Python compares str. Where it
@@ -22,21 +29,17 @@ import datetime as dt
 import re
 from decimal import Decimal
 
-from toolkit import (NotFound, Refusal, ToolError, allocate_id, as_float, as_list_always,
-                     compact, first, insert, rows, scenario_id, scenario_value)
+from toolkit import (NotFound, Refusal, ToolError, as_float, as_list_always, compact,
+                     first, insert, new_id, now, now_iso, rows, scenario_value)
 
 # Key columns per table: a row's key in db[table] is these columns joined by "|".
 KEY_COLUMNS = {
     "card_accounts": ["card_id"],
     "card_products": ["product_id"],
     "card_restrictions": ["restriction_id"],
-    "card_section_policy": ["section"],
-    "card_section_read_cursor": ["card_id", "section"],
-    "card_section_view": ["scope", "section", "view_index"],
     "channel_confirmations": ["confirmation_id"],
     "customers": ["customer_id"],
     "delivery_channels": ["channel"],
-    "id_allocator": ["entity_type", "scope"],
     "identity_verifications": ["verification_id"],
     "kb_records": ["record_id"],
     "notification_templates": ["template"],
@@ -64,6 +67,15 @@ MONTH_NUMBERS = {
 # Card sections in the order the registry declares them on the result.
 SECTION_ORDER = ("status", "available_credit", "authorizations", "declines",
                  "restrictions", "travel_notices")
+
+# The fields each ledger-backed section returns: every field the registry declares
+# for its items.
+LEDGER_SECTION_FIELDS = {
+    "authorizations": ("transaction_id", "merchant", "merchant_location", "amount",
+                       "currency", "status", "occurred_at"),
+    "declines": ("transaction_id", "merchant", "merchant_location", "amount",
+                 "currency", "status", "reason"),
+}
 
 
 class DatabaseError(ToolError):
@@ -164,13 +176,6 @@ def _decimal(value) -> Decimal | None:
     return None if value is None else Decimal(str(value))
 
 
-def _next_record_seq(db) -> int:
-    """transactions.record_seq is a BIGSERIAL. The seed inserts every ledger row
-    through its sequence and nothing deletes from the ledger, so the next value
-    the sequence issues is one past the highest in the table."""
-    return max((t["record_seq"] for t in db["transactions"].values()), default=0) + 1
-
-
 # ---------------------------------------------------------------------------
 # rendering
 # ---------------------------------------------------------------------------
@@ -203,16 +208,6 @@ def mask_email(email):
     return f"{local[:1]}***@{domain}"
 
 
-def destination_slug(destination: str) -> str:
-    """Naming stem for a place, as the bank's record identifiers use it.
-
-    'Portland, Maine' names a notice 'travel-notice-<customer>-portland': the
-    city carries the name and the region only qualifies it.
-    """
-    head = destination.split(",")[0].strip().lower()
-    return re.sub(r"[^a-z0-9]+", "-", head).strip("-") or "trip"
-
-
 def _parse_iso(value):
     if not value:
         return None
@@ -223,12 +218,11 @@ def _parse_iso(value):
 
 
 def _is_expired(db, expires_at) -> bool:
-    """True when the scenario clock has passed a stored expiry."""
+    """True when the call clock has passed a stored expiry."""
     deadline = _parse_iso(expires_at)
-    now = _parse_iso(scenario_value(db, "scenario_time"))
-    if deadline is None or now is None:
+    if deadline is None:
         return False
-    return now > deadline
+    return now(db) > deadline
 
 
 def _plus_minutes(stamp, minutes: int):
@@ -236,24 +230,6 @@ def _plus_minutes(stamp, minutes: int):
     if parsed is None:
         return None
     return (parsed + dt.timedelta(minutes=minutes)).isoformat()
-
-
-def _unique_id(db, table: str, column: str, candidate: str) -> str:
-    """The candidate identifier, suffixed if the bank already issued it.
-
-    Readable identifiers are derived from business keys, so a second record for
-    the same key would collide. The suffix keeps them distinct rather than
-    letting the second record overwrite the first. The taken set is what the
-    original's `column = candidate OR column LIKE candidate || '-%'` selected.
-    """
-    taken = {r[column] for r in db[table].values()
-             if r[column] == candidate or _like(r[column], candidate + "-%")}
-    if candidate not in taken:
-        return candidate
-    suffix = 2
-    while f"{candidate}-{suffix}" in taken:
-        suffix += 1
-    return f"{candidate}-{suffix}"
 
 
 # ---------------------------------------------------------------------------
@@ -338,7 +314,7 @@ def get_current_time(db, args) -> dict:
         return {"status": status}
     return {
         "status": "available",
-        "timestamp": scenario_value(db, "scenario_time"),
+        "timestamp": now_iso(db),
         "timezone": scenario_value(db, "timezone"),
     }
 
@@ -393,39 +369,29 @@ def verify_customer_identity(db, args) -> dict:
     matched_methods = [factor for factor in required if factor in matched]
     verified = all(factor in matched for factor in required)
 
-    now = scenario_value(db, "scenario_time")
+    stamp = now_iso(db)
     # A verification record is scoped to the reason the profile is in contact.
-    # Re-verifying inside one case returns that case's record rather than
-    # minting a second record for the same piece of work.
+    # Re-verifying inside one open case updates that case's record rather than
+    # minting a second record for the same piece of work; a profile with no open
+    # case gets a new record per attempt.
     case = first(db, "service_cases", customer_id=customer["customer_id"], status="open")
-    forced_id = scenario_id(db, "next_identity_verification_id",
-                            "identity_verifications", "verification_id",
-                            {"customer_id": customer["customer_id"]})
-    if forced_id:
-        verification_id = forced_id
-    elif case:
-        verification_id = (f"verification-{customer['verification_key']}"
-                           f"-{case['case_slug']}")
-    else:
-        verification_id = allocate_id(db, "identity_verification")
-
-    time_asserted = bool(args.get("verified_at"))
+    existing = case and first(db, "identity_verifications",
+                              customer_id=customer["customer_id"], case_id=case["case_id"])
     outcome = {
         "status": "verified" if verified else "unverified",
         "matched_methods": matched_methods,
-        "verified_at": now if verified else None,
-        "expires_at": _plus_minutes(now, 30) if verified else None,
-        "time_asserted": time_asserted,
+        "verified_at": stamp if verified else None,
+        "expires_at": _plus_minutes(stamp, 30) if verified else None,
     }
-    # An upsert on the identifier: a record that already exists keeps its
-    # customer and required methods and takes the new outcome.
-    existing = db["identity_verifications"].get(verification_id)
-    if existing is not None:
+    if existing:
+        verification_id = existing["verification_id"]
         existing.update(outcome)
     else:
+        verification_id = new_id(db, "identity_verification")
         insert(db, "identity_verifications", {
             "verification_id": verification_id,
             "customer_id": customer["customer_id"],
+            "case_id": case["case_id"] if case else None,
             "required_methods": required,
             **outcome,
         }, KEY_COLUMNS)
@@ -438,7 +404,7 @@ def verify_customer_identity(db, args) -> dict:
         # time is the authoritative one, so an asserted time is answered with
         # the time the record actually carries; a caller who asserted nothing is
         # given nothing to reconcile.
-        ("verified_at", now if (time_asserted and verified) else None),
+        ("verified_at", outcome["verified_at"] if args.get("verified_at") else None),
     ])
 
 
@@ -470,29 +436,30 @@ def start_trusted_channel_confirmation(db, args) -> dict:
                       {"channel": args["channel"]})
     channel = channels[0]
 
-    now = scenario_value(db, "scenario_time")
+    stamp = now_iso(db)
     purpose = args["purpose"]
-    confirmation_id = scenario_id(
-        db, "next_channel_confirmation_id", "channel_confirmations", "confirmation_id",
-        {"customer_id": customer["customer_id"], "purpose": purpose}) or (
-        f"confirmation-{purpose.replace('_', '-')}-{customer['verification_key']}")
-    # Starting the same purpose again re-sends the challenge on the same record
-    # rather than opening a second one, and resets it to 'sent': a re-sent
-    # challenge is not a completed one. It goes to the channel named this time,
-    # so the record and the reply agree on where the code went.
+    # Starting the same purpose again while a challenge is still outstanding
+    # re-sends that challenge rather than opening a second one. It goes to the
+    # channel named this time, so the record and the reply agree on where the
+    # code went. A completed or expired challenge is not reopened.
+    pending = [c for c in rows(db, "channel_confirmations",
+                               customer_id=customer["customer_id"], purpose=purpose,
+                               status="sent")
+               if not _is_expired(db, c["expires_at"])]
     challenge = {
         "status": "sent",
         "verified_at": None,
-        "sent_at": now,
+        "sent_at": stamp,
         "channel_id": channel["channel_id"],
         "masked_destination": channel["masked_destination"],
-        "expires_at": _plus_minutes(now, 15),
+        "expires_at": _plus_minutes(stamp, 15),
         "verification_id": args["verification_id"],
     }
-    existing = db["channel_confirmations"].get(confirmation_id)
-    if existing is not None:
-        existing.update(challenge)
+    if pending:
+        confirmation_id = pending[0]["confirmation_id"]
+        pending[0].update(challenge)
     else:
+        confirmation_id = new_id(db, "channel_confirmation")
         insert(db, "channel_confirmations", {
             "confirmation_id": confirmation_id,
             "customer_id": customer["customer_id"],
@@ -516,19 +483,13 @@ def get_trusted_channel_confirmation(db, args) -> dict:
     if channel is None:
         raise NotFound(f"unknown confirmation {args['confirmation_id']!r}")
 
+    # The challenge moves to 'verified' only when the customer answers it
+    # through the secure path, which the OTP service records on the row. This
+    # read reports the row; an outstanding challenge past its expiry reads as
+    # expired without the read changing anything.
     status, verified_at = row["status"], row["verified_at"]
-    if status in ("requested", "sent", "delivered"):
-        if _is_expired(db, row["expires_at"]):
-            status, verified_at = "expired", None
-        elif channel["confirmation_completes"]:
-            # The customer completes the challenge through the approved secure
-            # path, which no tool can observe happening. The channel records
-            # whether its owner completes it and when, so this read writes the
-            # transition once and every later read reports the same record.
-            status = "verified"
-            verified_at = (channel["confirmation_verified_at"]
-                           or scenario_value(db, "scenario_time"))
-        row["status"], row["verified_at"] = status, verified_at
+    if status in ("requested", "sent", "delivered") and _is_expired(db, row["expires_at"]):
+        status, verified_at = "expired", None
 
     return compact([
         ("confirmation_id", row["confirmation_id"]),
@@ -668,80 +629,13 @@ def _card(db, customer_id: str, card_last4) -> dict:
     return cards[0]
 
 
-TRANSACTION_FIELDS = {
-    "transaction_id": lambda r: r["transaction_id"],
-    "merchant": lambda r: r["merchant"],
-    "merchant_location": lambda r: r["merchant_location"],
-    "amount": lambda r: as_amount(r["amount"]),
-    "currency": lambda r: r["currency"],
-    "status": lambda r: r["status"],
-    "reason": lambda r: r["reason"],
-    "occurred_at": lambda r: r["occurred_at"],
-}
-
-
-def _deepest_view(db, scope: str, section: str):
-    views = rows(db, "card_section_view", scope=scope, section=section)
-    return max((v["view_index"] for v in views), default=None)
-
-
-def _section_depth(db, card_id: str, section: str):
-    """Disclosure depth this read serves, and where the last read stopped.
-
-    A section that has been read before is served its next deeper read model,
-    and once the deepest one has been served it repeats. The count is a row, so
-    an operator can see how many times a section was read.
-    """
-    cursor = (db["card_section_read_cursor"].get(f"{card_id}|{section}")
-              or {"reads_served": 0, "last_seen_seq": 0})
-    # A card with its own views uses them; every other card uses the '*' depth.
-    deepest = _deepest_view(db, card_id, section)
-    if deepest is None:
-        deepest = _deepest_view(db, "*", section)
-    return min(cursor["reads_served"], deepest or 0), cursor["last_seen_seq"]
-
-
-def _section_fields(db, card_id: str, section: str, view_index: int) -> list:
-    # The card's own view of this depth wins over the '*' one.
-    for scope in (card_id, "*"):
-        view = db["card_section_view"].get(f"{scope}|{section}|{view_index}")
-        if view is not None:
-            return list(view["fields"])
-    return []
-
-
-def _advance_section(db, card_id: str, section: str, new_seq: int) -> None:
-    cursor = db["card_section_read_cursor"].get(f"{card_id}|{section}")
-    if cursor is None:
-        insert(db, "card_section_read_cursor", {
-            "card_id": card_id, "section": section,
-            "reads_served": 1, "last_seen_seq": new_seq,
-        }, KEY_COLUMNS)
-    else:
-        cursor["reads_served"] += 1
-        cursor["last_seen_seq"] = max(cursor["last_seen_seq"], new_seq)
-
-
 def _ledger_section(db, card: dict, section: str, **where) -> list:
-    """Rows of one transaction-backed section, at the depth this read serves."""
-    view_index, last_seen_seq = _section_depth(db, card["card_id"], section)
-    fields = _section_fields(db, card["card_id"], section, view_index)
-    policy = db["card_section_policy"].get(section)
-    incremental = bool(policy and policy["disclosure"] == "incremental")
-
+    """Rows of one transaction-backed section, in ledger order."""
     ledger = sorted(rows(db, "transactions", card_id=card["card_id"], **where),
                     key=lambda t: t["record_seq"])
-    highest = max([t["record_seq"] for t in ledger] + [last_seen_seq])
-    _advance_section(db, card["card_id"], section, highest)
-
-    if incremental:
-        # An incremental section reports what the ledger recorded after the
-        # previous read of it, which is how a second look at a card's
-        # authorizations answers "what has happened since" rather than repeating.
-        ledger = [t for t in ledger if t["record_seq"] > last_seen_seq]
     return [
-        compact([(name, TRANSACTION_FIELDS[name](t)) for name in fields
-                 if name in TRANSACTION_FIELDS])
+        compact([(name, as_amount(t[name]) if name == "amount" else t[name])
+                 for name in LEDGER_SECTION_FIELDS[section]])
         for t in ledger
     ]
 
@@ -760,13 +654,10 @@ def get_card_account(db, args) -> dict:
                     "card_last4": card["card_last4"]}
 
     if "status" in requested:
-        _advance_section(db, card["card_id"], "status", 0)
-        for name in _section_fields(db, card["card_id"], "status", 0):
-            if name in ("status", "reported_lost", "payment_status"):
-                result[name] = card[name]
+        for name in ("status", "reported_lost", "payment_status"):
+            result[name] = card[name]
 
     if "available_credit" in requested:
-        _advance_section(db, card["card_id"], "available_credit", 0)
         result["available_credit"] = as_amount(card["available_credit"])
         result["available_credit_currency"] = card["available_credit_currency"]
 
@@ -779,7 +670,6 @@ def get_card_account(db, args) -> dict:
         result["declines"] = _ledger_section(db, card, "declines", kind="decline")
 
     if "restrictions" in requested:
-        _advance_section(db, card["card_id"], "restrictions", 0)
         restrictions = sorted(rows(db, "card_restrictions", card_id=card["card_id"]),
                               key=lambda r: (r["opened_at"], r["restriction_id"]))
         result["restrictions"] = [
@@ -793,7 +683,6 @@ def get_card_account(db, args) -> dict:
         ]
 
     if "travel_notices" in requested:
-        _advance_section(db, card["card_id"], "travel_notices", 0)
         notices = sorted(rows(db, "travel_notices", card_id=card["card_id"], status="created"),
                          key=lambda n: (n["created_at"], n["notice_id"]))
         result["travel_notices"] = [
@@ -823,12 +712,10 @@ def resolve_card_restriction(db, args) -> dict:
         # with a status the agent would read back as resolved.
         raise Refusal("this restriction is not resolved by confirming activity")
 
-    # The linked activity as it stood before this resolution changed any of it.
-    linked = [dict(db["transactions"][transaction_id])
-              for transaction_id in _linked_transaction_ids(db, restriction["restriction_id"])]
     confirmed = set(args["confirmed_transaction_ids"])
-    unconfirmed = [t["transaction_id"] for t in linked
-                   if t["transaction_id"] not in confirmed]
+    unconfirmed = [transaction_id
+                   for transaction_id in _linked_transaction_ids(db, restriction["restriction_id"])
+                   if transaction_id not in confirmed]
     if unconfirmed:
         # Every activity the review holds has to be accounted for. Lifting the
         # review while some of it is unconfirmed would remove the control that
@@ -836,62 +723,16 @@ def resolve_card_restriction(db, args) -> dict:
         raise Refusal("some activity linked to this restriction was not confirmed",
                       {"unconfirmed_count": len(unconfirmed)})
 
-    now = scenario_value(db, "scenario_time")
-    restriction["status"], restriction["resolved_at"] = "removed", now
+    # Lifting the review lifts the block and nothing else. The ledger is left as
+    # it is: a declined attempt stays declined, and a pending authorization stays
+    # pending until it clears. A merchant that tries again after this submits a
+    # new authorization through the card network, which arrives as its own ledger
+    # row with its own time and holds credit only then.
+    stamp = now_iso(db)
+    restriction["status"], restriction["resolved_at"] = "removed", stamp
     for link in rows(db, "restriction_transactions",
                      restriction_id=restriction["restriction_id"]):
-        link["confirmed_at"] = now
-
-    available = _decimal(card["available_credit"])
-    for row in linked:
-        if row["kind"] == "authorization" and row["settlement_state"] == "pending":
-            # A hold the review was sitting on settles once its activity is
-            # confirmed, so it stops being an outstanding authorization.
-            db["transactions"][row["transaction_id"]]["settlement_state"] = "settled"
-        elif row["kind"] == "decline" and row["represented_as"] is None:
-            # A confirmed attempt the review declined is re-presented: the bank
-            # pre-approves the amount so the merchant's next attempt carries an
-            # approval instead of the same block. Everything that belongs to the
-            # merchant's submission rather than to the pre-approval is left
-            # unset: the time it is submitted and the location it is submitted
-            # from are not known until the merchant submits, which happens
-            # outside every tool here.
-            #
-            # A hold has to be covered in full by the line, so an attempt the
-            # remaining credit cannot cover stays declined even though the
-            # customer confirmed it.
-            amount = _decimal(row["amount"])
-            if available < amount:
-                continue
-            new_id = scenario_id(db, "next_represented_transaction_id",
-                                 "transactions", "transaction_id") or _unique_id(
-                db, "transactions", "transaction_id",
-                f"{row['merchant_key']}-authorization-{as_amount(row['amount'])}")
-            insert(db, "transactions", {
-                "transaction_id": new_id,
-                "record_seq": _next_record_seq(db),
-                "card_id": row["card_id"],
-                "kind": "authorization",
-                "merchant_key": row["merchant_key"],
-                "merchant": row["merchant"],
-                "merchant_location": None,
-                "descriptor": None,
-                "category": None,
-                "amount": row["amount"],
-                "currency": row["currency"],
-                "status": "approved",
-                "reason": None,
-                "settlement_state": "pending",
-                "occurred_at": None,
-                "posted_date": None,
-                "resource_label": None,
-                "short_ref": None,
-                "represented_as": None,
-                "linked_transaction_id": None,
-            }, KEY_COLUMNS)
-            db["transactions"][row["transaction_id"]]["represented_as"] = new_id
-            available -= amount
-            card["available_credit"] = float(available)
+        link["confirmed_at"] = stamp
 
     still_open = first(db, "card_restrictions", card_id=card["card_id"], status="open")
     card_status = "temporarily_restricted" if still_open else "active"
@@ -903,12 +744,7 @@ def resolve_card_restriction(db, args) -> dict:
 
 def create_travel_notice(db, args) -> dict:
     card = _card(db, args["customer_id"], args.get("card_last4"))
-    customer = _customer(db, args["customer_id"])
-    notice_id = scenario_id(db, "next_travel_notice_id",
-                            "travel_notices", "notice_id") or _unique_id(
-        db, "travel_notices", "notice_id",
-        f"travel-notice-{customer['notice_slug']}"
-        f"-{destination_slug(args['destinations'][0])}")
+    notice_id = new_id(db, "travel_notice")
     # return_date is a DATE column, so the record holds the calendar date the
     # argument names in its canonical YYYY-MM-DD form.
     return_date = args.get("return_date")
@@ -918,7 +754,7 @@ def create_travel_notice(db, args) -> dict:
         "destinations": list(args["destinations"]),
         "return_date": dt.date.fromisoformat(return_date).isoformat() if return_date else None,
         "status": "created",
-        "created_at": scenario_value(db, "scenario_time"),
+        "created_at": now_iso(db),
     }, KEY_COLUMNS)
     # The record is what was created. What a notice does and does not do for
     # later authorizations is policy and knowledge-base content, not a field of it.
@@ -940,8 +776,7 @@ def get_referrals(db, args) -> dict:
     return {"referrals": [
         compact([
             ("referral_id", r["referral_id"]),
-            ("reference_code", scenario_value(db, "target_referral_reference")
-             if r["referral_id"] == scenario_value(db, "target_referral_id") else None),
+            ("reference_code", r["reference_code"]),
             ("invited_at", r["invited_on"]),
             ("invited_contact",
              {"channel": r["invited_channel"], "masked": r["invited_masked"]}
@@ -1033,8 +868,9 @@ def _linked_authorizations(db, transaction_id: str) -> list:
 # ---------------------------------------------------------------------------
 
 
-def _resource(db, workflow: str, customer_id: str, resource_id: str) -> dict:
-    """Check the resource exists, belongs to the customer, and is usable.
+def _resource_label(db, workflow: str, customer_id: str, resource_id: str) -> str | None:
+    """Check the resource exists, belongs to the customer, and is usable, and
+    return the label a session shows for it.
 
     A session is scoped to a real product, referral, or transaction; an
     identifier derived from a display name resolves to nothing here.
@@ -1043,17 +879,17 @@ def _resource(db, workflow: str, customer_id: str, resource_id: str) -> dict:
         product = first(db, "card_products", product_id=resource_id, active=True)
         if product is None:
             raise NotFound(f"unknown or withdrawn card product {resource_id!r}")
-        return {"label": product["product"], "short_ref": None}
+        return product["product"]
     if workflow == "referral_status":
         if first(db, "referrals", referral_id=resource_id,
                  referring_customer_id=customer_id) is None:
             raise NotFound(f"no referral {resource_id!r} for this customer")
-        return {"label": f"referral {resource_id}", "short_ref": None}
+        return f"referral {resource_id}"
     transaction = db["transactions"].get(resource_id)
     card = transaction and db["card_accounts"].get(transaction["card_id"])
     if card is None or card["customer_id"] != customer_id:
         raise NotFound(f"no transaction {resource_id!r} on this profile")
-    return {"label": transaction["resource_label"], "short_ref": transaction["short_ref"]}
+    return transaction["resource_label"]
 
 
 def create_secure_self_service_session(db, args) -> dict:
@@ -1062,24 +898,14 @@ def create_secure_self_service_session(db, args) -> dict:
     if profile is None:
         raise NotFound(f"unsupported workflow {args['workflow']!r}")
 
-    resource = _resource(db, args["workflow"], customer["customer_id"],
-                         args["resource_id"])
-    source = profile["resource_suffix_source"]
-    if source == "resource_id":
-        suffix = f"-{args['resource_id']}"
-    elif source == "resource_short_ref":
-        suffix = f"-{resource['short_ref'] or args['resource_id']}"
-    else:
-        suffix = ""
-    session_id = scenario_id(db, "next_self_service_session_id",
-                             "self_service_sessions", "session_id") or _unique_id(
-        db, "self_service_sessions", "session_id",
-        f"session-{profile['session_slug']}{suffix}")
+    resource_label = _resource_label(db, args["workflow"], customer["customer_id"],
+                                     args["resource_id"])
+    session_id = new_id(db, "self_service_session")
 
     label = None
     if profile["display_label_template"]:
         label = profile["display_label_template"].replace(
-            "{resource_label}", resource["label"] or args["resource_id"])
+            "{resource_label}", resource_label or args["resource_id"])
 
     insert(db, "self_service_sessions", {
         "session_id": session_id,
@@ -1097,8 +923,7 @@ def create_secure_self_service_session(db, args) -> dict:
         "display_label": label,
         "allowed_customer_actions": profile["allowed_customer_actions"],
         "visible_stages": profile["visible_stages"],
-        "customer_opens": True,
-        "issued_at": scenario_value(db, "scenario_time"),
+        "issued_at": now_iso(db),
         "opened_at": None,
         "expires_at": None,
     }, KEY_COLUMNS)
@@ -1165,19 +990,13 @@ def get_secure_self_service_session(db, args) -> dict:
     if session is None:
         raise NotFound(f"unknown session {args['session_id']!r} for this customer")
 
+    # Online banking moves the session to 'open_not_submitted' when the customer
+    # opens it, and on to saved, submitted or closed as they act in it. This read
+    # reports that record; an unopened session past its expiry reads as expired
+    # without the read changing anything.
     status = session["status"]
-    opened_at = session["opened_at"]
-    if status == "issued":
-        if _is_expired(db, session["expires_at"]):
-            status = "expired"
-        elif session["customer_opens"]:
-            # Opening happens in online banking, outside every tool. The session
-            # records whether its owner opens it, so the first read after
-            # delivery writes the transition it observes, and a session nobody
-            # opened keeps reading 'issued'.
-            status = "open_not_submitted"
-            opened_at = scenario_value(db, "scenario_time")
-        session["status"], session["opened_at"] = status, opened_at
+    if status == "issued" and _is_expired(db, session["expires_at"]):
+        status = "expired"
 
     result = compact([
         ("session_id", session["session_id"]),
@@ -1217,12 +1036,7 @@ def send_secure_notification(db, args) -> dict:
     if masked is None:
         raise Refusal(f"profile has no {args['channel']} destination on file")
 
-    # A notification is named after the secure resource it points at, so the
-    # audit trail links the two without a second lookup.
-    notification_id = scenario_id(db, "next_notification_id",
-                                  "notifications", "notification_id") or _unique_id(
-        db, "notifications", "notification_id",
-        "notification-" + re.sub(r"^session-", "", resource_id))
+    notification_id = new_id(db, "notification")
     insert(db, "notifications", {
         "notification_id": notification_id,
         "customer_id": customer["customer_id"],
@@ -1232,7 +1046,7 @@ def send_secure_notification(db, args) -> dict:
         "status": template["status_on_send"],
         "masked_destination": masked,
         "contains_working_secure_link": template["contains_working_secure_link"],
-        "sent_at": scenario_value(db, "scenario_time"),
+        "sent_at": now_iso(db),
     }, KEY_COLUMNS)
     return {
         "notification_id": notification_id,
@@ -1243,13 +1057,13 @@ def send_secure_notification(db, args) -> dict:
 
 
 def transfer_to_specialist(db, args) -> dict:
-    transfer_id = allocate_id(db, "specialist_transfer")
+    transfer_id = new_id(db, "specialist_transfer")
     insert(db, "specialist_transfers", {
         "transfer_id": transfer_id,
         "reason": args["reason"],
         "summary": args["summary"],
         "status": "initiated",
-        "created_at": scenario_value(db, "scenario_time"),
+        "created_at": now_iso(db),
     }, KEY_COLUMNS)
     return {"status": "initiated", "transfer_id": transfer_id}
 
@@ -1274,12 +1088,7 @@ TOOLS = {
 }
 
 # Tools that change the bank's records. Membership follows what a tool does to
-# the database, not what its name suggests: get_trusted_channel_confirmation and
-# get_secure_self_service_session both write, but all either writes is the
-# lifecycle marker for something the customer did outside every tool here -
-# completing a challenge, opening a session - so they are reads that record an
-# observation. get_card_account advances card_section_read_cursor and nothing
-# else. READ_SIDE_EFFECTS below names exactly what those reads write.
+# the database, not what its name suggests; every other tool only reads.
 WRITE_TOOLS = {
     "verify_customer_identity",
     "start_trusted_channel_confirmation",
@@ -1291,12 +1100,21 @@ WRITE_TOOLS = {
     "transfer_to_specialist",
 }
 
-# What read tools write, so a database hash can leave it out: reads must be free.
-# The two lifecycle markers are columns rather than whole tables so that an
-# inserted session or challenge nobody asked for still changes the hash; the read
-# cursor holds nothing but read state.
-READ_SIDE_EFFECTS: dict[str, list[str] | str] = {
-    "self_service_sessions": ["status", "opened_at"],
-    "channel_confirmations": ["status", "verified_at"],
-    "card_section_read_cursor": "*",
+# Reads write nothing.
+READ_SIDE_EFFECTS: dict[str, list[str] | str] = {}
+
+# Columns that only record when something happened. The DB score leaves them out,
+# so an agent is judged on what it did rather than the second it did it, and a
+# scheduled event that waits on the agent (a hotel retry after the block is
+# lifted) is judged on having happened rather than on when.
+CLOCK_COLUMNS: dict[str, list[str] | str] = {
+    "identity_verifications": ["verified_at", "expires_at"],
+    "channel_confirmations": ["sent_at", "verified_at", "expires_at"],
+    "self_service_sessions": ["issued_at", "opened_at", "expires_at"],
+    "card_restrictions": ["resolved_at"],
+    "restriction_transactions": ["confirmed_at"],
+    "transactions": ["occurred_at"],
+    "travel_notices": ["created_at"],
+    "notifications": ["sent_at"],
+    "specialist_transfers": ["created_at"],
 }

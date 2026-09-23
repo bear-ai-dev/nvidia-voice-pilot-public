@@ -107,7 +107,7 @@
       {
         "type": "function_call_output",
         "call_id": "bt-003",
-        "output": "\n\n{\"customer_id\":\"c68e3baf-9314-4fd5-8b8f-85e747f0f9d9\",\"card_last4\":\"6148\",\"declines\":[{\"transaction_id\":\"5af2030f-3fad-402f-a1de-23501596194a\",\"merchant\":\"Harbor View Hotel\",\"amount\":840,\"currency\":\"USD\",\"status\":\"declined\"},{\"transaction_id\":\"3065d723-2455-4a43-9d59-91c8dbb11da0\",\"merchant\":\"Harbor View Hotel\",\"amount\":840,\"currency\":\"USD\",\"status\":\"declined\"}]}"
+        "output": "\n\n{\"customer_id\":\"c68e3baf-9314-4fd5-8b8f-85e747f0f9d9\",\"card_last4\":\"6148\",\"declines\":[{\"transaction_id\":\"5af2030f-3fad-402f-a1de-23501596194a\",\"merchant\":\"Harbor View Hotel\",\"merchant_location\":\"Portland, Maine\",\"amount\":840,\"currency\":\"USD\",\"status\":\"declined\",\"reason\":\"travel_review\"},{\"transaction_id\":\"3065d723-2455-4a43-9d59-91c8dbb11da0\",\"merchant\":\"Harbor View Hotel\",\"merchant_location\":\"Portland, Maine\",\"amount\":840,\"currency\":\"USD\",\"status\":\"declined\",\"reason\":\"prior_review_open\"}]}"
       },
       {
         "id": "msg_0003_0006",
@@ -188,7 +188,7 @@
       {
         "type": "function_call_output",
         "call_id": "bt-004",
-        "output": "\n\n{\"customer_id\":\"c68e3baf-9314-4fd5-8b8f-85e747f0f9d9\",\"card_last4\":\"6148\",\"status\":\"temporarily_restricted\",\"available_credit\":912,\"available_credit_currency\":\"USD\",\"reported_lost\":false,\"payment_status\":\"current\",\"declines\":[{\"transaction_id\":\"5af2030f-3fad-402f-a1de-23501596194a\",\"merchant\":\"Harbor View Hotel\",\"merchant_location\":\"Portland, Maine\",\"amount\":840,\"currency\":\"USD\",\"reason\":\"travel_review\"},{\"transaction_id\":\"3065d723-2455-4a43-9d59-91c8dbb11da0\",\"merchant\":\"Harbor View Hotel\",\"merchant_location\":\"Portland, Maine\",\"amount\":840,\"currency\":\"USD\",\"reason\":\"prior_review_open\"}],\"authorizations\":[{\"transaction_id\":\"131fc14b-fc2e-4ec9-ad07-248d01f7d54b\",\"merchant\":\"Logan Airport\",\"amount\":32,\"currency\":\"USD\",\"status\":\"approved\",\"occurred_at\":\"2026-08-28T08:05:00-04:00\"}],\"restrictions\":[{\"restriction_id\":\"a4e9ecb1-a664-45d0-b3f4-cfe80b54ea8f\",\"status\":\"open\",\"linked_transaction_ids\":[\"5af2030f-3fad-402f-a1de-23501596194a\",\"3065d723-2455-4a43-9d59-91c8dbb11da0\",\"131fc14b-fc2e-4ec9-ad07-248d01f7d54b\"]}]}"
+        "output": "\n\n{\"customer_id\":\"c68e3baf-9314-4fd5-8b8f-85e747f0f9d9\",\"card_last4\":\"6148\",\"status\":\"temporarily_restricted\",\"reported_lost\":false,\"payment_status\":\"current\",\"available_credit\":912,\"available_credit_currency\":\"USD\",\"authorizations\":[{\"transaction_id\":\"131fc14b-fc2e-4ec9-ad07-248d01f7d54b\",\"merchant\":\"Logan Airport\",\"amount\":32,\"currency\":\"USD\",\"status\":\"approved\",\"occurred_at\":\"2026-08-28T08:05:00-04:00\"}],\"declines\":[{\"transaction_id\":\"5af2030f-3fad-402f-a1de-23501596194a\",\"merchant\":\"Harbor View Hotel\",\"merchant_location\":\"Portland, Maine\",\"amount\":840,\"currency\":\"USD\",\"status\":\"declined\",\"reason\":\"travel_review\"},{\"transaction_id\":\"3065d723-2455-4a43-9d59-91c8dbb11da0\",\"merchant\":\"Harbor View Hotel\",\"merchant_location\":\"Portland, Maine\",\"amount\":840,\"currency\":\"USD\",\"status\":\"declined\",\"reason\":\"prior_review_open\"}],\"restrictions\":[{\"restriction_id\":\"a4e9ecb1-a664-45d0-b3f4-cfe80b54ea8f\",\"status\":\"open\",\"linked_transaction_ids\":[\"5af2030f-3fad-402f-a1de-23501596194a\",\"3065d723-2455-4a43-9d59-91c8dbb11da0\",\"131fc14b-fc2e-4ec9-ad07-248d01f7d54b\"]}]}"
       },
       {
         "id": "msg_0003_0012",
@@ -424,7 +424,7 @@
       {
         "type": "function_call_output",
         "call_id": "bt-007",
-        "output": "\n\n{\"customer_id\":\"c68e3baf-9314-4fd5-8b8f-85e747f0f9d9\",\"card_last4\":\"6148\",\"authorizations\":[{\"transaction_id\":\"f96da295-2259-4311-b31d-661ab6053092\",\"merchant\":\"Harbor View Hotel\",\"amount\":840,\"currency\":\"USD\",\"status\":\"approved\"}]}"
+        "output": "\n\n{\"customer_id\":\"c68e3baf-9314-4fd5-8b8f-85e747f0f9d9\",\"card_last4\":\"6148\",\"authorizations\":[{\"transaction_id\":\"f96da295-2259-4311-b31d-661ab6053092\",\"merchant\":\"Harbor View Hotel\",\"merchant_location\":\"Portland, Maine\",\"amount\":840,\"currency\":\"USD\",\"status\":\"approved\",\"occurred_at\":\"2026-08-28T14:33:49-04:00\"}]}"
       },
       {
         "id": "msg_0003_0033",

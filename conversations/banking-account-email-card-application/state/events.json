@@ -1,0 +1,54 @@
+[
+ {
+  "event_id": "customer-answers-email-change-sms",
+  "at_seconds": 219,
+  "actor": "customer",
+  "description": "The customer enters the code texted to the mobile ending 1251, and the OTP service marks the email-change challenge verified.",
+  "when": [
+   {
+    "table": "channel_confirmations",
+    "key": "a241c1d7-d6c0-4489-9406-65a28d3bca66",
+    "equals": {
+     "status": "sent"
+    }
+   }
+  ],
+  "changes": [
+   {
+    "op": "update",
+    "table": "channel_confirmations",
+    "key": "a241c1d7-d6c0-4489-9406-65a28d3bca66",
+    "set": {
+     "status": "verified",
+     "verified_at": "$now"
+    }
+   }
+  ]
+ },
+ {
+  "event_id": "customer-opens-card-application",
+  "at_seconds": 476,
+  "actor": "customer",
+  "description": "The customer opens the Summit Journey application from the secure message centre (\"I see the application page on my end\").",
+  "when": [
+   {
+    "table": "self_service_sessions",
+    "key": "f4136da6-25dc-464b-b50c-8f02a5cc1ca3",
+    "equals": {
+     "status": "issued"
+    }
+   }
+  ],
+  "changes": [
+   {
+    "op": "update",
+    "table": "self_service_sessions",
+    "key": "f4136da6-25dc-464b-b50c-8f02a5cc1ca3",
+    "set": {
+     "status": "open_not_submitted",
+     "opened_at": "$now"
+    }
+   }
+  ]
+ }
+]
