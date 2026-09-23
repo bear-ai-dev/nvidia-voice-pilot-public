@@ -105,10 +105,10 @@ select#call {
 .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
 
 /* --- tabs ------------------------------------------------------------ */
-.tabs { display: flex; gap: 2px; margin-top: 14px; border-bottom: 1px solid var(--line); }
+.tabs { display: flex; gap: 2px; margin-top: 14px; border-bottom: 1px solid var(--line); overflow-x: auto; }
 .tab {
   border: 0; background: none; padding: 8px 12px; color: var(--muted); font-weight: 500;
-  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap;
 }
 .tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--agent); }
 .tab .pill { margin-left: 6px; }
@@ -216,6 +216,32 @@ dl.kv dt { color: var(--muted); font-size: 12px; letter-spacing: .06em; text-tra
 dl.kv dd { margin: 0; white-space: pre-wrap; max-width: 75ch; }
 @media (max-width: 560px) { dl.kv { grid-template-columns: 1fr; } dl.kv dd { margin-bottom: 6px; } }
 ol.assert { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
+/* git-style row diffs */
+.diff { border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--surface); }
+.diff + .diff { margin-top: 8px; }
+.diff .dh { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 5px 9px; background: var(--ground); border-bottom: 1px solid var(--line); font: 11.5px var(--mono); }
+.diff .dh .tbl { font-weight: 500; }
+.diff .dh .by { margin-left: auto; font-family: var(--sans); color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px; }
+.diff .dl { display: grid; grid-template-columns: 16px minmax(110px, max-content) minmax(0, 1fr); font: 11.5px/1.5 var(--mono); }
+.diff .dl > span { padding: 1px 6px; overflow-wrap: anywhere; }
+.diff .dl .sign { text-align: center; padding: 1px 0; }
+.diff .dl .col { color: var(--muted); }
+.diff .dl.add { background: var(--insert-soft); } .diff .dl.add .sign { color: var(--insert); }
+.diff .dl.del { background: var(--fail-soft); } .diff .dl.del .sign { color: var(--fail); }
+.diff .dl.del .val { text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--fail) 60%, transparent); }
+.diff .dl.ctx { color: var(--faint); }
+.diff .note { font: 11px var(--sans); color: var(--muted); padding: 3px 9px 5px 31px; background: var(--ground); border-top: 1px dashed var(--line); }
+.chip { font: 11px var(--sans); border: 1px solid var(--line); border-radius: 99px; padding: 0 7px; background: var(--surface); color: var(--ink); cursor: pointer; white-space: nowrap; }
+.chip:hover { border-color: var(--faint); }
+.q .times { color: var(--update); font-weight: 500; margin-left: 4px; }
+.seg-ctl { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.seg-ctl button { border: 0; background: var(--surface); padding: 5px 11px; font-size: 12.5px; color: var(--muted); }
+.seg-ctl button[aria-pressed="true"] { background: var(--agent); color: var(--surface); }
+.dsum { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin: 10px 0 4px; }
+.dsum .n { font: 600 22px var(--cond); }
+.tsum { display: grid; grid-template-columns: minmax(0, max-content) auto; gap: 3px 14px; font: 12px var(--mono); margin-top: 8px; }
+.cnt { display: inline-flex; flex-wrap: wrap; gap: 4px 12px; }
+.cnt .a { color: var(--insert); } .cnt .u { color: var(--update); } .cnt .d { color: var(--fail); }
 .foot { color: var(--muted); font-size: 12px; margin-top: 18px; max-width: 90ch; }
 .loading { padding: 40px 0; color: var(--muted); }
 </style>
@@ -244,6 +270,7 @@ ol.assert { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
   </div>
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" id="tab-replay" aria-selected="true">Replay</button>
+    <button class="tab" role="tab" id="tab-diff" aria-selected="false">Database diff<span class="pill neutral" id="diffpill"></span></button>
     <button class="tab" role="tab" id="tab-score" aria-selected="false">Score<span class="pill" id="scorepill"></span></button>
     <button class="tab" role="tab" id="tab-task" aria-selected="false">Task file</button>
   </div>
@@ -259,6 +286,7 @@ ol.assert { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
     <div class="body" id="backend"></div>
   </section>
 </main>
+<main id="view-diff" class="page" hidden></main>
 <main id="view-score" class="page" hidden></main>
 <main id="view-task" class="page" hidden></main>
 
@@ -410,10 +438,17 @@ ol.assert { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
     const writeMap = {};
     for (const w of e.writes) (writeMap[w.table] = writeMap[w.table] || {})[w.key] = w;
 
-    const qHtml = queries.map(({ t, q, scan }) => {
-      if (scan) return `<div class="q">scan <b>${esc(t)}</b> <span style="color:var(--muted)">· all ${trace.tables[t] ?? "?"} rows</span></div>`;
+    // The same lookup repeated inside one call is one line with a count.
+    const grouped = new Map();
+    for (const item of queries) {
+      const id = item.scan ? `scan|${item.t}` : `${item.t}|${JSON.stringify(item.q.where)}|${item.q.matched.length}`;
+      if (grouped.has(id)) grouped.get(id).times++; else grouped.set(id, { ...item, times: 1 });
+    }
+    const qHtml = [...grouped.values()].map(({ t, q, scan, times }) => {
+      const x = times > 1 ? `<span class="times">×${times}</span>` : "";
+      if (scan) return `<div class="q">scan <b>${esc(t)}</b> <span style="color:var(--muted)">· all ${trace.tables[t] ?? "?"} rows</span>${x}</div>`;
       const where = Object.entries(q.where).map(([k, v]) => `${esc(k)} = ${esc(JSON.stringify(v))}`).join(" and ");
-      return `<div class="q"><b>${esc(t)}</b> where ${where} <span style="color:var(--muted)">→ ${plural(q.matched.length, "row")}</span></div>`;
+      return `<div class="q"><b>${esc(t)}</b> where ${where} <span style="color:var(--muted)">→ ${plural(q.matched.length, "row")}</span>${x}</div>`;
     }).join("");
 
     const shownTables = new Set([...Object.keys(readRows), ...Object.keys(writeMap)]);
@@ -433,8 +468,9 @@ ol.assert { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
       <div class="step-head">${kindTag(e)}<span class="fn">${esc(e.name)}</span>${status}<span class="pill neutral num">${fmt(e._t)} into the call</span></div>
       ${e.label ? `<p class="hint">${esc(e.label)}</p>` : ""}
       <div class="io"><div><h3>Arguments</h3><pre class="json">${jsonHtml(e.arguments)}</pre></div><div><h3>Result returned to the agent</h3><pre class="json">${jsonHtml(e.output)}</pre></div></div>
+      ${nw ? `<div class="records"><h3>What it changed · ${plural(nw, "row")}</h3>${e.writes.map((w) => diffBlock(w.table, w.key, w.before, w.after)).join("")}</div>` : ""}
       ${qHtml ? `<div class="reads"><h3>What it read</h3>${qHtml}</div>` : ""}
-      <div class="records"><h3>Records · ${nw ? `${plural(nw, "row")} written` : "nothing written"}</h3>${recs || '<p class="hint">This call touched no records by key.</p>'}</div>`;
+      <div class="records"><h3>Records ${nw ? "after the call" : "· nothing written"}</h3>${recs || '<p class="hint">This call touched no records by key.</p>'}</div>`;
     b.querySelectorAll(".more").forEach((m) => m.addEventListener("click", () => {
       m.previousElementSibling.querySelectorAll("[data-extra]").forEach((x) => (x.hidden = false)); m.remove();
     }));
@@ -464,6 +500,78 @@ ol.assert { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
     return `<div class="row ${cls}"><div class="rk"><span>${esc(k)}</span>${tag}</div><div class="cols">${shown.map((c) => line(c, "")).join("")}${hidden.map((c) => line(c, " data-extra hidden")).join("")}</div>${hidden.length ? `<button class="more">show ${plural(hidden.length, "more column")}</button>` : ""}</div>`;
   }
 
+  // A row as a git-style diff: inserted rows are all additions, deleted rows all
+  // removals, and an updated row shows each changed column as a removal and an
+  // addition, with the unchanged columns folded into one line.
+  function diffBlock(t, k, before, after, by) {
+    const kind = before == null ? "inserted" : after == null ? "deleted" : "updated";
+    const quiet = trace.read_side_effects[t];
+    const lineHtml = (cls, sign, c, v) => `<div class="dl ${cls}"><span class="sign">${sign}</span><span class="col">${esc(c)}</span><span class="val">${cell(v)}</span></div>`;
+    let lines = "", notes = [];
+    if (kind === "inserted") lines = Object.keys(after).map((c) => lineHtml("add", "+", c, after[c])).join("");
+    else if (kind === "deleted") lines = Object.keys(before).map((c) => lineHtml("del", "−", c, before[c])).join("");
+    else {
+      const cols = Object.keys({ ...before, ...after });
+      const changed = cols.filter((c) => JSON.stringify(before[c]) !== JSON.stringify(after[c]));
+      lines = changed.map((c) => lineHtml("del", "−", c, before[c]) + lineHtml("add", "+", c, after[c])).join("");
+      const same = cols.length - changed.length;
+      if (same) lines += `<div class="dl ctx"><span class="sign"> </span><span class="col">…</span><span class="val">${plural(same, "unchanged column")}</span></div>`;
+      const sideCols = quiet === "*" ? changed : changed.filter((c) => (quiet || []).includes(c));
+      if (sideCols.length) notes.push(`${sideCols.join(", ")} ${sideCols.length === 1 ? "is" : "are"} written when the record is read, so ${sideCols.length === 1 ? "it is" : "they are"} left out of the DB hash`);
+    }
+    if (quiet === "*") notes = ["this table only records reads, so it is left out of the DB hash"];
+    const tag = `<span class="pill ${kind === "deleted" ? "bad" : "ok"}">${kind}</span>`;
+    const chips = by ? `<span class="by">${by.map((x) => `<button class="chip" data-go="${x.i}">${esc(x.name)} · ${fmt(x.t)}</button>`).join("")}</span>` : "";
+    return `<div class="diff"><div class="dh"><span class="tbl">${esc(t)}</span><span>${esc(k)}</span>${tag}${chips}</div>${lines}${notes.map((n) => `<div class="note">${esc(n)}</div>`).join("")}</div>`;
+  }
+
+  // Every row the call changed between two points, first state against last,
+  // with the tool calls that wrote it.
+  function cumulative(upTo) {
+    const rows = new Map();
+    events.forEach((e, i) => {
+      if (i > upTo || e.kind !== "tool") return;
+      for (const w of e.writes) {
+        const id = `${w.table}\u0000${w.key}`;
+        if (!rows.has(id)) rows.set(id, { table: w.table, key: w.key, before: w.before, after: w.after, by: [] });
+        const r = rows.get(id);
+        r.after = w.after;
+        if (!r.by.some((x) => x.i === i)) r.by.push({ i, name: e.name, t: e._t });
+      }
+    });
+    return [...rows.values()].filter((r) => JSON.stringify(r.before) !== JSON.stringify(r.after));
+  }
+
+  let diffScope = "all";
+  function renderDiff() {
+    const upTo = diffScope === "all" ? events.length - 1 : cur;
+    const changes = cumulative(upTo);
+    const count = (k) => changes.filter((r) => (k === "inserted" ? r.before == null : k === "deleted" ? r.after == null : r.before != null && r.after != null)).length;
+    const byTable = {};
+    for (const r of changes) (byTable[r.table] = byTable[r.table] || []).push(r);
+    const tableSum = Object.entries(byTable).sort().map(([t, rs]) => {
+      const a = rs.filter((r) => r.before == null).length, d = rs.filter((r) => r.after == null).length, u = rs.length - a - d;
+      return `<span>${esc(t)}</span><span class="cnt">${a ? `<span class="a">+${a}</span>` : ""}${u ? `<span class="u">~${u}</span>` : ""}${d ? `<span class="d">−${d}</span>` : ""}</span>`;
+    }).join("");
+    const where = diffScope === "all" ? "over the whole call" : cur < 0 ? "before the first tool call" : `up to ${fmt(events[cur]._t)} in the call`;
+    $("view-diff").innerHTML = `
+      <section class="sec"><h2>What the call changed in the database</h2>
+        <p><span class="mono">state/db.json</span> at the start of the call against the database ${where}. Each row shows its first state against its last, and the tool calls that wrote it; select one to jump to it in Replay.</p>
+        <div class="dsum">
+          <div class="seg-ctl" role="group" aria-label="Diff scope"><button id="scope-all" aria-pressed="${diffScope === "all"}">Whole call</button><button id="scope-now" aria-pressed="${diffScope === "now"}">Up to the selected step</button></div>
+          <span><span class="n num">${changes.length}</span> ${changes.length === 1 ? "row" : "rows"} changed of ${totalRows().toLocaleString()}</span>
+          <span class="cnt num"><span class="a">+${count("inserted")} inserted</span><span class="u">~${count("updated")} updated</span><span class="d">−${count("deleted")} deleted</span></span>
+        </div>
+        ${changes.length ? `<div class="tsum">${tableSum}</div>` : ""}
+      </section>
+      <section class="sec">${changes.length ? Object.entries(byTable).sort().map(([t, rs]) => rs.map((r) => diffBlock(t, r.key, r.before, r.after, r.by)).join("")).join("") : '<p class="hint">Nothing has been written yet.</p>'}</section>`;
+    $("scope-all").addEventListener("click", () => { diffScope = "all"; renderDiff(); });
+    $("scope-now").addEventListener("click", () => { diffScope = "now"; renderDiff(); });
+    $("view-diff").querySelectorAll("[data-go]").forEach((b) => b.addEventListener("click", () => { setTab("replay"); go(+b.dataset.go, true); }));
+    const total = cumulative(events.length - 1).length;
+    $("diffpill").textContent = String(total);
+  }
+
   function tableList() {
     const t = Object.entries(trace.tables).sort((a, b) => b[1] - a[1]);
     return `<div class="records"><h3>Tables in this database</h3><div class="cols" style="border:1px solid var(--line);border-radius:6px;overflow:hidden">${t.map(([n, c]) => `<div class="c">${esc(n)}</div><div class="num">${c.toLocaleString()} rows</div>`).join("")}</div></div>`;
@@ -485,6 +593,7 @@ ol.assert { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
     }
     if (seek && cur >= 0) { audio.currentTime = events[cur]._t; updateHead(); }
     renderBackend();
+    if (diffScope === "now") renderDiff();
   }
 
   function updateHead() {
@@ -560,7 +669,7 @@ ol.assert { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
   }
 
   function setTab(name) {
-    for (const n of ["replay", "score", "task"]) {
+    for (const n of ["replay", "diff", "score", "task"]) {
       $(`tab-${n}`).setAttribute("aria-selected", String(n === name));
       $(`view-${n}`).hidden = n !== name;
     }
@@ -579,7 +688,7 @@ ol.assert { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
     const tools = events.filter((e) => e.kind === "tool"), writes = tools.filter((e) => e.write_tool).length;
     $("callmeta").textContent = `${events.filter((e) => e.kind === "say").length} turns · ${tools.length} tool calls`;
     $("dbmeta").textContent = `${totalRows().toLocaleString()} rows · ${plural(writes, "write call")}`;
-    renderStream(); renderTrack(); renderScore(); renderTask();
+    renderStream(); renderTrack(); renderScore(); renderTask(); diffScope = "all"; renderDiff();
     go(-1, false); updateHead();
     try { localStorage.setItem("replay-call", id); } catch (_) {}
   }
@@ -613,7 +722,7 @@ ol.assert { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
     else if (ev.key.toLowerCase() === "t") $("nextcall").click();
     else if (ev.key === " " && ev.target === document.body) { ev.preventDefault(); $("play").click(); }
   });
-  for (const n of ["replay", "score", "task"]) $(`tab-${n}`).addEventListener("click", () => setTab(n));
+  for (const n of ["replay", "diff", "score", "task"]) $(`tab-${n}`).addEventListener("click", () => setTab(n));
   $("call").addEventListener("change", (e) => load(e.target.value));
 
   (async () => {
