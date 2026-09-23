@@ -1,12 +1,13 @@
 """Score a run the way tau2-bench does: reward = DB x COMMUNICATE.
 
 DB           Replay the task's reference actions on a fresh copy of the
-             conversation's database and hash the result; the run passes when
-             its own end state hashes the same. Any route to an equivalent end
-             state passes, and the reference actions are never compared to the
-             run's calls. Columns a read tool writes as a side effect (read
-             cursors, lazy status transitions, listed as READ_SIDE_EFFECTS in the
-             domain's tools.py) are left out of the hash, so looking is free.
+             conversation's database, let the scenario's scheduled events play
+             out, and hash the result; the run passes when its own end state
+             hashes the same. Any route to an equivalent end state passes, and
+             the reference actions are never compared to the run's calls.
+             Columns that only record when something happened (CLOCK_COLUMNS in
+             the domain's tools.py) are left out of the hash: the check is what
+             the agent did, not the second it did it.
 
 COMMUNICATE  Every string in communicate_info must appear in some assistant
              message, compared as tau2 does: lowercased, commas removed from the
@@ -85,17 +86,32 @@ def recorded_trajectory(conversation_id: str) -> list[dict]:
 # -- running and scoring -------------------------------------------------------
 
 def run(conversation_id: str, trajectory: list[dict]) -> tuple[Environment, list]:
-    """Execute a trajectory's tool calls in order against a fresh database."""
+    """Execute a trajectory's tool calls in order against a fresh database, each
+    at its own time when the trajectory says, then let the scenario finish."""
     env = Environment.for_conversation(conversation_id)
-    steps = [env.call(event["name"], event["arguments"])
+    steps = [env.call(event["name"], event["arguments"], at=event.get("at"))
              for event in trajectory if event["kind"] == "tool"]
+    env.finish()
     return env, steps
 
 
-def db_hash(db: dict, read_side_effects: dict) -> str:
+def unhashed_columns(tools) -> dict:
+    """Columns left out of the DB hash: when things happened, and anything a
+    read writes (which should be nothing)."""
+    merged: dict = {}
+    for source in (getattr(tools, "CLOCK_COLUMNS", {}), getattr(tools, "READ_SIDE_EFFECTS", {})):
+        for table, columns in source.items():
+            if columns == "*" or merged.get(table) == "*":
+                merged[table] = "*"
+            else:
+                merged[table] = sorted(set(merged.get(table, [])) | set(columns))
+    return merged
+
+
+def db_hash(db: dict, excluded_columns: dict) -> str:
     kept = {}
     for table, rows in db.items():
-        excluded = read_side_effects.get(table, ())
+        excluded = excluded_columns.get(table, ())
         if excluded == "*":
             continue
         kept[table] = {key: {c: v for c, v in row.items() if c not in excluded}
@@ -114,11 +130,13 @@ def evaluate(task: dict, trajectory: list[dict]) -> dict:
     conversation_id = task["annotations"]["conversation_id"]
     criteria = task["evaluation_criteria"]
 
-    gold, _ = run(conversation_id, [{"kind": "tool", **action} for action in criteria["actions"]])
+    times = task["annotations"].get("action_times") or [None] * len(criteria["actions"])
+    gold, _ = run(conversation_id, [{"kind": "tool", **action, "at": at}
+                                    for action, at in zip(criteria["actions"], times)])
     predicted, steps = run(conversation_id, trajectory)
-    side_effects = getattr(predicted.tools, "READ_SIDE_EFFECTS", {})
-    target_hash = db_hash(gold.db, side_effects)
-    predicted_hash = db_hash(predicted.db, side_effects)
+    excluded = unhashed_columns(predicted.tools)
+    target_hash = db_hash(gold.db, excluded)
+    predicted_hash = db_hash(predicted.db, excluded)
     checks = communicate_checks(trajectory, criteria.get("communicate_info") or [])
 
     breakdown = {

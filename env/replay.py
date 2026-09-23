@@ -5,16 +5,17 @@ that its task file scores the recording the way tau2 would.
 For every conversation with a db.json, replay the tool calls recorded in its
 annotated transcript against the domain's tools and require:
 
-  1. every call succeeds and returns exactly the recorded output, which also
-     satisfies the tool's result_schema in the registry,
-  2. the database afterwards equals state/db_after.json, the end state the
-     original PostgreSQL backend reached on the same calls,
+  1. every call, made at its recorded time, succeeds and returns exactly the
+     recorded output, which also satisfies the tool's result_schema,
+  2. no read tool writes to the database,
+  3. the database after the call and its scheduled events equals
+     state/db_after.json,
 
 and for its task in domains/<domain>/tasks.json:
 
-  3. the reference actions are exactly the recorded calls,
-  4. the recorded conversation scores 1.0 (DB x COMMUNICATE),
-  5. issuing every read call again still scores 1.0, and leaving out any one
+  4. the reference actions are exactly the recorded calls,
+  5. the recorded conversation scores 1.0 (DB x COMMUNICATE),
+  6. issuing every read call again still scores 1.0, and leaving out any one
      state-changing call fails the DB check.
 
     python3 env/replay.py                      # every conversation
@@ -59,8 +60,12 @@ def conversations_with_db() -> list[str]:
 def check_conversation(conversation_id: str) -> list[str]:
     env = Environment.for_conversation(conversation_id)
     problems = []
+    times = {e["call_id"]: e["at"] for e in recorded_trajectory(conversation_id) if e["kind"] == "tool"}
     for call in recorded_calls(conversation_id):
-        step = env.call(call["name"], call["arguments"])
+        step = env.call(call["name"], call["arguments"], at=times.get(call["call_id"]))
+        if step.ok and step.writes and call["name"] not in env.write_tools:
+            problems.append(f"{call['call_id']} {call['name']}: a read tool wrote "
+                            + ", ".join(sorted({w['table'] for w in step.writes})))
         if not step.ok:
             problems.append(f"{call['call_id']} {call['name']}: {step.status} {step.output}")
         elif canonical(step.output) != canonical(call["output"]):
@@ -72,6 +77,7 @@ def check_conversation(conversation_id: str) -> list[str]:
             if violations:
                 problems.append(f"{call['call_id']} {call['name']}: output breaks the "
                                 f"result_schema: {violations[:3]}")
+    env.finish()
     expected = load_json(os.path.join(ROOT, "conversations", conversation_id, "state", "db_after.json"))
     for change in row_changes(expected, env.db)[:10]:
         problems.append(f"end state: {change['table']}[{change['key']}] {change['kind']} "

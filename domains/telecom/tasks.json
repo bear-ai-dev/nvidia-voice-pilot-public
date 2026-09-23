@@ -140,6 +140,16 @@
       "outcome_label": "resolved",
       "db": "conversations/telecom-data-usage-cleanup/state/db.json",
       "db_after": "conversations/telecom-data-usage-cleanup/state/db_after.json",
+      "action_times": [
+        63.58,
+        67.5,
+        70.5,
+        102.34,
+        248.5,
+        260.0,
+        285.5,
+        452.6
+      ],
       "tool_registry": "domains/telecom/tool_registry.json",
       "transcript": "conversations/telecom-data-usage-cleanup/transcripts/annotated-transcript.json",
       "audio": "conversations/telecom-data-usage-cleanup/audio/full.wav",

@@ -129,6 +129,15 @@
       "outcome_label": "resolved",
       "db": "conversations/retail-damaged-item-replacement/state/db.json",
       "db_after": "conversations/retail-damaged-item-replacement/state/db_after.json",
+      "action_times": [
+        68.0,
+        123.5,
+        141.0,
+        209.5,
+        370.0,
+        410.8,
+        411.0
+      ],
       "tool_registry": "domains/retail/tool_registry.json",
       "transcript": "conversations/retail-damaged-item-replacement/transcripts/annotated-transcript.json",
       "audio": "conversations/retail-damaged-item-replacement/audio/full.wav",
@@ -293,6 +302,15 @@
       "outcome_label": "pending_carrier_trace",
       "db": "conversations/retail-missing-package/state/db.json",
       "db_after": "conversations/retail-missing-package/state/db_after.json",
+      "action_times": [
+        55.0,
+        129.46,
+        211.65,
+        238.14,
+        346.0,
+        435.0,
+        462.9
+      ],
       "tool_registry": "domains/retail/tool_registry.json",
       "transcript": "conversations/retail-missing-package/transcripts/annotated-transcript.json",
       "audio": "conversations/retail-missing-package/audio/full.wav",
@@ -453,6 +471,15 @@
       "outcome_label": "pending_payment_trace",
       "db": "conversations/retail-refund-bank-fee/state/db.json",
       "db_after": "conversations/retail-refund-bank-fee/state/db_after.json",
+      "action_times": [
+        55.66,
+        150.6,
+        406.0,
+        426.0,
+        426.2,
+        469.0,
+        526.72
+      ],
       "tool_registry": "domains/retail/tool_registry.json",
       "transcript": "conversations/retail-refund-bank-fee/transcripts/annotated-transcript.json",
       "audio": "conversations/retail-refund-bank-fee/audio/full.wav",

@@ -68,17 +68,39 @@ def variations(trajectory: list[dict], task: dict, write_tools: set[str]) -> lis
     return out
 
 
+def merge_by_time(events: list[dict], outside: list[dict]) -> list[dict]:
+    """Slot outside events into the recorded timeline before the first recorded
+    event that happens later, keeping the recording's own order untouched."""
+    def when(event):
+        return event.get("start") if event["kind"] == "say" else event.get("at")
+
+    merged, pending = [], sorted(outside, key=lambda e: e["at"])
+    for event in events:
+        t = when(event)
+        while pending and t is not None and pending[0]["at"] < t:
+            merged.append(pending.pop(0))
+        merged.append(event)
+    return merged + pending
+
+
 def build(conversation_id: str) -> dict:
     task = find_task(conversation_id)
     trajectory = recorded_trajectory(conversation_id)
     env, steps = run(conversation_id, trajectory)
     db_before = load_json(os.path.join(ROOT, "conversations", conversation_id, "state", "db.json"))
 
+    def world(applied: list[dict]) -> list[dict]:
+        """Things other people did, placed on the timeline at their own time."""
+        return [{"kind": "event", "at": e["at_seconds"], "actor": e["actor"],
+                 "description": e["description"], "event_id": e["event_id"],
+                 "writes": e["writes"]} for e in applied]
+
     step_iter = iter(steps)
-    events = []
+    events, outside = [], []
     for event in trajectory:
         if event["kind"] == "tool":
             step = next(step_iter)
+            outside.extend(world(step.events))
             event = {**event, "status": step.status, "output": step.output,
                      "matches_recording": json.dumps(step.output, sort_keys=True)
                      == json.dumps(event["recorded_output"], sort_keys=True),
@@ -86,6 +108,7 @@ def build(conversation_id: str) -> dict:
                      "reads": step.reads, "writes": step.writes}
             event.pop("recorded_output")
         events.append(event)
+    events = merge_by_time(events, outside + world(env.after_call))
 
     scored = evaluate(task, trajectory)
     return {

@@ -13,8 +13,13 @@ returned and rolls the database back, so a failed call leaves nothing behind.
 """
 from __future__ import annotations
 
+import contextlib
+import contextvars
+import random
+import uuid
+from datetime import datetime
 from decimal import Decimal
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable, Iterator
 
 
 class ToolError(Exception):
@@ -75,29 +80,88 @@ def first(db: dict, table: str, **where) -> dict | None:
     return matches[0] if matches else None
 
 
-# -- the scenario clock and identifier allocation -----------------------------
+# -- the call clock and identifier generation ---------------------------------
+# The runtime sets both for the duration of each tool call. A tool asks what time
+# it is with now(), and for a fresh identifier with new_id(); neither is stored in
+# the database, the way a real service reads its clock and its id generator
+# rather than a table.
+
+_clock: contextvars.ContextVar = contextvars.ContextVar("clock", default=None)
+_ids: contextvars.ContextVar = contextvars.ContextVar("ids", default=None)
+
+
+def call_started(db: dict) -> datetime:
+    """When the call began, in the scenario's own UTC offset."""
+    started = scenario_value(db, "call_started_at") or scenario_value(db, "scenario_time")
+    return datetime.fromisoformat(started)
+
+
+def now(db: dict) -> datetime:
+    """The current time in the call, in the scenario's own UTC offset."""
+    current = _clock.get()
+    return call_started(db) if current is None else current
+
+
+def now_iso(db: dict) -> str:
+    return now(db).isoformat(timespec="seconds")
+
+
+def new_id(db: dict, kind: str, fallback: Callable[[], str] | None = None) -> str:
+    """A fresh identifier of the given kind from the environment's generator.
+
+    The generator is seeded per conversation, so a replay issues the same
+    identifiers the recording did. Once its seeded values for a kind are used
+    up it falls back to `fallback` (for formatted references such as a case
+    number) or to a random-looking UUID drawn from the same seed.
+    """
+    generator = _ids.get()
+    if generator is None:
+        return fallback() if fallback else str(uuid.uuid4())
+    return generator.next(kind, fallback)
+
+
+class IdGenerator:
+    """Seeded identifiers: the listed values for each kind first, then derived ones."""
+
+    def __init__(self, seed: str, sequences: dict[str, list[str]] | None = None):
+        self.seed = seed
+        self.sequences = sequences or {}
+        self.issued: dict[str, int] = {}
+
+    def next(self, kind: str, fallback: Callable[[], str] | None = None) -> str:
+        n = self.issued.get(kind, 0)
+        self.issued[kind] = n + 1
+        seeded = self.sequences.get(kind, [])
+        if n < len(seeded):
+            return seeded[n]
+        if fallback is not None:
+            return fallback()
+        rng = random.Random(f"{self.seed}:{kind}:{n}")
+        return str(uuid.UUID(int=rng.getrandbits(128), version=4))
+
+    def state(self) -> dict:
+        return dict(self.issued)
+
+    def restore(self, state: dict) -> None:
+        self.issued = dict(state)
+
+
+@contextlib.contextmanager
+def call_context(clock: datetime, ids: IdGenerator) -> Iterator[None]:
+    """Set the clock and identifier generator the tools see for one call."""
+    clock_token, ids_token = _clock.set(clock), _ids.set(ids)
+    try:
+        yield
+    finally:
+        _clock.reset(clock_token)
+        _ids.reset(ids_token)
+
+
+# -- scenario values and database sequences ------------------------------------
 
 def scenario_value(db: dict, key: str) -> Any:
     row = db["scenario"].get(key)
     return None if row is None else row["value"]
-
-
-def scenario_id(db: dict, key: str, table: str, column: str,
-                owner: dict | None = None) -> str | None:
-    """The scenario's seeded identifier for a new record, while it is still free.
-
-    Seeded identifiers let a replay reproduce the recorded ones, but each names
-    one record, so once taken it is only reused for a row with the same `owner`
-    values (a re-send to the same customer). Otherwise None, and the caller
-    issues an ordinary identifier.
-    """
-    fixed = scenario_value(db, key)
-    if not fixed:
-        return None
-    row = first(db, table, **{column: fixed})
-    if row is None or (owner and all(row[k] == v for k, v in owner.items())):
-        return fixed
-    return None
 
 
 def allocate_id(db: dict, entity_type: str, scope: str = "") -> str:

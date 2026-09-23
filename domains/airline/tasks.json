@@ -172,6 +172,17 @@
       "outcome_label": "resolved",
       "db": "conversations/airline-family-reservation/state/db.json",
       "db_after": "conversations/airline-family-reservation/state/db_after.json",
+      "action_times": [
+        60.4,
+        93.5,
+        137.8,
+        161.42,
+        181.7,
+        305.8,
+        306.0,
+        345.5,
+        345.6
+      ],
       "tool_registry": "domains/airline/tool_registry.json",
       "transcript": "conversations/airline-family-reservation/transcripts/annotated-transcript.json",
       "audio": "conversations/airline-family-reservation/audio/full.wav",

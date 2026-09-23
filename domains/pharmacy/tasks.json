@@ -121,6 +121,16 @@
       "outcome_label": "pending_pharmacist_check",
       "db": "conversations/pharmacy-travel-refill/state/db.json",
       "db_after": "conversations/pharmacy-travel-refill/state/db_after.json",
+      "action_times": [
+        24.0,
+        36.5,
+        127.5,
+        187.2,
+        255.68,
+        278.0,
+        284.56,
+        304.2
+      ],
       "tool_registry": "domains/pharmacy/tool_registry.json",
       "transcript": "conversations/pharmacy-travel-refill/transcripts/annotated-transcript.json",
       "audio": "conversations/pharmacy-travel-refill/audio/full.wav",

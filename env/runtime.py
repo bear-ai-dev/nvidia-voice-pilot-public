@@ -18,14 +18,18 @@ import json
 import os
 import sys
 from dataclasses import dataclass, field
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import schema  # noqa: E402
-from toolkit import ToolError  # noqa: E402
+from toolkit import IdGenerator, ToolError, call_context, call_started, row_key  # noqa: E402
+
+# When a caller does not say when a tool call happens, the clock moves on by
+# this much, so scheduled events still unfold over a simulated conversation.
+DEFAULT_STEP_SECONDS = 20
 
 
 def json_default(value):
@@ -137,6 +141,8 @@ class Step:
     output: dict
     reads: dict[str, dict] = field(default_factory=dict)
     writes: list[dict] = field(default_factory=list)
+    at: int = 0
+    events: list[dict] = field(default_factory=list)
 
     @property
     def ok(self) -> bool:
@@ -160,7 +166,17 @@ def conversation_domain(conversation_id: str) -> str:
 
 
 class Environment:
-    def __init__(self, domain: str, db: dict):
+    """One conversation's backend: its database, its tools, a clock, the things
+    other people do during the call, and a seeded identifier generator.
+
+    The clock starts at the scenario's call_started_at and is measured in
+    seconds into the call. Scheduled events (the customer entering a code sent
+    to their phone, a merchant retrying a charge) are applied when the clock
+    reaches them, before the next tool call, and only if their conditions hold.
+    """
+
+    def __init__(self, domain: str, db: dict, events: list[dict] | None = None,
+                 ids: IdGenerator | None = None):
         self.domain = domain
         self.db = db
         self.tools = load_domain(domain)
@@ -169,17 +185,110 @@ class Environment:
         unsupported = schema.validate_registry(registry)
         if unsupported:
             raise ValueError(f"{domain} registry uses unsupported keywords: {unsupported}")
+        self.started = call_started(db)
+        self.elapsed = 0
+        self.pending = sorted((dict(e) for e in events or []), key=lambda e: (e["at_seconds"], e["event_id"]))
+        # The events that played out after the last tool call, once finish() runs.
+        self.after_call: list[dict] = []
+        self.ids = ids or IdGenerator(domain)
 
     @classmethod
     def for_conversation(cls, conversation_id: str, which: str = "db.json") -> "Environment":
-        path = os.path.join(ROOT, "conversations", conversation_id, "state", which)
-        return cls(conversation_domain(conversation_id), load_json(path))
+        state = os.path.join(ROOT, "conversations", conversation_id, "state")
+        events_path, ids_path = os.path.join(state, "events.json"), os.path.join(state, "ids.json")
+        events = load_json(events_path) if os.path.exists(events_path) else []
+        sequences = load_json(ids_path) if os.path.exists(ids_path) else {}
+        return cls(conversation_domain(conversation_id), load_json(os.path.join(state, which)),
+                   events, IdGenerator(conversation_id, sequences))
+
+    # -- time and the world outside the call ---------------------------------
+
+    def clock(self, seconds: int | None = None) -> datetime:
+        return self.started + timedelta(seconds=self.elapsed if seconds is None else seconds)
+
+    def advance_to(self, seconds: float | None) -> list[dict]:
+        """Move the clock forward and apply every event now due."""
+        if seconds is None:
+            self.elapsed += DEFAULT_STEP_SECONDS
+        else:
+            self.elapsed = max(self.elapsed, int(seconds))
+        return self._apply_due(self.elapsed)
+
+    def finish(self) -> list[dict]:
+        """Let the rest of the scenario play out once the call is over."""
+        self.after_call = self._apply_due(None)
+        return self.after_call
+
+    def _apply_due(self, upto: int | None) -> list[dict]:
+        """Apply due events whose conditions hold.
+
+        An event that fell due while its conditions did not hold (a merchant
+        retrying a charge only once the card is unblocked) happens when they
+        first do, and is stamped with that time rather than its scheduled one,
+        so the record never shows it before the thing it waited for.
+        """
+        applied, waiting = [], []
+        for event in self.pending:
+            due = upto is None or event["at_seconds"] <= upto
+            if due and self._conditions_hold(event):
+                when = self.elapsed if event.get("_waited") else event["at_seconds"]
+                before = copy.deepcopy(self.db)
+                self._apply(event, when)
+                applied.append({"event_id": event["event_id"], "at_seconds": when,
+                                "actor": event["actor"], "description": event["description"],
+                                "writes": row_changes(before, self.db)})
+            else:
+                if due:
+                    event["_waited"] = True
+                waiting.append(event)
+        self.pending = waiting
+        return applied
+
+    def _conditions_hold(self, event: dict) -> bool:
+        checks = list(event.get("when", []))
+        # An update needs its row to exist: the customer cannot open a link that
+        # has not been sent yet, so the event waits until it has.
+        checks += [{"table": c["table"], "key": c["key"]}
+                   for c in event["changes"] if c["op"] == "update"]
+        for check in checks:
+            row = self.db.get(check["table"], {}).get(check["key"])
+            if row is None:
+                return False
+            if any(row.get(column) != value for column, value in check.get("equals", {}).items()):
+                return False
+        return True
+
+    def _apply(self, event: dict, when: int) -> None:
+        at = self.clock(when).isoformat(timespec="seconds")
+
+        def resolve(value):
+            return at if value == "$now" else value
+
+        for change in event["changes"]:
+            if change["op"] == "update":
+                row = self.db[change["table"]][change["key"]]
+                row.update({column: resolve(value) for column, value in change["set"].items()})
+            elif change["op"] == "insert":
+                row = {column: resolve(value) for column, value in change["row"].items()}
+                key = row_key(row, self.tools.KEY_COLUMNS[change["table"]])
+                self.db[change["table"]][key] = row
+            else:
+                raise ValueError(f"unknown event change {change['op']!r} in {event['event_id']}")
 
     @property
     def write_tools(self) -> set[str]:
         return set(self.tools.WRITE_TOOLS)
 
-    def call(self, name: str, arguments: dict) -> Step:
+    def call(self, name: str, arguments: dict, at: float | None = None) -> Step:
+        """Run one tool call `at` seconds into the call (or one step after the last)."""
+        events = self.advance_to(at)
+        step = self._call(name, arguments)
+        # A write can be what an event was waiting for; let it happen now.
+        events += self._apply_due(self.elapsed)
+        step.at, step.events = self.elapsed, events
+        return step
+
+    def _call(self, name: str, arguments: dict) -> Step:
         tool = self.schemas.get(name)
         handler = self.tools.TOOLS.get(name)
         if tool is None or handler is None:
@@ -190,17 +299,20 @@ class Environment:
                 "invalid_arguments", "arguments do not satisfy the tool schema",
                 {"violations": violations}))
 
-        before = copy.deepcopy(self.db)
+        before, issued = copy.deepcopy(self.db), self.ids.state()
         log: dict[str, dict] = {}
         traced = {table: TracedTable(table, rows, log) for table, rows in self.db.items()}
         try:
-            output = plain(handler(traced, arguments))
+            with call_context(self.clock(), self.ids):
+                output = plain(handler(traced, arguments))
         except ToolError as exc:
             self.db = before
+            self.ids.restore(issued)
             return Step(name, arguments, exc.status, _error(exc.kind, exc.message, exc.detail),
                         reads=_reads(log))
         except Exception as exc:  # noqa: BLE001 - reported as the recorded backend did
             self.db = before
+            self.ids.restore(issued)
             return Step(name, arguments, 500, _error("handler_error", f"{type(exc).__name__}: {exc}"))
         reads = _reads(log)
         self.db = {table: dict(dict.items(rows)) for table, rows in traced.items()}
