@@ -75,7 +75,7 @@ timing.
 Function outputs are records and measurements, not the agent's conclusions: a
 result lists airports with their distances rather than naming the one to
 recommend, and a knowledge-base result is an article rather than a true or
-false answer to the caller's question. 34 of the 85 outputs in the runnable
+false answer to the caller's question. 35 of the 85 outputs in the runnable
 conversations were revised to this rule; the
 [revision log](docs/TOOL_OUTPUT_REVISIONS.md) lists each one.
 

@@ -746,18 +746,33 @@ def _shift_hours(timestamp: str, hours: int) -> str:
 
 
 def check_mobility_device_requirements(db, args) -> dict:
-    rule = _device_rule(db, args["device_type"])
+    # The published accessibility tariff: the version of every device category
+    # in force at the scenario clock. Which category the caller's device falls
+    # under is read from the names each rule covers, by the agent, not matched
+    # here; a device none of them names takes the unspecified-device rule.
+    scenario_date = (scenario_value(db, "scenario_time") or "")[:10]
+    current: dict = {}
+    for rule in db["mobility_device_rules"].values():
+        if rule["effective_at"] > scenario_date:
+            continue
+        held = current.get(rule["device_type"])
+        if held is None or rule["effective_at"] > held["effective_at"]:
+            current[rule["device_type"]] = rule
     return {
-        # The canonical name of the rule that applies, so a caller who says
-        # "walker" is told which tariff line was read.
-        "device_type": rule["device_type"],
-        "counts_as_paid_bag": rule["counts_as_paid_bag"],
-        "fee": as_float(rule["fee"]),
-        "currency": rule["currency"],
-        "serial_number_required": rule["serial_number_required"],
-        "labeling_guidance": rule["labeling_guidance"],
-        "airport_notification_required": rule["airport_notification_required"],
-        "effective_at": rule["effective_at"],
+        "rules": [
+            {
+                "device_type": rule["device_type"],
+                "also_called": list(rule["aliases"]),
+                "counts_as_paid_bag": rule["counts_as_paid_bag"],
+                "fee": as_float(rule["fee"]),
+                "currency": rule["currency"],
+                "serial_number_required": rule["serial_number_required"],
+                "labeling_guidance": rule["labeling_guidance"],
+                "airport_notification_required": rule["airport_notification_required"],
+                "effective_at": rule["effective_at"],
+            }
+            for _, rule in sorted(current.items())
+        ],
     }
 
 

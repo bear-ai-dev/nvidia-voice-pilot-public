@@ -537,51 +537,6 @@
     "segment_index": 2
    }
   },
-  "mobility_device_rules": {
-   "folding walker|2025-06-01": {
-    "airport_notification_required": false,
-    "aliases": [
-     "walker",
-     "folding walker"
-    ],
-    "counts_as_paid_bag": false,
-    "currency": "USD",
-    "device_type": "folding walker",
-    "effective_at": "2025-06-01",
-    "fee": 0.0,
-    "is_quote_default": false,
-    "labeling_guidance": "label with customer contact information",
-    "serial_number_required": false
-   },
-   "folding walker|2026-07-01": {
-    "airport_notification_required": true,
-    "aliases": [
-     "walker",
-     "folding walker",
-     "collapsible walker"
-    ],
-    "counts_as_paid_bag": false,
-    "currency": "USD",
-    "device_type": "folding walker",
-    "effective_at": "2026-07-01",
-    "fee": 0.0,
-    "is_quote_default": false,
-    "labeling_guidance": "label with customer contact information and identify it as a mobility device at the airport",
-    "serial_number_required": false
-   },
-   "unspecified mobility device|2026-07-01": {
-    "airport_notification_required": true,
-    "aliases": [],
-    "counts_as_paid_bag": false,
-    "currency": "USD",
-    "device_type": "unspecified mobility device",
-    "effective_at": "2026-07-01",
-    "fee": 0.0,
-    "is_quote_default": true,
-    "labeling_guidance": "label with customer contact information and identify it as a mobility device at the airport",
-    "serial_number_required": false
-   }
-  },
   "baggage_fees": {
    "standard_economy": {
     "currency": "USD",
@@ -666,6 +621,51 @@
     "plan_id": "insurance-standard-band-5",
     "price_per_traveler": 84.5,
     "tier": "standard"
+   }
+  },
+  "mobility_device_rules": {
+   "unspecified mobility device|2026-07-01": {
+    "airport_notification_required": true,
+    "aliases": [],
+    "counts_as_paid_bag": false,
+    "currency": "USD",
+    "device_type": "unspecified mobility device",
+    "effective_at": "2026-07-01",
+    "fee": 0.0,
+    "is_quote_default": true,
+    "labeling_guidance": "label with customer contact information and identify it as a mobility device at the airport",
+    "serial_number_required": false
+   },
+   "folding walker|2025-06-01": {
+    "airport_notification_required": false,
+    "aliases": [
+     "walker",
+     "folding walker"
+    ],
+    "counts_as_paid_bag": false,
+    "currency": "USD",
+    "device_type": "folding walker",
+    "effective_at": "2025-06-01",
+    "fee": 0.0,
+    "is_quote_default": false,
+    "labeling_guidance": "label with customer contact information",
+    "serial_number_required": false
+   },
+   "folding walker|2026-07-01": {
+    "airport_notification_required": true,
+    "aliases": [
+     "walker",
+     "folding walker",
+     "collapsible walker"
+    ],
+    "counts_as_paid_bag": false,
+    "currency": "USD",
+    "device_type": "folding walker",
+    "effective_at": "2026-07-01",
+    "fee": 0.0,
+    "is_quote_default": false,
+    "labeling_guidance": "label with customer contact information and identify it as a mobility device at the airport",
+    "serial_number_required": false
    }
   },
   "payment_methods": {
@@ -2178,31 +2178,181 @@
    "at": 161.42,
    "status": 200,
    "output": {
-    "device_type": "folding walker",
-    "counts_as_paid_bag": false,
-    "fee": 0.0,
-    "currency": "USD",
-    "serial_number_required": false,
-    "labeling_guidance": "label with customer contact information and identify it as a mobility device at the airport",
-    "airport_notification_required": true,
-    "effective_at": "2026-07-01"
+    "rules": [
+     {
+      "device_type": "crutches",
+      "also_called": [
+       "crutch",
+       "forearm crutches"
+      ],
+      "counts_as_paid_bag": false,
+      "fee": 0.0,
+      "currency": "USD",
+      "serial_number_required": false,
+      "labeling_guidance": "keep crutches with the customer in the cabin",
+      "airport_notification_required": false,
+      "effective_at": "2026-04-01"
+     },
+     {
+      "device_type": "folding walker",
+      "also_called": [
+       "walker",
+       "folding walker",
+       "collapsible walker"
+      ],
+      "counts_as_paid_bag": false,
+      "fee": 0.0,
+      "currency": "USD",
+      "serial_number_required": false,
+      "labeling_guidance": "label with customer contact information and identify it as a mobility device at the airport",
+      "airport_notification_required": true,
+      "effective_at": "2026-07-01"
+     },
+     {
+      "device_type": "knee scooter",
+      "also_called": [
+       "knee walker"
+      ],
+      "counts_as_paid_bag": false,
+      "fee": 0.0,
+      "currency": "USD",
+      "serial_number_required": false,
+      "labeling_guidance": "label with customer contact information and identify it as a mobility device at the airport",
+      "airport_notification_required": true,
+      "effective_at": "2026-07-01"
+     },
+     {
+      "device_type": "manual wheelchair",
+      "also_called": [
+       "wheelchair",
+       "manual chair",
+       "push chair"
+      ],
+      "counts_as_paid_bag": false,
+      "fee": 0.0,
+      "currency": "USD",
+      "serial_number_required": false,
+      "labeling_guidance": "label with customer contact information and identify it as a mobility device at the airport",
+      "airport_notification_required": true,
+      "effective_at": "2026-07-01"
+     },
+     {
+      "device_type": "mobility scooter",
+      "also_called": [
+       "scooter",
+       "travel scooter"
+      ],
+      "counts_as_paid_bag": false,
+      "fee": 0.0,
+      "currency": "USD",
+      "serial_number_required": true,
+      "labeling_guidance": "label with customer contact information, record the battery serial number, and identify it as a mobility device at the airport",
+      "airport_notification_required": true,
+      "effective_at": "2026-07-01"
+     },
+     {
+      "device_type": "oversized sports wheelchair",
+      "also_called": [
+       "sports wheelchair",
+       "racing chair"
+      ],
+      "counts_as_paid_bag": true,
+      "fee": 35.0,
+      "currency": "USD",
+      "serial_number_required": true,
+      "labeling_guidance": "label with customer contact information, record the frame serial number, and present the chair at the oversized counter",
+      "airport_notification_required": true,
+      "effective_at": "2026-07-01"
+     },
+     {
+      "device_type": "portable oxygen concentrator",
+      "also_called": [
+       "oxygen concentrator",
+       "poc"
+      ],
+      "counts_as_paid_bag": false,
+      "fee": 0.0,
+      "currency": "USD",
+      "serial_number_required": true,
+      "labeling_guidance": "label with customer contact information, record the device serial number, and notify the airport medical desk",
+      "airport_notification_required": true,
+      "effective_at": "2026-07-01"
+     },
+     {
+      "device_type": "powered wheelchair",
+      "also_called": [
+       "electric wheelchair",
+       "power chair",
+       "powered chair"
+      ],
+      "counts_as_paid_bag": false,
+      "fee": 0.0,
+      "currency": "USD",
+      "serial_number_required": true,
+      "labeling_guidance": "label with customer contact information, record the battery serial number, and identify it as a mobility device at the airport",
+      "airport_notification_required": true,
+      "effective_at": "2026-07-01"
+     },
+     {
+      "device_type": "rollator",
+      "also_called": [
+       "rolling walker",
+       "four wheel walker"
+      ],
+      "counts_as_paid_bag": false,
+      "fee": 0.0,
+      "currency": "USD",
+      "serial_number_required": false,
+      "labeling_guidance": "label with customer contact information and identify it as a mobility device at the airport",
+      "airport_notification_required": true,
+      "effective_at": "2026-07-01"
+     },
+     {
+      "device_type": "transport chair",
+      "also_called": [
+       "companion chair"
+      ],
+      "counts_as_paid_bag": false,
+      "fee": 0.0,
+      "currency": "USD",
+      "serial_number_required": false,
+      "labeling_guidance": "label with customer contact information and identify it as a mobility device at the airport",
+      "airport_notification_required": true,
+      "effective_at": "2026-07-01"
+     },
+     {
+      "device_type": "unspecified mobility device",
+      "also_called": [],
+      "counts_as_paid_bag": false,
+      "fee": 0.0,
+      "currency": "USD",
+      "serial_number_required": false,
+      "labeling_guidance": "label with customer contact information and identify it as a mobility device at the airport",
+      "airport_notification_required": true,
+      "effective_at": "2026-07-01"
+     },
+     {
+      "device_type": "walking cane",
+      "also_called": [
+       "cane",
+       "walking stick"
+      ],
+      "counts_as_paid_bag": false,
+      "fee": 0.0,
+      "currency": "USD",
+      "serial_number_required": false,
+      "labeling_guidance": "keep the cane with the customer in the cabin",
+      "airport_notification_required": false,
+      "effective_at": "2026-04-01"
+     }
+    ]
    },
    "matches_recording": true,
    "write_tool": false,
    "reads": {
     "mobility_device_rules": {
      "keys": [],
-     "queries": [
-      {
-       "where": {
-        "device_type": "folding walker"
-       },
-       "matched": [
-        "folding walker|2025-06-01",
-        "folding walker|2026-07-01"
-       ]
-      }
-     ],
+     "queries": [],
      "scanned": true
     },
     "scenario": {

@@ -842,68 +842,88 @@
     },
     {
       "name": "check_mobility_device_requirements",
-      "description": "Return current fee, baggage-count, labeling, serial-number, and airport-notification rules for one mobility-device type.",
+      "description": "Return the accessibility baggage rules in force for every mobility-device category: the other names each category covers, whether it counts as paid baggage, its fee, labeling guidance, and serial-number and airport-notification requirements. Match the customer's device to a category from these rules; a device no category names falls under the unspecified mobility device rule.",
       "parameters": {
         "type": "object",
         "properties": {
           "device_type": {
             "type": "string",
-            "description": "Customer-stated mobility device."
+            "description": "Customer-stated mobility device, kept with the lookup. The result is the full rules table whatever is passed."
           }
         },
-        "required": [
-          "device_type"
-        ],
+        "required": [],
         "additionalProperties": false
       },
       "result_schema": {
         "type": "object",
         "properties": {
-          "device_type": {
-            "type": "string",
-            "description": "Device type the rules apply to."
-          },
-          "counts_as_paid_bag": {
-            "type": "boolean",
-            "description": "Whether the device counts as paid baggage."
-          },
-          "fee": {
-            "type": "number",
-            "description": "Device fee.",
-            "minimum": 0
-          },
-          "currency": {
-            "type": "string",
-            "description": "ISO 4217 currency code.",
-            "pattern": "^[A-Z]{3}$"
-          },
-          "serial_number_required": {
-            "type": "boolean",
-            "description": "Whether reservation entry needs a serial number."
-          },
-          "labeling_guidance": {
-            "type": "string",
-            "description": "Labeling guidance for the device."
-          },
-          "airport_notification_required": {
-            "type": "boolean",
-            "description": "Whether the airport must be notified about the device."
-          },
-          "effective_at": {
-            "type": "string",
-            "description": "Effective date of this rule version.",
-            "format": "date"
+          "rules": {
+            "type": "array",
+            "description": "The rule in force for each device category, ordered by category name.",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "properties": {
+                "device_type": {
+                  "type": "string",
+                  "description": "Device category the rule covers."
+                },
+                "also_called": {
+                  "type": "array",
+                  "description": "Other names the category covers.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "counts_as_paid_bag": {
+                  "type": "boolean",
+                  "description": "Whether the device counts as paid baggage."
+                },
+                "fee": {
+                  "type": "number",
+                  "description": "Device fee.",
+                  "minimum": 0
+                },
+                "currency": {
+                  "type": "string",
+                  "description": "ISO 4217 currency code.",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "serial_number_required": {
+                  "type": "boolean",
+                  "description": "Whether reservation entry needs a serial number."
+                },
+                "labeling_guidance": {
+                  "type": "string",
+                  "description": "Labeling guidance for the device."
+                },
+                "airport_notification_required": {
+                  "type": "boolean",
+                  "description": "Whether the airport must be notified about the device."
+                },
+                "effective_at": {
+                  "type": "string",
+                  "description": "Effective date of this rule version.",
+                  "format": "date"
+                }
+              },
+              "required": [
+                "device_type",
+                "also_called",
+                "counts_as_paid_bag",
+                "fee",
+                "currency",
+                "serial_number_required",
+                "labeling_guidance",
+                "airport_notification_required",
+                "effective_at"
+              ],
+              "additionalProperties": false
+            }
           }
         },
         "required": [
-          "device_type",
-          "counts_as_paid_bag",
-          "fee",
-          "currency",
-          "serial_number_required",
-          "labeling_guidance",
-          "airport_notification_required",
-          "effective_at"
+          "rules"
         ],
         "additionalProperties": false
       }

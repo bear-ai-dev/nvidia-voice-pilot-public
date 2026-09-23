@@ -9,7 +9,7 @@ trained on those results learns to read a verdict aloud, while Tau-voice
 rewards an agent that reads data and reaches the conclusion itself.
 
 This revision changes the tools so they return records and measurements, and
-updates the recorded results to match. 34 of the 85 recorded results changed.
+updates the recorded results to match. 35 of the 85 recorded results changed.
 The spoken audio, the transcripts of what was said, and the tool calls the
 agent made (names and arguments) did not change.
 
@@ -23,6 +23,9 @@ A tool returns what a real backend would hold or compute:
 - Removed: recommendations, verdicts about the caller's situation, answers keyed
   to the caller's question, pre-extracted clues, disclaimers for the agent to
   repeat, and relative, speech-ready times such as "18:00 tomorrow".
+- Also removed: matching the caller's own words to a rule. A tool that took
+  "folding walker" and returned the one rule that applies did the agent's
+  classification; it now returns the published rules and the agent matches.
 
 Where a policy forbade the agent from drawing a conclusion from returned data
 (for example the airline rule against inferring that a fare is cheaper unless
@@ -38,6 +41,7 @@ data instead.
 | af-001 | `list_supported_airports` | Airport names, a recommended airport, and a stored sentence explaining why | Each airport with its distance and ground-access time |
 | af-002 | `search_flights` | The cheapest nonstop each way, fares ranked "lower" and "higher" | Every nonstop with seats each way, each with its own fares |
 | af-003 | `search_flights` | One pre-picked connection with its saving ($62) and "almost three hours" | Every qualifying connection with legs, layovers, durations and fares |
+| af-003b | `check_mobility_device_requirements` | The rule for "folding walker", matched from the caller's words by the tool | The accessibility rules for all 12 device categories with the names each covers; the agent matches the walker to its category (one category, an oversized sports wheelchair, is a $35 paid bag) |
 | af-005 | `get_customer_profile` | `duplicate_reservation: false` and a hint to ask for a certificate | The customer's reservations (none) and certificates on file |
 
 ### banking-account-email-card-application, banking-referral-missing-reward, banking-transaction-dispute-session, banking-declined-card-travel
