@@ -32,7 +32,7 @@ from toolkit import (NotFound, Refusal, ToolError, allocate_id, as_float, as_int
 KEY_COLUMNS = {
     "airport_area_links": [
         "area_id",
-        "proximity_rank"
+        "airport_code"
     ],
     "airports": [
         "code"
@@ -326,11 +326,10 @@ def _price_itinerary(db, outbound_id: str, return_id: str, fare_class: str,
 def _current_quote(db) -> dict | None:
     """The most recently priced quote: the desk's current pricing context.
 
-    A profile read has to know which itinerary to run a duplicate check against,
-    and a certificate validation has to know what amount it is being applied to.
-    Neither call carries an itinerary in its arguments, so both read the quote
-    that pricing last touched. `last_priced_at` is a text column, so "most
-    recent" is the greatest string, with the greatest quote_id breaking a tie.
+    A certificate validation has to know what amount it is being applied to and
+    carries no itinerary in its arguments, so it reads the quote that pricing
+    last touched. `last_priced_at` is a text column, so "most recent" is the
+    greatest string, with the greatest quote_id breaking a tie.
     """
     priced = [quote for quote in db["fare_quotes"].values()
               if quote["last_priced_at"] is not None]
@@ -404,17 +403,21 @@ def list_supported_airports(db, args) -> dict:
     for link in rows(db, "airport_area_links", area_id=area["area_id"]):
         airport = first(db, "airports", code=link["airport_code"], served=True)
         if airport is not None:
-            linked.append((link["proximity_rank"], airport))
-    airports = [airport for _, airport in _order(
-        linked, (lambda pair: pair[0], False), (lambda pair: pair[1]["code"], False))]
-    if not airports:
+            linked.append({
+                "code": airport["code"],
+                "name": airport["name"],
+                "distance_miles": as_float(link["distance_miles"]),
+                "ground_access_minutes": as_int(link["ground_access_minutes"]),
+            })
+    if not linked:
         raise NotFound(f"destination area {area['area_id']!r} has no served airports")
 
+    # Nearest first is a listing order, not a recommendation: the caller gets the
+    # distance and ground travel time for every airport and weighs them.
     return {
-        "airports": [{"code": row["code"], "name": row["name"]} for row in airports],
-        "recommended_airport_code": airports[0]["code"],
-        "recommendation_basis": area["recommendation_basis"],
-        "retrieved_at": area["retrieved_at"],
+        "destination_area": area["display_name"],
+        "airports": _order(linked, (lambda row: row["distance_miles"], False),
+                           (lambda row: row["code"], False)),
     }
 
 
@@ -434,26 +437,41 @@ def _sellable_fares(db, flight_id: str, departure_date: str, traveler_count: int
     return sellable
 
 
-def _best_flight(db, origin: str, destination: str, departure_date: str,
-                 traveler_count: int, max_stops: int) -> dict | None:
-    """Cheapest sellable flight on a route and date, earliest departure on a tie."""
-    candidates = []
-    for flight in rows(db, "flights", origin_code=origin, destination_code=destination):
+def _direct_flights(db, origin: str, destination: str, departure_date: str,
+                    travel_day: str, traveler_count: int, max_stops: int) -> list[dict]:
+    """Every flight on a route and date within the stop limit with room for the
+    party, ordered by departure time, each with the fare families it can sell.
+
+    Prices are one way, per traveler, for that flight. No flight is picked over
+    another; the caller has the times and prices to choose.
+    """
+    currency = scenario_value(db, "currency")
+    found = []
+    flights = _order(rows(db, "flights", origin_code=origin, destination_code=destination),
+                     (lambda row: row["departure_time"], False),
+                     (lambda row: row["flight_id"], False))
+    for flight in flights:
         if flight["stops"] > max_stops:
             continue
-        sellable = _sellable_fares(db, flight["flight_id"], departure_date, traveler_count)
+        sellable = _sellable_fares(db, flight["flight_id"], travel_day, traveler_count)
         if not sellable:
             continue
-        candidates.append({
-            "flight_id": flight["flight_id"],
-            "duration_minutes": flight["duration_minutes"],
-            "lowest_leg_price": min(fare["leg_price"] for fare in sellable.values()),
-            "departure_time": flight["departure_time"],
+        priced = sorted((_cents(fare["leg_price"]), fare["fare_class"],
+                         fare["advance_seat_selection_allowed"])
+                        for fare in sellable.values())
+        found.append({
+            **_flight_view(db, flight, departure_date),
+            "fare_options": [
+                {
+                    "fare_class": fare_class,
+                    "price_per_traveler": as_float(price),
+                    "currency": currency,
+                    "advance_seat_selection_allowed": seats,
+                }
+                for price, fare_class, seats in priced
+            ],
         })
-    if not candidates:
-        return None
-    return min(candidates, key=lambda row: (row["lowest_leg_price"], row["departure_time"],
-                                            row["flight_id"]))
+    return found
 
 
 def _connection_legs(db, itinerary_id: str) -> dict:
@@ -465,105 +483,92 @@ def _connection_legs(db, itinerary_id: str) -> dict:
         flight = first(db, "flights", flight_id=segment["flight_id"])
         if flight is None:
             continue
-        legs[segment["direction"]].append({
-            "direction": segment["direction"],
-            "segment_index": segment["segment_index"],
-            "flight_id": segment["flight_id"],
-            "layover_after_minutes": segment["layover_after_minutes"],
-            "duration_minutes": flight["duration_minutes"],
-            "origin_code": flight["origin_code"],
-            "destination_code": flight["destination_code"],
-        })
+        legs[segment["direction"]].append({"segment": segment, "flight": flight})
     return legs
 
 
-def _best_connection(db, origin: str, destination: str, departure_date: str,
-                     return_date: str, traveler_count: int, max_stops: int,
-                     max_layover_minutes, direct_outbound: dict | None,
-                     direct_return: dict | None) -> dict | None:
-    """Cheapest offered connection within the stop and layover limits.
+def _connections(db, origin: str, destination: str, departure_date: str,
+                 return_date: str, traveler_count: int, max_stops: int,
+                 max_layover_minutes) -> list[dict]:
+    """Every offered connecting itinerary on the route and dates with room for the
+    party, within the stop and layover limits.
 
-    Savings compare the cheapest fare family sellable across every segment of the
-    connection against the cheapest family on the direct pair, for the whole
-    party, which is what the registry means by savings versus the comparable
-    direct itinerary. Without a direct pair there is nothing to compare against
-    and no comparison is returned.
+    Each is returned with its legs, its elapsed time per direction, and the price
+    per traveler of every fare family sellable on all of its segments. Nothing is
+    compared against the nonstop option or against another connection; the
+    caller has the figures to do that.
     """
-    if direct_outbound is None or direct_return is None:
-        return None
-    direct_classes = _shared_fare_classes(db, direct_outbound["flight_id"],
-                                          departure_date, direct_return["flight_id"],
-                                          return_date, traveler_count)
-    if not direct_classes:
-        return None
-    direct_cheapest = min(
-        _cents(_leg_price(db, direct_outbound["flight_id"], fare_class)
-               + _leg_price(db, direct_return["flight_id"], fare_class))
-        for fare_class in direct_classes
-    )
-
     candidates = _order(
         rows(db, "connecting_itineraries", origin_code=origin, destination_code=destination,
              departure_date=departure_date, return_date=return_date, offered=True),
         (lambda row: row["itinerary_id"], False),
     )
+    currency = scenario_value(db, "currency")
+    dates = {"outbound": departure_date, "return": return_date}
 
-    best = None
+    found = []
     for candidate in candidates:
         legs = _connection_legs(db, candidate["itinerary_id"])
         if not legs["outbound"] or not legs["return"]:
             continue
         if max(len(legs["outbound"]), len(legs["return"])) - 1 > max_stops:
             continue
-        layovers = [row["layover_after_minutes"] for direction in legs.values()
-                    for row in direction[:-1]]
+        layovers = [leg["segment"]["layover_after_minutes"] for direction in legs.values()
+                    for leg in direction[:-1]]
         if max_layover_minutes is not None and layovers and max(layovers) > max_layover_minutes:
             continue
 
         # A fare family is only sellable on the connection when every segment has
         # room for the party in it.
         sellable: set[str] | None = None
-        for direction, travel_date in (("outbound", departure_date), ("return", return_date)):
-            for row in legs[direction]:
-                classes = set(_sellable_fares(db, row["flight_id"], travel_date,
+        for direction, travel_date in dates.items():
+            for leg in legs[direction]:
+                classes = set(_sellable_fares(db, leg["flight"]["flight_id"], travel_date,
                                               traveler_count))
                 sellable = classes if sellable is None else sellable & classes
         if not sellable:
             continue
 
-        price = min(
-            _cents(sum((_leg_price(db, row["flight_id"], fare_class)
-                        for direction in legs.values() for row in direction), ZERO))
-            for fare_class in sorted(sellable)
-        )
-        savings = _cents((direct_cheapest - price) * traveler_count)
-        if savings <= 0:
-            continue
+        flight_ids = [leg["flight"]["flight_id"] for direction in legs.values()
+                      for leg in direction]
+        priced = []
+        for fare_class in sellable:
+            price = _cents(sum((_leg_price(db, flight_id, fare_class)
+                                for flight_id in flight_ids), ZERO))
+            seats = all(first(db, "fare_options", flight_id=flight_id,
+                              fare_class=fare_class)["advance_seat_selection_allowed"]
+                        for flight_id in flight_ids)
+            priced.append((price, fare_class, seats))
+        priced.sort()
 
-        added = max(
-            sum(row["duration_minutes"] + row["layover_after_minutes"]
-                for row in legs["outbound"]) - direct_outbound["duration_minutes"],
-            sum(row["duration_minutes"] + row["layover_after_minutes"]
-                for row in legs["return"]) - direct_return["duration_minutes"],
-        )
-        if added <= 0:
-            continue
-        if best is None or price < best["price"]:
-            best = {
-                "itinerary_id": candidate["itinerary_id"],
-                "price": price,
-                "savings": savings,
-                "display": candidate["additional_duration_display"],
-                "added_minutes": added,
+        itinerary: dict = {"itinerary_id": candidate["itinerary_id"]}
+        for direction, travel_date in dates.items():
+            itinerary[direction] = {
+                # Elapsed time from the first departure to the last arrival:
+                # block time plus the connection time on the ground.
+                "total_duration_minutes": as_int(sum(
+                    leg["flight"]["duration_minutes"] + leg["segment"]["layover_after_minutes"]
+                    for leg in legs[direction])),
+                "legs": [
+                    {
+                        "segment_index": as_int(leg["segment"]["segment_index"]),
+                        **_flight_view(db, leg["flight"], travel_date),
+                        "layover_after_minutes": as_int(leg["segment"]["layover_after_minutes"]),
+                    }
+                    for leg in legs[direction]
+                ],
             }
-    return best
-
-
-def _shared_fare_classes(db, outbound_id: str, departure_date: str, return_id: str,
-                         return_date: str, traveler_count: int) -> list[str]:
-    outbound = _sellable_fares(db, outbound_id, departure_date, traveler_count)
-    inbound = _sellable_fares(db, return_id, return_date, traveler_count)
-    return sorted(set(outbound) & set(inbound))
+        itinerary["fare_options"] = [
+            {
+                "fare_class": fare_class,
+                "price_per_traveler": as_float(price),
+                "currency": currency,
+                "advance_seat_selection_allowed": seats,
+            }
+            for price, fare_class, seats in priced
+        ]
+        found.append(itinerary)
+    return found
 
 
 def search_flights(db, args) -> dict:
@@ -578,22 +583,15 @@ def search_flights(db, args) -> dict:
     max_stops = args["max_stops"]
     max_layover = args.get("max_layover_minutes")
 
-    outbound = _best_flight(db, origin["code"], destination["code"], departure_day,
-                            traveler_count, max_stops)
-    inbound = _best_flight(db, destination["code"], origin["code"], return_day,
-                           traveler_count, max_stops)
-
-    # A search that allows a stop is a comparison request: the registry has the
-    # connecting comparison and the direct option set as alternatives, and the
-    # connecting form is what a caller asking about stops is being shown. With no
-    # qualifying connection the search falls back to the direct option set, which
-    # is also what a nonstop-only search returns.
-    connection = None
+    # A search that allows a stop is asking about connections: every qualifying
+    # connecting itinerary is listed. With none, the search falls back to the
+    # direct option set, which is also what a nonstop-only search returns.
+    connections = []
     if max_stops >= 1:
-        connection = _best_connection(db, origin["code"], destination["code"],
-                                      departure_day, return_day, traveler_count,
-                                      max_stops, max_layover, outbound, inbound)
-    profile = "one_stop" if connection else "nonstop"
+        connections = _connections(db, origin["code"], destination["code"],
+                                   departure_day, return_day, traveler_count,
+                                   max_stops, max_layover)
+    profile = "one_stop" if connections else "nonstop"
 
     search = first(db, "flight_searches", origin_code=origin["code"],
                    destination_code=destination["code"], departure_date=departure_day,
@@ -615,46 +613,15 @@ def search_flights(db, args) -> dict:
 
     result: dict = {"search_id": search["search_id"]}
 
-    if connection is not None:
-        result["best_connection"] = {
-            "itinerary_id": connection["itinerary_id"],
-            "total_savings": as_float(connection["savings"]),
-            "currency": scenario_value(db, "currency"),
-            "additional_duration_each_way": connection["display"],
-            "additional_duration_minutes_each_way": as_int(connection["added_minutes"]),
-        }
-    elif outbound is not None and inbound is not None:
-        outbound_row = _flight(db, outbound["flight_id"])
-        inbound_row = _flight(db, inbound["flight_id"])
-        result["outbound"] = _flight_view(db, outbound_row, departure_date)
-        result["return"] = _flight_view(db, inbound_row, return_date)
-
-        shared = _shared_fare_classes(db, outbound["flight_id"], departure_day,
-                                      inbound["flight_id"], return_day,
-                                      traveler_count)
-        priced = []
-        for fare_class in shared:
-            option = first(db, "fare_options", flight_id=outbound["flight_id"],
-                           fare_class=fare_class)
-            priced.append((
-                _cents(_leg_price(db, outbound["flight_id"], fare_class)
-                       + _leg_price(db, inbound["flight_id"], fare_class)),
-                fare_class, option["advance_seat_selection_allowed"]))
-        priced.sort()
-        currency = scenario_value(db, "currency")
-        if priced:
-            result["fare_options"] = [
-                {
-                    "fare_class": fare_class,
-                    "price_per_traveler": as_float(price),
-                    "currency": currency,
-                    # Rank within the returned set, so the cheapest family is the
-                    # lower one and the rest are higher. Nothing stores it.
-                    "relative_price_rank": "lower" if index == 0 else "higher",
-                    "advance_seat_selection_allowed": seats,
-                }
-                for index, (price, fare_class, seats) in enumerate(priced)
-            ]
+    if connections:
+        result["connections"] = connections
+    else:
+        result["outbound"] = _direct_flights(db, origin["code"], destination["code"],
+                                             departure_date, departure_day,
+                                             traveler_count, max_stops)
+        result["return"] = _direct_flights(db, destination["code"], origin["code"],
+                                           return_date, return_day,
+                                           traveler_count, max_stops)
 
     result["availability_checked_at"] = search["availability_checked_at"]
     result["expires_at"] = search["expires_at"]
@@ -668,6 +635,8 @@ def _flight_view(db, flight: dict, departure_date: str) -> dict:
         "destination": _airport(db, flight["destination_code"]),
         "departure_date": departure_date,
         "departure_time": flight["departure_time"],
+        "arrival_date": (date.fromisoformat(departure_date) + timedelta(days=1)).isoformat()
+        if flight["arrives_next_day"] else departure_date,
         "arrival_time": flight["arrival_time"],
         "duration_minutes": as_int(flight["duration_minutes"]),
         "stops": as_int(flight["stops"]),
@@ -804,25 +773,30 @@ def get_customer_profile(db, args) -> dict:
 
     sections = set(args["include"])
 
-    # Duplicate check against the itinerary currently being priced at the desk.
-    # With nothing priced there is no itinerary to duplicate.
-    duplicate = False
-    quote = _current_quote(db)
-    if quote is not None:
-        duplicate = any(
-            reservation["status"] in ACTIVE_RESERVATION_STATUSES
-            for reservation in rows(db, "reservations",
-                                    customer_id=customer["customer_id"],
-                                    outbound_flight_id=quote["outbound_flight_id"],
-                                    return_flight_id=quote["return_flight_id"],
-                                    departure_date=quote["departure_date"],
-                                    return_date=quote["return_date"]))
-
     result: dict = {
         "customer_id": customer["customer_id"],
         "verification_id": args["verification_id"],
-        "duplicate_reservation": duplicate,
     }
+
+    if "reservations" in sections:
+        # Every reservation on the account, whatever its status. Whether one of
+        # them duplicates the itinerary being booked is for the caller to judge
+        # from the route and dates.
+        held = _order(rows(db, "reservations", customer_id=customer["customer_id"]),
+                      (lambda row: row["departure_date"], False),
+                      (lambda row: row["reservation_id"], False))
+        result["reservations"] = []
+        for row in held:
+            outbound = _flight(db, row["outbound_flight_id"])
+            result["reservations"].append({
+                "reservation_id": row["reservation_id"],
+                "confirmation_code": row["confirmation_code"],
+                "origin_code": outbound["origin_code"],
+                "destination_code": outbound["destination_code"],
+                "departure_date": row["departure_date"],
+                "return_date": row["return_date"],
+                "status": row["status"],
+            })
 
     if "payment_methods" in sections:
         cards = _order(rows(db, "payment_methods", customer_id=customer["customer_id"],
@@ -835,13 +809,23 @@ def get_customer_profile(db, args) -> dict:
         ]
 
     if "travel_certificates" in sections:
-        # Certificate codes are never disclosed by a profile read, so a customer
-        # holding usable certificate value has to supply the code. A customer
-        # with nothing usable on file has nothing to supply.
-        result["travel_certificate_input_required"] = any(
-            _num(row["available_balance"]) > 0
-            for row in rows(db, "travel_certificates",
-                            customer_id=customer["customer_id"], status="valid"))
+        # Every certificate on the account, with its status and balance as held.
+        # Codes are never disclosed by a profile read; only the masked form is.
+        certificates = _order(rows(db, "travel_certificates",
+                                   customer_id=customer["customer_id"]),
+                              (lambda row: row["expires_at"] or "", False),
+                              (lambda row: row["certificate_id"], False))
+        result["travel_certificates"] = [
+            compact([
+                ("certificate_id", row["certificate_id"]),
+                ("masked_code", row["masked_code"]),
+                ("status", row["status"]),
+                ("available_balance", as_float(row["available_balance"])),
+                ("currency", row["currency"]),
+                ("expires_at", row["expires_at"]),
+            ])
+            for row in certificates
+        ]
 
     return result
 

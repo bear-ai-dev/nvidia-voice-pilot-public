@@ -2,7 +2,7 @@
   {
     "id": "airline-family-reservation",
     "description": {
-      "purpose": "Recommend Washington Reagan National for a National Mall stay from the backend comparison, price a nonstop PHX-DCA round trip (October 14 to 19) in standard economy for the caller and her 12-year-old grandson with two checked bags, a free folding walker and optional insurance, verify her identity, validate her 200 dollar certificate, and book reservation B9RT6M with the remainder on her Visa ending 1182.",
+      "purpose": "Recommend Washington Reagan National for a National Mall stay by comparing the returned airport distances and ground travel times, price a nonstop PHX-DCA round trip (October 14 to 19) in standard economy for the caller and her 12-year-old grandson with two checked bags, a free folding walker and optional insurance, verify her identity, validate her 200 dollar certificate, and book reservation B9RT6M with the remainder on her Visa ending 1182.",
       "relevant_policies": "domains/airline/policy.md",
       "notes": "Every figure (the one-stop saving, the fare with bags, insurance, the walker's treatment, the certificate value) must come from the tools before it is spoken. Identity must be verified before stored cards or certificates are used, and the agent must not paraphrase ID or custody rules for the minor or promise seats."
     },

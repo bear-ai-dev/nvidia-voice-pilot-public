@@ -1,235 +1,202 @@
 {
  "airport_area_links": {
-  "baltimore-inner-harbor|1": {
+  "baltimore-inner-harbor|BWI": {
    "airport_code": "BWI",
    "area_id": "baltimore-inner-harbor",
    "distance_miles": 9.4,
-   "ground_access_minutes": 24,
-   "proximity_rank": 1
+   "ground_access_minutes": 24
   },
-  "baltimore-inner-harbor|2": {
+  "baltimore-inner-harbor|DCA": {
    "airport_code": "DCA",
    "area_id": "baltimore-inner-harbor",
    "distance_miles": 39.8,
-   "ground_access_minutes": 78,
-   "proximity_rank": 2
+   "ground_access_minutes": 78
   },
-  "baltimore-inner-harbor|3": {
+  "baltimore-inner-harbor|IAD": {
    "airport_code": "IAD",
    "area_id": "baltimore-inner-harbor",
    "distance_miles": 51.2,
-   "ground_access_minutes": 96,
-   "proximity_rank": 3
+   "ground_access_minutes": 96
   },
-  "boston-north-end|1": {
+  "boston-north-end|BOS": {
    "airport_code": "BOS",
    "area_id": "boston-north-end",
    "distance_miles": 3.6,
-   "ground_access_minutes": 16,
-   "proximity_rank": 1
+   "ground_access_minutes": 16
   },
-  "chicago-loop|1": {
+  "chicago-loop|MDW": {
    "airport_code": "MDW",
    "area_id": "chicago-loop",
    "distance_miles": 10.1,
-   "ground_access_minutes": 32,
-   "proximity_rank": 1
+   "ground_access_minutes": 32
   },
-  "chicago-loop|2": {
+  "chicago-loop|ORD": {
    "airport_code": "ORD",
    "area_id": "chicago-loop",
    "distance_miles": 17.9,
-   "ground_access_minutes": 48,
-   "proximity_rank": 2
+   "ground_access_minutes": 48
   },
-  "french-quarter|1": {
+  "french-quarter|MSY": {
    "airport_code": "MSY",
    "area_id": "french-quarter",
    "distance_miles": 14.8,
-   "ground_access_minutes": 28,
-   "proximity_rank": 1
+   "ground_access_minutes": 28
   },
-  "grand-canyon-south-rim|1": {
-   "airport_code": "PHX",
-   "area_id": "grand-canyon-south-rim",
-   "distance_miles": 223.0,
-   "ground_access_minutes": 268,
-   "proximity_rank": 1
-  },
-  "grand-canyon-south-rim|2": {
+  "grand-canyon-south-rim|LAS": {
    "airport_code": "LAS",
    "area_id": "grand-canyon-south-rim",
    "distance_miles": 278.0,
-   "ground_access_minutes": 306,
-   "proximity_rank": 2
+   "ground_access_minutes": 306
   },
-  "hollywood|1": {
+  "grand-canyon-south-rim|PHX": {
+   "airport_code": "PHX",
+   "area_id": "grand-canyon-south-rim",
+   "distance_miles": 223.0,
+   "ground_access_minutes": 268
+  },
+  "hollywood|LAX": {
    "airport_code": "LAX",
    "area_id": "hollywood",
    "distance_miles": 14.2,
-   "ground_access_minutes": 40,
-   "proximity_rank": 1
+   "ground_access_minutes": 40
   },
-  "hollywood|2": {
-   "airport_code": "SNA",
-   "area_id": "hollywood",
-   "distance_miles": 44.7,
-   "ground_access_minutes": 72,
-   "proximity_rank": 2
-  },
-  "hollywood|3": {
+  "hollywood|SAN": {
    "airport_code": "SAN",
    "area_id": "hollywood",
    "distance_miles": 121.4,
-   "ground_access_minutes": 168,
-   "proximity_rank": 3
+   "ground_access_minutes": 168
   },
-  "las-vegas-strip|1": {
+  "hollywood|SNA": {
+   "airport_code": "SNA",
+   "area_id": "hollywood",
+   "distance_miles": 44.7,
+   "ground_access_minutes": 72
+  },
+  "las-vegas-strip|LAS": {
    "airport_code": "LAS",
    "area_id": "las-vegas-strip",
    "distance_miles": 2.4,
-   "ground_access_minutes": 12,
-   "proximity_rank": 1
+   "ground_access_minutes": 12
   },
-  "manhattan-midtown|1": {
-   "airport_code": "LGA",
-   "area_id": "manhattan-midtown",
-   "distance_miles": 8.6,
-   "ground_access_minutes": 34,
-   "proximity_rank": 1
-  },
-  "manhattan-midtown|2": {
-   "airport_code": "JFK",
-   "area_id": "manhattan-midtown",
-   "distance_miles": 16.4,
-   "ground_access_minutes": 58,
-   "proximity_rank": 2
-  },
-  "manhattan-midtown|3": {
+  "manhattan-midtown|EWR": {
    "airport_code": "EWR",
    "area_id": "manhattan-midtown",
    "distance_miles": 17.2,
-   "ground_access_minutes": 62,
-   "proximity_rank": 3
+   "ground_access_minutes": 62
   },
-  "napa-valley|1": {
+  "manhattan-midtown|JFK": {
+   "airport_code": "JFK",
+   "area_id": "manhattan-midtown",
+   "distance_miles": 16.4,
+   "ground_access_minutes": 58
+  },
+  "manhattan-midtown|LGA": {
+   "airport_code": "LGA",
+   "area_id": "manhattan-midtown",
+   "distance_miles": 8.6,
+   "ground_access_minutes": 34
+  },
+  "napa-valley|OAK": {
    "airport_code": "OAK",
    "area_id": "napa-valley",
    "distance_miles": 41.5,
-   "ground_access_minutes": 62,
-   "proximity_rank": 1
+   "ground_access_minutes": 62
   },
-  "napa-valley|2": {
+  "napa-valley|SFO": {
    "airport_code": "SFO",
    "area_id": "napa-valley",
    "distance_miles": 52.8,
-   "ground_access_minutes": 84,
-   "proximity_rank": 2
+   "ground_access_minutes": 84
   },
-  "napa-valley|3": {
+  "napa-valley|SJC": {
    "airport_code": "SJC",
    "area_id": "napa-valley",
    "distance_miles": 71.3,
-   "ground_access_minutes": 108,
-   "proximity_rank": 3
+   "ground_access_minutes": 108
   },
-  "national-mall|1": {
-   "airport_code": "DCA",
-   "area_id": "national-mall",
-   "distance_miles": 3.2,
-   "ground_access_minutes": 18,
-   "proximity_rank": 1
-  },
-  "national-mall|2": {
-   "airport_code": "IAD",
-   "area_id": "national-mall",
-   "distance_miles": 26.4,
-   "ground_access_minutes": 52,
-   "proximity_rank": 2
-  },
-  "national-mall|3": {
+  "national-mall|BWI": {
    "airport_code": "BWI",
    "area_id": "national-mall",
    "distance_miles": 32.1,
-   "ground_access_minutes": 64,
-   "proximity_rank": 3
+   "ground_access_minutes": 64
   },
-  "pike-place-market|1": {
+  "national-mall|DCA": {
+   "airport_code": "DCA",
+   "area_id": "national-mall",
+   "distance_miles": 3.2,
+   "ground_access_minutes": 18
+  },
+  "national-mall|IAD": {
+   "airport_code": "IAD",
+   "area_id": "national-mall",
+   "distance_miles": 26.4,
+   "ground_access_minutes": 52
+  },
+  "pike-place-market|SEA": {
    "airport_code": "SEA",
    "area_id": "pike-place-market",
    "distance_miles": 15.3,
-   "ground_access_minutes": 38,
-   "proximity_rank": 1
+   "ground_access_minutes": 38
   },
-  "silicon-valley|1": {
-   "airport_code": "SJC",
-   "area_id": "silicon-valley",
-   "distance_miles": 9.8,
-   "ground_access_minutes": 22,
-   "proximity_rank": 1
-  },
-  "silicon-valley|2": {
-   "airport_code": "SFO",
-   "area_id": "silicon-valley",
-   "distance_miles": 31.2,
-   "ground_access_minutes": 48,
-   "proximity_rank": 2
-  },
-  "silicon-valley|3": {
+  "silicon-valley|OAK": {
    "airport_code": "OAK",
    "area_id": "silicon-valley",
    "distance_miles": 34.6,
-   "ground_access_minutes": 56,
-   "proximity_rank": 3
+   "ground_access_minutes": 56
   },
-  "south-beach|1": {
-   "airport_code": "MIA",
-   "area_id": "south-beach",
-   "distance_miles": 11.7,
-   "ground_access_minutes": 30,
-   "proximity_rank": 1
+  "silicon-valley|SFO": {
+   "airport_code": "SFO",
+   "area_id": "silicon-valley",
+   "distance_miles": 31.2,
+   "ground_access_minutes": 48
   },
-  "south-beach|2": {
+  "silicon-valley|SJC": {
+   "airport_code": "SJC",
+   "area_id": "silicon-valley",
+   "distance_miles": 9.8,
+   "ground_access_minutes": 22
+  },
+  "south-beach|FLL": {
    "airport_code": "FLL",
    "area_id": "south-beach",
    "distance_miles": 24.3,
-   "ground_access_minutes": 46,
-   "proximity_rank": 2
+   "ground_access_minutes": 46
   },
-  "walt-disney-world|1": {
+  "south-beach|MIA": {
+   "airport_code": "MIA",
+   "area_id": "south-beach",
+   "distance_miles": 11.7,
+   "ground_access_minutes": 30
+  },
+  "walt-disney-world|MCO": {
    "airport_code": "MCO",
    "area_id": "walt-disney-world",
    "distance_miles": 21.6,
-   "ground_access_minutes": 38,
-   "proximity_rank": 1
+   "ground_access_minutes": 38
   },
-  "walt-disney-world|2": {
+  "walt-disney-world|TPA": {
    "airport_code": "TPA",
    "area_id": "walt-disney-world",
    "distance_miles": 78.4,
-   "ground_access_minutes": 104,
-   "proximity_rank": 2
+   "ground_access_minutes": 104
   },
-  "washington-dc-metro|1": {
-   "airport_code": "DCA",
-   "area_id": "washington-dc-metro",
-   "distance_miles": 4.8,
-   "ground_access_minutes": 22,
-   "proximity_rank": 1
-  },
-  "washington-dc-metro|2": {
-   "airport_code": "IAD",
-   "area_id": "washington-dc-metro",
-   "distance_miles": 27.0,
-   "ground_access_minutes": 55,
-   "proximity_rank": 2
-  },
-  "washington-dc-metro|3": {
+  "washington-dc-metro|BWI": {
    "airport_code": "BWI",
    "area_id": "washington-dc-metro",
    "distance_miles": 33.6,
-   "ground_access_minutes": 68,
-   "proximity_rank": 3
+   "ground_access_minutes": 68
+  },
+  "washington-dc-metro|DCA": {
+   "airport_code": "DCA",
+   "area_id": "washington-dc-metro",
+   "distance_miles": 4.8,
+   "ground_access_minutes": 22
+  },
+  "washington-dc-metro|IAD": {
+   "airport_code": "IAD",
+   "area_id": "washington-dc-metro",
+   "distance_miles": 27.0,
+   "ground_access_minutes": 55
   }
  },
  "airports": {
@@ -2946,7 +2913,6 @@
  },
  "connecting_itineraries": {
   "87ba9919-0d38-418a-868c-42185e5a9ab9": {
-   "additional_duration_display": "almost three hours",
    "departure_date": "2026-10-14",
    "destination_code": "DCA",
    "itinerary_id": "87ba9919-0d38-418a-868c-42185e5a9ab9",
@@ -2956,7 +2922,6 @@
    "via_airport_code": "ORD"
   },
   "itinerary-clt-dfw-via-phl": {
-   "additional_duration_display": "just over 5 hours",
    "departure_date": "2026-10-05",
    "destination_code": "DFW",
    "itinerary_id": "itinerary-clt-dfw-via-phl",
@@ -2966,7 +2931,6 @@
    "via_airport_code": "PHL"
   },
   "itinerary-clt-ord-via-phl": {
-   "additional_duration_display": "about 6 and a half hours",
    "departure_date": "2026-10-12",
    "destination_code": "ORD",
    "itinerary_id": "itinerary-clt-ord-via-phl",
@@ -2976,7 +2940,6 @@
    "via_airport_code": "PHL"
   },
   "itinerary-dca-phx-via-ord": {
-   "additional_duration_display": "almost 3 hours",
    "departure_date": "2026-10-05",
    "destination_code": "PHX",
    "itinerary_id": "itinerary-dca-phx-via-ord",
@@ -2986,7 +2949,6 @@
    "via_airport_code": "ORD"
   },
   "itinerary-dfw-clt-via-phl": {
-   "additional_duration_display": "just over 5 hours",
    "departure_date": "2026-10-14",
    "destination_code": "CLT",
    "itinerary_id": "itinerary-dfw-clt-via-phl",
@@ -2996,7 +2958,6 @@
    "via_airport_code": "PHL"
   },
   "itinerary-ord-clt-via-phl": {
-   "additional_duration_display": "about 6 and a half hours",
    "departure_date": "2026-10-12",
    "destination_code": "CLT",
    "itinerary_id": "itinerary-ord-clt-via-phl",
@@ -3006,7 +2967,6 @@
    "via_airport_code": "PHL"
   },
   "itinerary-phx-dca-via-ord": {
-   "additional_duration_display": "almost 3 hours",
    "departure_date": "2026-10-12",
    "destination_code": "DCA",
    "itinerary_id": "itinerary-phx-dca-via-ord",
@@ -4281,8 +4241,6 @@
    "area_id": "baltimore-inner-harbor",
    "area_kind": "landmark",
    "display_name": "Inner Harbor, Baltimore",
-   "recommendation_basis": "closest airport to the Inner Harbor and the only supported option with direct rail access to it",
-   "retrieved_at": "2026-08-26T11:41:00-07:00",
    "search_terms": [
     "inner harbor",
     "baltimore harbor",
@@ -4294,8 +4252,6 @@
    "area_id": "boston-north-end",
    "area_kind": "district",
    "display_name": "North End, Boston",
-   "recommendation_basis": "the only supported airport serving central Boston, and the shortest harbour tunnel transfer of the returned options",
-   "retrieved_at": "2026-08-26T06:07:00-07:00",
    "search_terms": [
     "north end",
     "fenway",
@@ -4308,8 +4264,6 @@
    "area_id": "chicago-loop",
    "area_kind": "district",
    "display_name": "The Loop, Chicago",
-   "recommendation_basis": "closest airport to the Loop and the shorter of the two supported rail connections into it",
-   "retrieved_at": "2026-08-26T09:47:00-07:00",
    "search_terms": [
     "the loop",
     "downtown chicago",
@@ -4322,8 +4276,6 @@
    "area_id": "french-quarter",
    "area_kind": "district",
    "display_name": "French Quarter, New Orleans",
-   "recommendation_basis": "the only supported airport serving the French Quarter, with direct highway access",
-   "retrieved_at": "2026-08-26T06:52:00-07:00",
    "search_terms": [
     "french quarter",
     "bourbon street",
@@ -4335,8 +4287,6 @@
    "area_id": "grand-canyon-south-rim",
    "area_kind": "landmark",
    "display_name": "Grand Canyon South Rim, Arizona",
-   "recommendation_basis": "shortest scheduled ground connection to the South Rim among the supported options",
-   "retrieved_at": "2026-08-26T07:15:00-07:00",
    "search_terms": [
     "grand canyon",
     "south rim",
@@ -4348,8 +4298,6 @@
    "area_id": "hollywood",
    "area_kind": "district",
    "display_name": "Hollywood, Los Angeles",
-   "recommendation_basis": "closest airport to Hollywood among the supported southern California options",
-   "retrieved_at": "2026-08-26T07:54:00-07:00",
    "search_terms": [
     "hollywood",
     "west hollywood",
@@ -4362,8 +4310,6 @@
    "area_id": "las-vegas-strip",
    "area_kind": "landmark",
    "display_name": "The Strip, Las Vegas",
-   "recommendation_basis": "the only supported airport serving the Strip, adjacent to its southern end",
-   "retrieved_at": "2026-08-26T07:38:00-07:00",
    "search_terms": [
     "the strip",
     "las vegas strip",
@@ -4376,8 +4322,6 @@
    "area_id": "manhattan-midtown",
    "area_kind": "district",
    "display_name": "Midtown Manhattan, New York",
-   "recommendation_basis": "shortest scheduled ground access to Midtown among the supported New York area options",
-   "retrieved_at": "2026-08-26T10:12:00-07:00",
    "search_terms": [
     "midtown manhattan",
     "times square",
@@ -4391,8 +4335,6 @@
    "area_id": "napa-valley",
    "area_kind": "district",
    "display_name": "Napa Valley, California",
-   "recommendation_basis": "shortest drive to the valley floor among the supported Bay Area options",
-   "retrieved_at": "2026-08-26T08:11:00-07:00",
    "search_terms": [
     "napa valley",
     "napa",
@@ -4405,8 +4347,6 @@
    "area_id": "national-mall",
    "area_kind": "landmark",
    "display_name": "National Mall, Washington, DC",
-   "recommendation_basis": "closest airport returned for the National Mall destination area and most direct city access among the supported options",
-   "retrieved_at": "2026-08-26T12:31:00-07:00",
    "search_terms": [
     "national mall",
     "the mall washington",
@@ -4419,8 +4359,6 @@
    "area_id": "pike-place-market",
    "area_kind": "landmark",
    "display_name": "Pike Place Market, Seattle",
-   "recommendation_basis": "the only supported airport serving downtown Seattle, with direct light rail to the market",
-   "retrieved_at": "2026-08-26T06:30:00-07:00",
    "search_terms": [
     "pike place",
     "space needle",
@@ -4433,8 +4371,6 @@
    "area_id": "silicon-valley",
    "area_kind": "district",
    "display_name": "Silicon Valley, California",
-   "recommendation_basis": "shortest scheduled ground access to the valley among the supported Bay Area options",
-   "retrieved_at": "2026-08-26T05:44:00-07:00",
    "search_terms": [
     "silicon valley",
     "palo alto",
@@ -4447,8 +4383,6 @@
    "area_id": "south-beach",
    "area_kind": "landmark",
    "display_name": "South Beach, Miami",
-   "recommendation_basis": "closest airport to South Beach among the supported south Florida options",
-   "retrieved_at": "2026-08-26T09:02:00-07:00",
    "search_terms": [
     "south beach",
     "miami beach",
@@ -4461,8 +4395,6 @@
    "area_id": "walt-disney-world",
    "area_kind": "landmark",
    "display_name": "Walt Disney World, Florida",
-   "recommendation_basis": "closest airport to the resort area with scheduled shuttle service among the supported central Florida options",
-   "retrieved_at": "2026-08-26T08:35:00-07:00",
    "search_terms": [
     "walt disney world",
     "disney world",
@@ -4475,8 +4407,6 @@
    "area_id": "washington-dc-metro",
    "area_kind": "metro",
    "display_name": "Washington, DC metropolitan area",
-   "recommendation_basis": "shortest scheduled ground access to the District among the supported Washington-area options",
-   "retrieved_at": "2026-08-26T11:58:00-07:00",
    "search_terms": [
     "washington, dc",
     "washington dc",
@@ -20624,7 +20554,7 @@
    "stop_profile": "one_stop"
   },
   "search-00030": {
-   "availability_checked_at": "2026-08-24T8:32:41-07:00",
+   "availability_checked_at": "2026-08-24T08:32:41-07:00",
    "departure_date": "2026-10-14",
    "destination_code": "DFW",
    "expires_at": "quote_required_before_booking",

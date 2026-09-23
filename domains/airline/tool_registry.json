@@ -5,7 +5,7 @@
   "tools": [
     {
       "name": "list_supported_airports",
-      "description": "List airports supported for a destination area before recommending one.",
+      "description": "List the supported airports linked to a destination area, with each airport's distance and ground travel time to it.",
       "parameters": {
         "type": "object",
         "properties": {
@@ -22,9 +22,13 @@
       "result_schema": {
         "type": "object",
         "properties": {
+          "destination_area": {
+            "type": "string",
+            "description": "Display name of the catalogued destination area the query matched."
+          },
           "airports": {
             "type": "array",
-            "description": "Supported airports serving the destination area.",
+            "description": "Supported airports linked to the destination area, ordered by distance and then airport code.",
             "items": {
               "type": "object",
               "properties": {
@@ -36,43 +40,39 @@
                 "name": {
                   "type": "string",
                   "description": "Airport display name."
+                },
+                "distance_miles": {
+                  "type": "number",
+                  "description": "Distance from the airport to the destination area, in miles.",
+                  "minimum": 0
+                },
+                "ground_access_minutes": {
+                  "type": "integer",
+                  "description": "Typical ground travel time from the airport to the destination area, in minutes.",
+                  "minimum": 0
                 }
               },
               "required": [
                 "code",
-                "name"
+                "name",
+                "distance_miles",
+                "ground_access_minutes"
               ],
               "additionalProperties": false
             },
             "minItems": 1
-          },
-          "recommended_airport_code": {
-            "type": "string",
-            "description": "Recommended airport code.",
-            "pattern": "^[A-Z]{3}$"
-          },
-          "recommendation_basis": {
-            "type": "string",
-            "description": "Comparison basis for the recommendation, such as distance or city access."
-          },
-          "retrieved_at": {
-            "type": "string",
-            "description": "Retrieval timestamp.",
-            "format": "date-time"
           }
         },
         "required": [
-          "airports",
-          "recommended_airport_code",
-          "recommendation_basis",
-          "retrieved_at"
+          "destination_area",
+          "airports"
         ],
         "additionalProperties": false
       }
     },
     {
       "name": "search_flights",
-      "description": "Search round-trip flight options for a fixed route, dates, traveler count, and stop limit.",
+      "description": "Search round-trip flight options for a fixed route, dates, traveler count, and stop limit. A search that allows stops lists every qualifying connecting itinerary; with none, or with a nonstop-only limit, it lists every direct flight with room for the party in each direction.",
       "parameters": {
         "type": "object",
         "properties": {
@@ -132,266 +132,587 @@
             "format": "uuid"
           },
           "outbound": {
-            "type": "object",
-            "description": "Selected best outbound flight option. Present when the search returns direct flight options within the requested stop limit; absent when only a best-connection comparison is returned.",
-            "properties": {
-              "flight_id": {
-                "type": "string",
-                "description": "Stable flight identifier for downstream pricing and booking.",
-                "format": "uuid"
-              },
-              "origin": {
-                "type": "object",
-                "description": "Origin airport.",
-                "properties": {
-                  "code": {
-                    "type": "string",
-                    "description": "IATA airport code.",
-                    "pattern": "^[A-Z]{3}$"
-                  },
-                  "name": {
-                    "type": "string",
-                    "description": "Airport display name."
-                  }
-                },
-                "required": [
-                  "code",
-                  "name"
-                ],
-                "additionalProperties": false
-              },
-              "destination": {
-                "type": "object",
-                "description": "Destination airport.",
-                "properties": {
-                  "code": {
-                    "type": "string",
-                    "description": "IATA airport code.",
-                    "pattern": "^[A-Z]{3}$"
-                  },
-                  "name": {
-                    "type": "string",
-                    "description": "Airport display name."
-                  }
-                },
-                "required": [
-                  "code",
-                  "name"
-                ],
-                "additionalProperties": false
-              },
-              "departure_date": {
-                "type": "string",
-                "description": "Local departure date.",
-                "format": "date"
-              },
-              "departure_time": {
-                "type": "string",
-                "description": "Local departure time at the origin airport, 24-hour HH:MM.",
-                "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
-              },
-              "arrival_time": {
-                "type": "string",
-                "description": "Local arrival time at the destination airport, 24-hour HH:MM.",
-                "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
-              },
-              "duration_minutes": {
-                "type": "integer",
-                "description": "Scheduled block time in minutes.",
-                "minimum": 1
-              },
-              "stops": {
-                "type": "integer",
-                "description": "Number of stops for this flight.",
-                "minimum": 0,
-                "maximum": 2
-              }
-            },
-            "required": [
-              "flight_id",
-              "origin",
-              "destination",
-              "departure_date",
-              "departure_time",
-              "arrival_time",
-              "duration_minutes",
-              "stops"
-            ],
-            "additionalProperties": false
-          },
-          "return": {
-            "type": "object",
-            "description": "Selected best return flight option. Present when the search returns direct flight options within the requested stop limit; absent when only a best-connection comparison is returned.",
-            "properties": {
-              "flight_id": {
-                "type": "string",
-                "description": "Stable flight identifier for downstream pricing and booking.",
-                "format": "uuid"
-              },
-              "origin": {
-                "type": "object",
-                "description": "Origin airport.",
-                "properties": {
-                  "code": {
-                    "type": "string",
-                    "description": "IATA airport code.",
-                    "pattern": "^[A-Z]{3}$"
-                  },
-                  "name": {
-                    "type": "string",
-                    "description": "Airport display name."
-                  }
-                },
-                "required": [
-                  "code",
-                  "name"
-                ],
-                "additionalProperties": false
-              },
-              "destination": {
-                "type": "object",
-                "description": "Destination airport.",
-                "properties": {
-                  "code": {
-                    "type": "string",
-                    "description": "IATA airport code.",
-                    "pattern": "^[A-Z]{3}$"
-                  },
-                  "name": {
-                    "type": "string",
-                    "description": "Airport display name."
-                  }
-                },
-                "required": [
-                  "code",
-                  "name"
-                ],
-                "additionalProperties": false
-              },
-              "departure_date": {
-                "type": "string",
-                "description": "Local departure date.",
-                "format": "date"
-              },
-              "departure_time": {
-                "type": "string",
-                "description": "Local departure time at the origin airport, 24-hour HH:MM.",
-                "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
-              },
-              "arrival_time": {
-                "type": "string",
-                "description": "Local arrival time at the destination airport, 24-hour HH:MM.",
-                "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
-              },
-              "duration_minutes": {
-                "type": "integer",
-                "description": "Scheduled block time in minutes.",
-                "minimum": 1
-              },
-              "stops": {
-                "type": "integer",
-                "description": "Number of stops for this flight.",
-                "minimum": 0,
-                "maximum": 2
-              }
-            },
-            "required": [
-              "flight_id",
-              "origin",
-              "destination",
-              "departure_date",
-              "departure_time",
-              "arrival_time",
-              "duration_minutes",
-              "stops"
-            ],
-            "additionalProperties": false
-          },
-          "fare_options": {
             "type": "array",
-            "description": "Fare families available on the returned outbound/return pair. Present together with outbound and return.",
+            "description": "Every direct outbound flight on the date within the stop limit with room for the party, ordered by departure time. Present, possibly empty, when no connecting itineraries are returned.",
             "items": {
               "type": "object",
               "properties": {
-                "fare_class": {
+                "flight_id": {
                   "type": "string",
-                  "description": "Fare family.",
-                  "enum": [
-                    "basic_economy",
-                    "standard_economy"
-                  ]
+                  "description": "Stable flight identifier for downstream pricing and booking."
                 },
-                "price_per_traveler": {
-                  "type": "number",
-                  "description": "Round-trip fare including taxes, per traveler, excluding paid bags and optional products.",
-                  "minimum": 0
+                "origin": {
+                  "type": "object",
+                  "description": "Origin airport.",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "description": "IATA airport code.",
+                      "pattern": "^[A-Z]{3}$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Airport display name."
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "name"
+                  ],
+                  "additionalProperties": false
                 },
-                "currency": {
+                "destination": {
+                  "type": "object",
+                  "description": "Destination airport.",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "description": "IATA airport code.",
+                      "pattern": "^[A-Z]{3}$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Airport display name."
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                "departure_date": {
                   "type": "string",
-                  "description": "ISO 4217 currency code.",
-                  "pattern": "^[A-Z]{3}$"
+                  "description": "Local departure date.",
+                  "format": "date"
                 },
-                "relative_price_rank": {
+                "departure_time": {
                   "type": "string",
-                  "description": "Relative price of this fare family within the returned options.",
-                  "enum": [
-                    "lower",
-                    "higher"
-                  ]
+                  "description": "Local departure time at the origin airport, 24-hour HH:MM.",
+                  "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
                 },
-                "advance_seat_selection_allowed": {
-                  "type": "boolean",
-                  "description": "Whether advance seat selection is included for this fare family."
+                "arrival_date": {
+                  "type": "string",
+                  "description": "Local arrival date (YYYY-MM-DD); later than departure_date for an overnight arrival.",
+                  "format": "date"
+                },
+                "arrival_time": {
+                  "type": "string",
+                  "description": "Local arrival time at the destination airport, 24-hour HH:MM.",
+                  "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+                },
+                "duration_minutes": {
+                  "type": "integer",
+                  "description": "Scheduled block time in minutes.",
+                  "minimum": 1
+                },
+                "stops": {
+                  "type": "integer",
+                  "description": "Number of stops for this flight.",
+                  "minimum": 0,
+                  "maximum": 2
+                },
+                "fare_options": {
+                  "type": "array",
+                  "description": "Fare families with room for the party on this flight, ordered by price.",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "fare_class": {
+                        "type": "string",
+                        "description": "Fare family.",
+                        "enum": [
+                          "basic_economy",
+                          "standard_economy"
+                        ]
+                      },
+                      "price_per_traveler": {
+                        "type": "number",
+                        "description": "One-way fare including taxes for this flight, per traveler, excluding paid bags and optional products.",
+                        "minimum": 0
+                      },
+                      "currency": {
+                        "type": "string",
+                        "description": "ISO 4217 currency code.",
+                        "pattern": "^[A-Z]{3}$"
+                      },
+                      "advance_seat_selection_allowed": {
+                        "type": "boolean",
+                        "description": "Whether advance seat selection is included for this fare family."
+                      }
+                    },
+                    "required": [
+                      "fare_class",
+                      "price_per_traveler",
+                      "currency",
+                      "advance_seat_selection_allowed"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "minItems": 1
                 }
               },
               "required": [
-                "fare_class",
-                "price_per_traveler",
-                "currency",
-                "relative_price_rank",
-                "advance_seat_selection_allowed"
+                "flight_id",
+                "origin",
+                "destination",
+                "departure_date",
+                "departure_time",
+                "arrival_date",
+                "arrival_time",
+                "duration_minutes",
+                "stops",
+                "fare_options"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "return": {
+            "type": "array",
+            "description": "Every direct return flight on the date within the stop limit with room for the party, ordered by departure time. Present, possibly empty, when no connecting itineraries are returned.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "flight_id": {
+                  "type": "string",
+                  "description": "Stable flight identifier for downstream pricing and booking."
+                },
+                "origin": {
+                  "type": "object",
+                  "description": "Origin airport.",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "description": "IATA airport code.",
+                      "pattern": "^[A-Z]{3}$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Airport display name."
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                "destination": {
+                  "type": "object",
+                  "description": "Destination airport.",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "description": "IATA airport code.",
+                      "pattern": "^[A-Z]{3}$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Airport display name."
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                "departure_date": {
+                  "type": "string",
+                  "description": "Local departure date.",
+                  "format": "date"
+                },
+                "departure_time": {
+                  "type": "string",
+                  "description": "Local departure time at the origin airport, 24-hour HH:MM.",
+                  "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+                },
+                "arrival_date": {
+                  "type": "string",
+                  "description": "Local arrival date (YYYY-MM-DD); later than departure_date for an overnight arrival.",
+                  "format": "date"
+                },
+                "arrival_time": {
+                  "type": "string",
+                  "description": "Local arrival time at the destination airport, 24-hour HH:MM.",
+                  "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+                },
+                "duration_minutes": {
+                  "type": "integer",
+                  "description": "Scheduled block time in minutes.",
+                  "minimum": 1
+                },
+                "stops": {
+                  "type": "integer",
+                  "description": "Number of stops for this flight.",
+                  "minimum": 0,
+                  "maximum": 2
+                },
+                "fare_options": {
+                  "type": "array",
+                  "description": "Fare families with room for the party on this flight, ordered by price.",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "fare_class": {
+                        "type": "string",
+                        "description": "Fare family.",
+                        "enum": [
+                          "basic_economy",
+                          "standard_economy"
+                        ]
+                      },
+                      "price_per_traveler": {
+                        "type": "number",
+                        "description": "One-way fare including taxes for this flight, per traveler, excluding paid bags and optional products.",
+                        "minimum": 0
+                      },
+                      "currency": {
+                        "type": "string",
+                        "description": "ISO 4217 currency code.",
+                        "pattern": "^[A-Z]{3}$"
+                      },
+                      "advance_seat_selection_allowed": {
+                        "type": "boolean",
+                        "description": "Whether advance seat selection is included for this fare family."
+                      }
+                    },
+                    "required": [
+                      "fare_class",
+                      "price_per_traveler",
+                      "currency",
+                      "advance_seat_selection_allowed"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "minItems": 1
+                }
+              },
+              "required": [
+                "flight_id",
+                "origin",
+                "destination",
+                "departure_date",
+                "departure_time",
+                "arrival_date",
+                "arrival_time",
+                "duration_minutes",
+                "stops",
+                "fare_options"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "connections": {
+            "type": "array",
+            "description": "Every offered connecting itinerary on the route and dates with room for the party within the stop and layover limits, ordered by itinerary identifier. Present when the search allows stops and at least one qualifies; absent otherwise.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "itinerary_id": {
+                  "type": "string",
+                  "description": "Stable itinerary identifier for the connecting option.",
+                  "format": "uuid"
+                },
+                "outbound": {
+                  "type": "object",
+                  "description": "Outbound legs of the itinerary.",
+                  "properties": {
+                    "total_duration_minutes": {
+                      "type": "integer",
+                      "description": "Elapsed time from the first departure to the last arrival in this direction, in minutes: block time plus layovers.",
+                      "minimum": 1
+                    },
+                    "legs": {
+                      "type": "array",
+                      "description": "Flight legs in travel order.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "segment_index": {
+                            "type": "integer",
+                            "description": "Position of the leg within its direction, starting at 1.",
+                            "minimum": 1
+                          },
+                          "flight_id": {
+                            "type": "string",
+                            "description": "Stable flight identifier for the leg."
+                          },
+                          "origin": {
+                            "type": "object",
+                            "description": "Origin airport.",
+                            "properties": {
+                              "code": {
+                                "type": "string",
+                                "description": "IATA airport code.",
+                                "pattern": "^[A-Z]{3}$"
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Airport display name."
+                              }
+                            },
+                            "required": [
+                              "code",
+                              "name"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "destination": {
+                            "type": "object",
+                            "description": "Destination airport.",
+                            "properties": {
+                              "code": {
+                                "type": "string",
+                                "description": "IATA airport code.",
+                                "pattern": "^[A-Z]{3}$"
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Airport display name."
+                              }
+                            },
+                            "required": [
+                              "code",
+                              "name"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "departure_date": {
+                            "type": "string",
+                            "description": "Local departure date of the direction this leg belongs to.",
+                            "format": "date"
+                          },
+                          "departure_time": {
+                            "type": "string",
+                            "description": "Local departure time at the origin airport, 24-hour HH:MM.",
+                            "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+                          },
+                          "arrival_date": {
+                            "type": "string",
+                            "description": "Local arrival date (YYYY-MM-DD); later than departure_date for an overnight arrival.",
+                            "format": "date"
+                          },
+                          "arrival_time": {
+                            "type": "string",
+                            "description": "Local arrival time at the destination airport, 24-hour HH:MM.",
+                            "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+                          },
+                          "duration_minutes": {
+                            "type": "integer",
+                            "description": "Scheduled block time in minutes.",
+                            "minimum": 1
+                          },
+                          "stops": {
+                            "type": "integer",
+                            "description": "Number of stops on this leg.",
+                            "minimum": 0,
+                            "maximum": 2
+                          },
+                          "layover_after_minutes": {
+                            "type": "integer",
+                            "description": "Minutes on the ground at this leg's arrival airport before the next leg departs; 0 on the final leg of a direction.",
+                            "minimum": 0
+                          }
+                        },
+                        "required": [
+                          "segment_index",
+                          "flight_id",
+                          "origin",
+                          "destination",
+                          "departure_date",
+                          "departure_time",
+                          "arrival_date",
+                          "arrival_time",
+                          "duration_minutes",
+                          "stops",
+                          "layover_after_minutes"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "minItems": 2
+                    }
+                  },
+                  "required": [
+                    "total_duration_minutes",
+                    "legs"
+                  ],
+                  "additionalProperties": false
+                },
+                "return": {
+                  "type": "object",
+                  "description": "Return legs of the itinerary.",
+                  "properties": {
+                    "total_duration_minutes": {
+                      "type": "integer",
+                      "description": "Elapsed time from the first departure to the last arrival in this direction, in minutes: block time plus layovers.",
+                      "minimum": 1
+                    },
+                    "legs": {
+                      "type": "array",
+                      "description": "Flight legs in travel order.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "segment_index": {
+                            "type": "integer",
+                            "description": "Position of the leg within its direction, starting at 1.",
+                            "minimum": 1
+                          },
+                          "flight_id": {
+                            "type": "string",
+                            "description": "Stable flight identifier for the leg."
+                          },
+                          "origin": {
+                            "type": "object",
+                            "description": "Origin airport.",
+                            "properties": {
+                              "code": {
+                                "type": "string",
+                                "description": "IATA airport code.",
+                                "pattern": "^[A-Z]{3}$"
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Airport display name."
+                              }
+                            },
+                            "required": [
+                              "code",
+                              "name"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "destination": {
+                            "type": "object",
+                            "description": "Destination airport.",
+                            "properties": {
+                              "code": {
+                                "type": "string",
+                                "description": "IATA airport code.",
+                                "pattern": "^[A-Z]{3}$"
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Airport display name."
+                              }
+                            },
+                            "required": [
+                              "code",
+                              "name"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "departure_date": {
+                            "type": "string",
+                            "description": "Local departure date of the direction this leg belongs to.",
+                            "format": "date"
+                          },
+                          "departure_time": {
+                            "type": "string",
+                            "description": "Local departure time at the origin airport, 24-hour HH:MM.",
+                            "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+                          },
+                          "arrival_date": {
+                            "type": "string",
+                            "description": "Local arrival date (YYYY-MM-DD); later than departure_date for an overnight arrival.",
+                            "format": "date"
+                          },
+                          "arrival_time": {
+                            "type": "string",
+                            "description": "Local arrival time at the destination airport, 24-hour HH:MM.",
+                            "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+                          },
+                          "duration_minutes": {
+                            "type": "integer",
+                            "description": "Scheduled block time in minutes.",
+                            "minimum": 1
+                          },
+                          "stops": {
+                            "type": "integer",
+                            "description": "Number of stops on this leg.",
+                            "minimum": 0,
+                            "maximum": 2
+                          },
+                          "layover_after_minutes": {
+                            "type": "integer",
+                            "description": "Minutes on the ground at this leg's arrival airport before the next leg departs; 0 on the final leg of a direction.",
+                            "minimum": 0
+                          }
+                        },
+                        "required": [
+                          "segment_index",
+                          "flight_id",
+                          "origin",
+                          "destination",
+                          "departure_date",
+                          "departure_time",
+                          "arrival_date",
+                          "arrival_time",
+                          "duration_minutes",
+                          "stops",
+                          "layover_after_minutes"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "minItems": 2
+                    }
+                  },
+                  "required": [
+                    "total_duration_minutes",
+                    "legs"
+                  ],
+                  "additionalProperties": false
+                },
+                "fare_options": {
+                  "type": "array",
+                  "description": "Fare families with room for the party on every leg, ordered by price.",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "fare_class": {
+                        "type": "string",
+                        "description": "Fare family.",
+                        "enum": [
+                          "basic_economy",
+                          "standard_economy"
+                        ]
+                      },
+                      "price_per_traveler": {
+                        "type": "number",
+                        "description": "Round-trip fare including taxes across all legs, per traveler, excluding paid bags and optional products.",
+                        "minimum": 0
+                      },
+                      "currency": {
+                        "type": "string",
+                        "description": "ISO 4217 currency code.",
+                        "pattern": "^[A-Z]{3}$"
+                      },
+                      "advance_seat_selection_allowed": {
+                        "type": "boolean",
+                        "description": "Whether advance seat selection is included for this fare family on every leg."
+                      }
+                    },
+                    "required": [
+                      "fare_class",
+                      "price_per_traveler",
+                      "currency",
+                      "advance_seat_selection_allowed"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "minItems": 1
+                }
+              },
+              "required": [
+                "itinerary_id",
+                "outbound",
+                "return",
+                "fare_options"
               ],
               "additionalProperties": false
             },
             "minItems": 1
-          },
-          "best_connection": {
-            "type": "object",
-            "description": "Best connecting itinerary within the stop and layover limits, for price comparison. Present when the search allows stops and a connecting comparison is available; absent for nonstop-only result sets.",
-            "properties": {
-              "itinerary_id": {
-                "type": "string",
-                "description": "Stable itinerary identifier for the connecting option.",
-                "format": "uuid"
-              },
-              "total_savings": {
-                "type": "number",
-                "description": "Total savings versus the comparable direct itinerary for all travelers.",
-                "minimum": 0
-              },
-              "currency": {
-                "type": "string",
-                "description": "ISO 4217 currency code.",
-                "pattern": "^[A-Z]{3}$"
-              },
-              "additional_duration_each_way": {
-                "type": "string",
-                "description": "Human-readable added travel time per direction versus the direct option."
-              },
-              "additional_duration_minutes_each_way": {
-                "type": "integer",
-                "description": "Added travel time per direction versus the direct option, in minutes.",
-                "minimum": 0
-              }
-            },
-            "required": [
-              "itinerary_id",
-              "total_savings",
-              "currency",
-              "additional_duration_each_way",
-              "additional_duration_minutes_each_way"
-            ],
-            "additionalProperties": false
           },
           "availability_checked_at": {
             "type": "string",
@@ -589,7 +910,7 @@
     },
     {
       "name": "get_customer_profile",
-      "description": "Retrieve a customer profile with selected reservation and masked payment sections.",
+      "description": "Retrieve a customer profile with the selected reservation, masked payment, and travel-certificate sections.",
       "parameters": {
         "type": "object",
         "properties": {
@@ -637,9 +958,63 @@
             "description": "Verification record used for this read.",
             "format": "uuid"
           },
-          "duplicate_reservation": {
-            "type": "boolean",
-            "description": "Whether an existing reservation duplicates the itinerary being booked. Present when 'reservations' was included."
+          "reservations": {
+            "type": "array",
+            "description": "Every reservation on the account, whatever its status, ordered by departure date. Present when 'reservations' was included.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "reservation_id": {
+                  "type": "string",
+                  "description": "Reservation identifier."
+                },
+                "confirmation_code": {
+                  "type": "string",
+                  "description": "Booking confirmation code."
+                },
+                "origin_code": {
+                  "type": "string",
+                  "description": "Origin IATA airport code of the outbound flight.",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "destination_code": {
+                  "type": "string",
+                  "description": "Destination IATA airport code of the outbound flight.",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "departure_date": {
+                  "type": "string",
+                  "description": "Outbound departure date.",
+                  "format": "date"
+                },
+                "return_date": {
+                  "type": "string",
+                  "description": "Return departure date.",
+                  "format": "date"
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Reservation lifecycle status.",
+                  "enum": [
+                    "draft",
+                    "quoted",
+                    "pending_payment",
+                    "confirmed",
+                    "ticketed"
+                  ]
+                }
+              },
+              "required": [
+                "reservation_id",
+                "confirmation_code",
+                "origin_code",
+                "destination_code",
+                "departure_date",
+                "return_date",
+                "status"
+              ],
+              "additionalProperties": false
+            }
           },
           "payment_methods": {
             "type": "array",
@@ -670,15 +1045,60 @@
               "additionalProperties": false
             }
           },
-          "travel_certificate_input_required": {
-            "type": "boolean",
-            "description": "Whether the customer must supply the certificate code to use a travel certificate. Present when 'travel_certificates' was included."
+          "travel_certificates": {
+            "type": "array",
+            "description": "Every travel certificate on the account, whatever its status, ordered by expiry. Codes are not disclosed; validate a code with validate_travel_certificate before applying it. Present when 'travel_certificates' was included.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "certificate_id": {
+                  "type": "string",
+                  "description": "Stable certificate identifier."
+                },
+                "masked_code": {
+                  "type": "string",
+                  "description": "Masked certificate code for readback."
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Certificate status as held on the account.",
+                  "enum": [
+                    "valid",
+                    "redeemed",
+                    "expired",
+                    "void"
+                  ]
+                },
+                "available_balance": {
+                  "type": "number",
+                  "description": "Remaining certificate balance.",
+                  "minimum": 0
+                },
+                "currency": {
+                  "type": "string",
+                  "description": "ISO 4217 currency code.",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "expires_at": {
+                  "type": "string",
+                  "description": "Certificate expiry date. Present when the certificate has an expiry.",
+                  "format": "date"
+                }
+              },
+              "required": [
+                "certificate_id",
+                "masked_code",
+                "status",
+                "available_balance",
+                "currency"
+              ],
+              "additionalProperties": false
+            }
           }
         },
         "required": [
           "customer_id",
-          "verification_id",
-          "duplicate_reservation"
+          "verification_id"
         ],
         "additionalProperties": false
       }

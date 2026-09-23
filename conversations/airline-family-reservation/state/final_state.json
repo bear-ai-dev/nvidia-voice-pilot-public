@@ -20,8 +20,11 @@
         "reservations": [
           "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7"
         ],
-        "duplicate_reservation": false,
-        "travel_certificate_input_required": true
+        "travel_certificates": [
+          "certificate-CT-990031",
+          "18e422e6-a2c3-4cb8-93fa-daf7a28c328b",
+          "certificate-CT-118240"
+        ]
       }
     },
     "identity_verifications": {
@@ -47,6 +50,22 @@
         "expires_at": "2026-12-31",
         "applied_amount": 200.0,
         "applied_to": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7"
+      },
+      "certificate-CT-990031": {
+        "certificate_id": "certificate-CT-990031",
+        "masked_code": "CT-***031",
+        "status": "expired",
+        "available_balance": 120.0,
+        "currency": "USD",
+        "expires_at": "2026-04-30"
+      },
+      "certificate-CT-118240": {
+        "certificate_id": "certificate-CT-118240",
+        "masked_code": "CT-***240",
+        "status": "valid",
+        "available_balance": 45.0,
+        "currency": "USD",
+        "expires_at": "2027-05-31"
       }
     },
     "fare_quotes": {
@@ -131,6 +150,28 @@
         "certificate_id": "18e422e6-a2c3-4cb8-93fa-daf7a28c328b"
       }
     },
+    "destination_areas": {
+      "National Mall, Washington, DC": {
+        "display_name": "National Mall, Washington, DC",
+        "airports": [
+          {
+            "code": "DCA",
+            "distance_miles": 3.2,
+            "ground_access_minutes": 18
+          },
+          {
+            "code": "IAD",
+            "distance_miles": 26.4,
+            "ground_access_minutes": 52
+          },
+          {
+            "code": "BWI",
+            "distance_miles": 32.1,
+            "ground_access_minutes": 64
+          }
+        ]
+      }
+    },
     "supported_airports": {
       "DCA": {
         "code": "DCA",
@@ -147,6 +188,10 @@
       "PHX": {
         "code": "PHX",
         "name": "Phoenix Sky Harbor"
+      },
+      "ORD": {
+        "code": "ORD",
+        "name": "Chicago O'Hare International"
       }
     },
     "flights": {
@@ -166,12 +211,14 @@
         "fare_options": [
           {
             "fare_class": "basic_economy",
-            "relative_price_rank": "lower",
+            "price_per_traveler": 256.2,
+            "currency": "USD",
             "advance_seat_selection_allowed": false
           },
           {
             "fare_class": "standard_economy",
-            "relative_price_rank": "higher",
+            "price_per_traveler": 279.1,
+            "currency": "USD",
             "advance_seat_selection_allowed": true
           }
         ]
@@ -192,12 +239,14 @@
         "fare_options": [
           {
             "fare_class": "basic_economy",
-            "relative_price_rank": "lower",
+            "price_per_traveler": 256.2,
+            "currency": "USD",
             "advance_seat_selection_allowed": false
           },
           {
             "fare_class": "standard_economy",
-            "relative_price_rank": "higher",
+            "price_per_traveler": 279.1,
+            "currency": "USD",
             "advance_seat_selection_allowed": true
           }
         ]
@@ -206,8 +255,70 @@
     "itineraries": {
       "87ba9919-0d38-418a-868c-42185e5a9ab9": {
         "itinerary_id": "87ba9919-0d38-418a-868c-42185e5a9ab9",
-        "total_savings": 62.0,
-        "additional_duration_each_way": "almost three hours"
+        "outbound": {
+          "total_duration_minutes": 430,
+          "legs": [
+            {
+              "flight_id": "BM-PHX-ORD-0600",
+              "origin": "PHX",
+              "destination": "ORD",
+              "departure_date": "October 14",
+              "departure_time": "06:00",
+              "arrival_time": "10:45",
+              "duration_minutes": 165,
+              "layover_after_minutes": 145
+            },
+            {
+              "flight_id": "BM-ORD-DCA-1310",
+              "origin": "ORD",
+              "destination": "DCA",
+              "departure_date": "October 14",
+              "departure_time": "13:10",
+              "arrival_time": "16:10",
+              "duration_minutes": 120,
+              "layover_after_minutes": 0
+            }
+          ]
+        },
+        "return": {
+          "total_duration_minutes": 450,
+          "legs": [
+            {
+              "flight_id": "BM-DCA-ORD-1215",
+              "origin": "DCA",
+              "destination": "ORD",
+              "departure_date": "October 19",
+              "departure_time": "12:15",
+              "arrival_time": "13:30",
+              "duration_minutes": 135,
+              "layover_after_minutes": 75
+            },
+            {
+              "flight_id": "BM-ORD-PHX-1445",
+              "origin": "ORD",
+              "destination": "PHX",
+              "departure_date": "October 19",
+              "departure_time": "14:45",
+              "arrival_time": "16:45",
+              "duration_minutes": 240,
+              "layover_after_minutes": 0
+            }
+          ]
+        },
+        "fare_options": [
+          {
+            "fare_class": "basic_economy",
+            "price_per_traveler": 481.4,
+            "currency": "USD",
+            "advance_seat_selection_allowed": false
+          },
+          {
+            "fare_class": "standard_economy",
+            "price_per_traveler": 527.2,
+            "currency": "USD",
+            "advance_seat_selection_allowed": true
+          }
+        ]
       }
     },
     "accessibility_rules": {
