@@ -51,7 +51,7 @@
       },
       "payment_options": [
         "app_prepay_if_offered_when_ready",
-        "pay_15_at_pickup"
+        "pay_at_pickup"
       ]
     },
     "9e90544a-3497-4aee-a1f0-4437d4f4684c": {
@@ -66,7 +66,7 @@
       "store_id": "8e22d41d-843c-4e73-95c0-3c9877366ba9",
       "display_name": "Oak Street Pharmacy",
       "counter_closes_at": "19:00",
-      "front_store_closes_later": true
+      "front_store_closes_at": "22:00"
     },
     "155059ca-b6aa-4372-b0af-86c2d681c393": {
       "entity_type": "pharmacy_location",

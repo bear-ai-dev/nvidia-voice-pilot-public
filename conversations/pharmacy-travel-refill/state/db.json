@@ -5568,7 +5568,7 @@
    "currency": "USD",
    "display_name": "Heartland Basic HMO",
    "paid_payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "plan_id": "plan-heartland-basic-hmo",
    "unpaid_payment_options": [
@@ -5580,7 +5580,7 @@
    "currency": "USD",
    "display_name": "Lakeshore Value",
    "paid_payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "plan_id": "plan-lakeshore-value",
    "unpaid_payment_options": [
@@ -5593,7 +5593,7 @@
    "display_name": "Midwest Choice PPO",
    "paid_payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "plan_id": "plan-midwest-choice-ppo",
    "unpaid_payment_options": [
@@ -5606,7 +5606,7 @@
    "display_name": "Northstar Select",
    "paid_payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "plan_id": "plan-northstar-select",
    "unpaid_payment_options": [
@@ -5618,7 +5618,7 @@
    "currency": "USD",
    "display_name": "Cash Price",
    "paid_payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "plan_id": "plan-uninsured-cash",
    "unpaid_payment_options": [
@@ -8243,7 +8243,7 @@
    "notification_channel": null,
    "patient_id": "patient-rahul-moreau-000",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Anya Abbasi",
    "prescription_id": "prescription-0001",
@@ -8265,7 +8265,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-rahul-moreau-000",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Desmond Nakamura",
    "prescription_id": "prescription-0002",
@@ -8288,7 +8288,7 @@
    "patient_id": "patient-nadia-castellanos-001",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Colette Carteret",
    "prescription_id": "prescription-0003",
@@ -8311,7 +8311,7 @@
    "patient_id": "patient-bianca-santoro-002",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Anya Duarte",
    "prescription_id": "prescription-0004",
@@ -8334,7 +8334,7 @@
    "patient_id": "patient-bianca-santoro-002",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Andre Nakamura",
    "prescription_id": "prescription-0005",
@@ -8356,7 +8356,7 @@
    "notification_channel": null,
    "patient_id": "patient-colette-abbasi-003",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Noor Mbeki",
    "prescription_id": "prescription-0006",
@@ -8378,7 +8378,7 @@
    "notification_channel": null,
    "patient_id": "patient-colette-abbasi-003",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Ingrid Carter",
    "prescription_id": "prescription-0007",
@@ -8466,7 +8466,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-petra-vasquez-005",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Lorna Lindqvist",
    "prescription_id": "prescription-0011",
@@ -8533,7 +8533,7 @@
    "patient_id": "patient-imani-okonkwo-006",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Leah Brennan",
    "prescription_id": "prescription-0014",
@@ -8621,7 +8621,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-kelsey-kaur-007",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Rosa Nakamura",
    "prescription_id": "prescription-0018",
@@ -8665,7 +8665,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-kelsey-kaur-007",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Kelsey Fontaine",
    "prescription_id": "prescription-0020",
@@ -8731,7 +8731,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-kelsey-moreau-008",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Aiko Okonkwo",
    "prescription_id": "prescription-0023",
@@ -8842,7 +8842,7 @@
    "patient_id": "patient-renata-okonkwo-010",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Farah Kaur",
    "prescription_id": "prescription-0028",
@@ -8908,7 +8908,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-farah-brennan-012",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Owen Bergstrom",
    "prescription_id": "prescription-0031",
@@ -8930,7 +8930,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-farah-brennan-012",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Yuki Vasquez",
    "prescription_id": "prescription-0032",
@@ -8953,7 +8953,7 @@
    "patient_id": "patient-miles-carter-013",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Renata Okonkwo",
    "prescription_id": "prescription-0033",
@@ -9020,7 +9020,7 @@
    "patient_id": "patient-miles-carter-013",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Desmond Santoro",
    "prescription_id": "prescription-0036",
@@ -9043,7 +9043,7 @@
    "patient_id": "patient-errol-oyelaran-014",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Bram Castellanos",
    "prescription_id": "prescription-0037",
@@ -9066,7 +9066,7 @@
    "patient_id": "patient-errol-oyelaran-014",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Noor Nakamura",
    "prescription_id": "prescription-0038",
@@ -9089,7 +9089,7 @@
    "patient_id": "patient-errol-oyelaran-014",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Rahul Kaur",
    "prescription_id": "prescription-0039",
@@ -9178,7 +9178,7 @@
    "patient_id": "patient-sana-marchetti-016",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Sana Lindqvist",
    "prescription_id": "prescription-0043",
@@ -9222,7 +9222,7 @@
    "notification_channel": null,
    "patient_id": "patient-bianca-moreau-018",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Celia Lindqvist",
    "prescription_id": "prescription-0045",
@@ -9244,7 +9244,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-bianca-moreau-018",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Trevor Kaur",
    "prescription_id": "prescription-0046",
@@ -9266,7 +9266,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-bianca-moreau-018",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Yuki Reyes",
    "prescription_id": "prescription-0047",
@@ -9311,7 +9311,7 @@
    "patient_id": "patient-devon-achebe-019",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Leah Achebe",
    "prescription_id": "prescription-0049",
@@ -9333,7 +9333,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-malik-haddad-020",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Camila Whitfield",
    "prescription_id": "prescription-0050",
@@ -9377,7 +9377,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-malik-haddad-020",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Noor Achebe",
    "prescription_id": "prescription-0052",
@@ -9465,7 +9465,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-leah-thorne-021",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Hugo Delgado",
    "prescription_id": "prescription-0056",
@@ -9487,7 +9487,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-leah-thorne-021",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Imani Reyes",
    "prescription_id": "prescription-0057",
@@ -9509,7 +9509,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-petra-kovacs-022",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Anya Achebe",
    "prescription_id": "prescription-0058",
@@ -9531,7 +9531,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-petra-kovacs-022",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Kwame Lindqvist",
    "prescription_id": "prescription-0059",
@@ -9554,7 +9554,7 @@
    "patient_id": "patient-nadia-novak-023",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Aiko Lindqvist",
    "prescription_id": "prescription-0060",
@@ -9577,7 +9577,7 @@
    "patient_id": "patient-nadia-novak-023",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Anya Reyes",
    "prescription_id": "prescription-0061",
@@ -9644,7 +9644,7 @@
    "patient_id": "patient-nadia-novak-023",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Lorna Achebe",
    "prescription_id": "prescription-0064",
@@ -9667,7 +9667,7 @@
    "patient_id": "patient-nadia-castellanos-024",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Trevor Vasquez",
    "prescription_id": "prescription-0065",
@@ -9689,7 +9689,7 @@
    "notification_channel": null,
    "patient_id": "patient-rosa-oyelaran-025",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Hugo Bergstrom",
    "prescription_id": "prescription-0066",
@@ -9711,7 +9711,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-rosa-oyelaran-025",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Bianca Ferraro",
    "prescription_id": "prescription-0067",
@@ -9733,7 +9733,7 @@
    "notification_channel": null,
    "patient_id": "patient-leah-abbasi-026",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Errol Ferraro",
    "prescription_id": "prescription-0068",
@@ -9755,7 +9755,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-leah-abbasi-026",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Anya Carteret",
    "prescription_id": "prescription-0069",
@@ -9777,7 +9777,7 @@
    "notification_channel": null,
    "patient_id": "patient-leah-abbasi-026",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Rahul Novak",
    "prescription_id": "prescription-0070",
@@ -9822,7 +9822,7 @@
    "patient_id": "patient-bram-sorensen-028",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Sana Kovacs",
    "prescription_id": "prescription-0072",
@@ -9845,7 +9845,7 @@
    "patient_id": "patient-bram-sorensen-028",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Devon Carteret",
    "prescription_id": "prescription-0073",
@@ -9868,7 +9868,7 @@
    "patient_id": "patient-bram-sorensen-028",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Trevor Duarte",
    "prescription_id": "prescription-0074",
@@ -9890,7 +9890,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-malik-vasquez-029",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Desmond Ilyin",
    "prescription_id": "prescription-0075",
@@ -9912,7 +9912,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-malik-vasquez-029",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Andre Abbasi",
    "prescription_id": "prescription-0076",
@@ -9956,7 +9956,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-malik-vasquez-029",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Kelsey Delgado",
    "prescription_id": "prescription-0078",
@@ -10000,7 +10000,7 @@
    "notification_channel": null,
    "patient_id": "patient-noor-carter-030",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Tomas Whitfield",
    "prescription_id": "prescription-0080",
@@ -10022,7 +10022,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-noor-carter-030",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Lorna Abbasi",
    "prescription_id": "prescription-0081",
@@ -10044,7 +10044,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-noor-carter-030",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Miles Kovacs",
    "prescription_id": "prescription-0082",
@@ -10066,7 +10066,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-noor-carter-030",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Errol Duarte",
    "prescription_id": "prescription-0083",
@@ -10088,7 +10088,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-farah-fontaine-031",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Rosa Kovacs",
    "prescription_id": "prescription-0084",
@@ -10110,7 +10110,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-farah-fontaine-031",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Hugo Sorensen",
    "prescription_id": "prescription-0085",
@@ -10132,7 +10132,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-farah-fontaine-031",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Andre Duarte",
    "prescription_id": "prescription-0086",
@@ -10177,7 +10177,7 @@
    "patient_id": "patient-andre-carter-032",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Miles Nakamura",
    "prescription_id": "prescription-0088",
@@ -10221,7 +10221,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-bianca-okonkwo-033",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Marcus Bergstrom",
    "prescription_id": "prescription-0090",
@@ -10243,7 +10243,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-bianca-okonkwo-033",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Tomas Carter",
    "prescription_id": "prescription-0091",
@@ -10265,7 +10265,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-bianca-okonkwo-033",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Renata Reyes",
    "prescription_id": "prescription-0092",
@@ -10310,7 +10310,7 @@
    "patient_id": "patient-farah-marchetti-035",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Yuki Carter",
    "prescription_id": "prescription-0094",
@@ -10354,7 +10354,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-colette-castellanos-037",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Bianca Brennan",
    "prescription_id": "prescription-0096",
@@ -10442,7 +10442,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-priya-reyes-038",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Hugo Brennan",
    "prescription_id": "prescription-0100",
@@ -10508,7 +10508,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-devon-kovacs-039",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Leah Sorensen",
    "prescription_id": "prescription-0103",
@@ -10552,7 +10552,7 @@
    "notification_channel": null,
    "patient_id": "patient-bram-fontaine-040",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Marcus Marchetti",
    "prescription_id": "prescription-0105",
@@ -10596,7 +10596,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-bram-fontaine-040",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Kelsey Moreau",
    "prescription_id": "prescription-0107",
@@ -10641,7 +10641,7 @@
    "patient_id": "patient-dana-ilyin-041",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Aiko Oyelaran",
    "prescription_id": "prescription-0109",
@@ -10663,7 +10663,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-marcus-kaur-042",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Dana Ferraro",
    "prescription_id": "prescription-0110",
@@ -10685,7 +10685,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-marcus-kaur-042",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Anya Brennan",
    "prescription_id": "prescription-0111",
@@ -10707,7 +10707,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-marcus-kaur-042",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Priya Moreau",
    "prescription_id": "prescription-0112",
@@ -10729,7 +10729,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-marcus-kaur-042",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Kwame Achebe",
    "prescription_id": "prescription-0113",
@@ -10795,7 +10795,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-miles-oyelaran-043",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Hugo Reyes",
    "prescription_id": "prescription-0116",
@@ -10817,7 +10817,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-miles-oyelaran-043",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Nadia Abbasi",
    "prescription_id": "prescription-0117",
@@ -10839,7 +10839,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-petra-achebe-044",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Aiko Achebe",
    "prescription_id": "prescription-0118",
@@ -10883,7 +10883,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-petra-achebe-044",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Ingrid Duarte",
    "prescription_id": "prescription-0120",
@@ -10927,7 +10927,7 @@
    "notification_channel": null,
    "patient_id": "patient-errol-kaur-045",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Colette Nakamura",
    "prescription_id": "prescription-0122",
@@ -11148,7 +11148,7 @@
    "patient_id": "patient-celia-carter-048",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Leah Carteret",
    "prescription_id": "prescription-0132",
@@ -11193,7 +11193,7 @@
    "patient_id": "patient-celia-carter-048",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Owen Fontaine",
    "prescription_id": "prescription-0134",
@@ -11216,7 +11216,7 @@
    "patient_id": "patient-farah-novak-049",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Marcus Kovacs",
    "prescription_id": "prescription-0135",
@@ -11304,7 +11304,7 @@
    "notification_channel": null,
    "patient_id": "patient-jonah-lindqvist-050",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Errol Brennan",
    "prescription_id": "prescription-0139",
@@ -11326,7 +11326,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-jonah-lindqvist-050",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Hugo Reyes",
    "prescription_id": "prescription-0140",
@@ -11348,7 +11348,7 @@
    "notification_channel": null,
    "patient_id": "patient-leah-lindqvist-051",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Bianca Sorensen",
    "prescription_id": "prescription-0141",
@@ -11392,7 +11392,7 @@
    "notification_channel": null,
    "patient_id": "patient-leah-lindqvist-051",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Camila Delgado",
    "prescription_id": "prescription-0143",
@@ -11414,7 +11414,7 @@
    "notification_channel": null,
    "patient_id": "patient-leah-lindqvist-051",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Marcus Ilyin",
    "prescription_id": "prescription-0144",
@@ -11437,7 +11437,7 @@
    "patient_id": "patient-sana-haddad-052",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Colette Vasquez",
    "prescription_id": "prescription-0145",
@@ -11460,7 +11460,7 @@
    "patient_id": "patient-sana-haddad-052",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Miles Okonkwo",
    "prescription_id": "prescription-0146",
@@ -11526,7 +11526,7 @@
    "notification_channel": null,
    "patient_id": "patient-devon-novak-053",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Nadia Ferraro",
    "prescription_id": "prescription-0149",
@@ -11548,7 +11548,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-devon-novak-053",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Renata Thorne",
    "prescription_id": "prescription-0150",
@@ -11571,7 +11571,7 @@
    "patient_id": "patient-grant-bergstrom-054",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Kwame Carter",
    "prescription_id": "prescription-0151",
@@ -11637,7 +11637,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-victor-ferraro-055",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Ingrid Kaur",
    "prescription_id": "prescription-0154",
@@ -11703,7 +11703,7 @@
    "notification_channel": null,
    "patient_id": "patient-farah-kaur-056",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Leah Castellanos",
    "prescription_id": "prescription-0157",
@@ -11813,7 +11813,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-andre-duarte-057",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Hugo Bergstrom",
    "prescription_id": "prescription-0162",
@@ -11835,7 +11835,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-andre-duarte-057",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Tomas Ferraro",
    "prescription_id": "prescription-0163",
@@ -11858,7 +11858,7 @@
    "patient_id": "patient-bram-vasquez-058",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Silas Moreau",
    "prescription_id": "prescription-0164",
@@ -11903,7 +11903,7 @@
    "patient_id": "patient-bram-vasquez-058",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Bianca Carter",
    "prescription_id": "prescription-0166",
@@ -11948,7 +11948,7 @@
    "patient_id": "patient-bram-vasquez-058",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Nadia Haddad",
    "prescription_id": "prescription-0168",
@@ -11971,7 +11971,7 @@
    "patient_id": "patient-marcus-sorensen-059",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Renata Sorensen",
    "prescription_id": "prescription-0169",
@@ -11994,7 +11994,7 @@
    "patient_id": "patient-marcus-sorensen-059",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Tomas Kaur",
    "prescription_id": "prescription-0170",
@@ -12016,7 +12016,7 @@
    "notification_channel": null,
    "patient_id": "patient-desmond-achebe-060",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Petra Vasquez",
    "prescription_id": "prescription-0171",
@@ -12082,7 +12082,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-miles-moreau-061",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Marcus Abbasi",
    "prescription_id": "prescription-0174",
@@ -12126,7 +12126,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-miles-moreau-061",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Rahul Nakamura",
    "prescription_id": "prescription-0176",
@@ -12170,7 +12170,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-andre-santoro-062",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Hugo Santoro",
    "prescription_id": "prescription-0178",
@@ -12236,7 +12236,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-andre-santoro-062",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Priya Lindqvist",
    "prescription_id": "prescription-0181",
@@ -12302,7 +12302,7 @@
    "notification_channel": null,
    "patient_id": "patient-kelsey-achebe-063",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Celia Lindqvist",
    "prescription_id": "prescription-0184",
@@ -12324,7 +12324,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-kelsey-achebe-063",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Noor Thorne",
    "prescription_id": "prescription-0185",
@@ -12369,7 +12369,7 @@
    "patient_id": "patient-devon-moreau-064",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Lorna Duarte",
    "prescription_id": "prescription-0187",
@@ -12392,7 +12392,7 @@
    "patient_id": "patient-devon-moreau-064",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Bram Abbasi",
    "prescription_id": "prescription-0188",
@@ -12415,7 +12415,7 @@
    "patient_id": "patient-devon-moreau-064",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Victor Achebe",
    "prescription_id": "prescription-0189",
@@ -12438,7 +12438,7 @@
    "patient_id": "patient-devon-moreau-064",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Victor Marchetti",
    "prescription_id": "prescription-0190",
@@ -12460,7 +12460,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-jonah-vasquez-065",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Colette Lindqvist",
    "prescription_id": "prescription-0191",
@@ -12504,7 +12504,7 @@
    "notification_channel": null,
    "patient_id": "patient-jonah-vasquez-065",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Trevor Whitfield",
    "prescription_id": "prescription-0193",
@@ -12548,7 +12548,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-jonah-vasquez-065",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Andre Abbasi",
    "prescription_id": "prescription-0195",
@@ -12571,7 +12571,7 @@
    "patient_id": "patient-camila-marchetti-066",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Priya Delgado",
    "prescription_id": "prescription-0196",
@@ -12616,7 +12616,7 @@
    "patient_id": "patient-camila-marchetti-066",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Anya Carter",
    "prescription_id": "prescription-0198",
@@ -12639,7 +12639,7 @@
    "patient_id": "patient-camila-marchetti-066",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Renata Haddad",
    "prescription_id": "prescription-0199",
@@ -12750,7 +12750,7 @@
    "patient_id": "patient-victor-haddad-067",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Kwame Bergstrom",
    "prescription_id": "prescription-0204",
@@ -12772,7 +12772,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-andre-delgado-068",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Lorna Oyelaran",
    "prescription_id": "prescription-0205",
@@ -12794,7 +12794,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-andre-delgado-068",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Malik Ilyin",
    "prescription_id": "prescription-0206",
@@ -12860,7 +12860,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-petra-mbeki-070",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Tomas Castellanos",
    "prescription_id": "prescription-0209",
@@ -12927,7 +12927,7 @@
    "patient_id": "patient-colette-mbeki-071",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Kelsey Castellanos",
    "prescription_id": "prescription-0212",
@@ -13015,7 +13015,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-hugo-novak-073",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Elise Kaur",
    "prescription_id": "prescription-0216",
@@ -13037,7 +13037,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-hugo-novak-073",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Lorna Mbeki",
    "prescription_id": "prescription-0217",
@@ -13104,7 +13104,7 @@
    "patient_id": "patient-petra-fontaine-074",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Silas Fontaine",
    "prescription_id": "prescription-0220",
@@ -13149,7 +13149,7 @@
    "patient_id": "patient-bram-vasquez-075",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Lorna Carter",
    "prescription_id": "prescription-0222",
@@ -13259,7 +13259,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-rahul-okonkwo-076",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Petra Brennan",
    "prescription_id": "prescription-0227",
@@ -13281,7 +13281,7 @@
    "notification_channel": null,
    "patient_id": "patient-rahul-okonkwo-076",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Bram Thorne",
    "prescription_id": "prescription-0228",
@@ -13326,7 +13326,7 @@
    "patient_id": "patient-lorna-okonkwo-078",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Bianca Sorensen",
    "prescription_id": "prescription-0230",
@@ -13349,7 +13349,7 @@
    "patient_id": "patient-lorna-okonkwo-078",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Rosa Ilyin",
    "prescription_id": "prescription-0231",
@@ -13372,7 +13372,7 @@
    "patient_id": "patient-lorna-okonkwo-078",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Kelsey Haddad",
    "prescription_id": "prescription-0232",
@@ -13438,7 +13438,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-silas-oyelaran-079",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Colette Marchetti",
    "prescription_id": "prescription-0235",
@@ -13460,7 +13460,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-silas-oyelaran-079",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Yuki Mbeki",
    "prescription_id": "prescription-0236",
@@ -13615,7 +13615,7 @@
    "patient_id": "patient-lorna-carteret-081",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Devon Oyelaran",
    "prescription_id": "prescription-0243",
@@ -13637,7 +13637,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-dana-brennan-082",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Dana Nakamura",
    "prescription_id": "prescription-0244",
@@ -13659,7 +13659,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-dana-brennan-082",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Sana Haddad",
    "prescription_id": "prescription-0245",
@@ -13681,7 +13681,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-dana-brennan-082",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Kwame Kovacs",
    "prescription_id": "prescription-0246",
@@ -13703,7 +13703,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-dana-brennan-082",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Farah Nakamura",
    "prescription_id": "prescription-0247",
@@ -13748,7 +13748,7 @@
    "patient_id": "patient-victor-thorne-083",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Kelsey Oyelaran",
    "prescription_id": "prescription-0249",
@@ -13770,7 +13770,7 @@
    "notification_channel": null,
    "patient_id": "patient-nadia-castellanos-084",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Petra Marchetti",
    "prescription_id": "prescription-0250",
@@ -13792,7 +13792,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-nadia-castellanos-084",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Miles Carteret",
    "prescription_id": "prescription-0251",
@@ -13814,7 +13814,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-renata-haddad-085",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Dana Santoro",
    "prescription_id": "prescription-0252",
@@ -13836,7 +13836,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-imani-duarte-086",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Bianca Abbasi",
    "prescription_id": "prescription-0253",
@@ -13880,7 +13880,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-imani-duarte-086",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Tomas Castellanos",
    "prescription_id": "prescription-0255",
@@ -13902,7 +13902,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-imani-duarte-086",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Tomas Abbasi",
    "prescription_id": "prescription-0256",
@@ -13946,7 +13946,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-owen-ferraro-087",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Hugo Kaur",
    "prescription_id": "prescription-0258",
@@ -13990,7 +13990,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-owen-ferraro-087",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Trevor Haddad",
    "prescription_id": "prescription-0260",
@@ -14034,7 +14034,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-kelsey-carter-088",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Trevor Mbeki",
    "prescription_id": "prescription-0262",
@@ -14056,7 +14056,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-kelsey-carter-088",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Owen Ferraro",
    "prescription_id": "prescription-0263",
@@ -14100,7 +14100,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-kelsey-carter-088",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Nadia Marchetti",
    "prescription_id": "prescription-0265",
@@ -14122,7 +14122,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-kelsey-carter-088",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Kelsey Brennan",
    "prescription_id": "prescription-0266",
@@ -14144,7 +14144,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-trevor-thorne-089",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Imani Vasquez",
    "prescription_id": "prescription-0267",
@@ -14166,7 +14166,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-trevor-thorne-089",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Silas Abbasi",
    "prescription_id": "prescription-0268",
@@ -14188,7 +14188,7 @@
    "notification_channel": null,
    "patient_id": "patient-trevor-thorne-089",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Malik Sorensen",
    "prescription_id": "prescription-0269",
@@ -14255,7 +14255,7 @@
    "patient_id": "patient-noor-lindqvist-091",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Petra Castellanos",
    "prescription_id": "prescription-0272",
@@ -14278,7 +14278,7 @@
    "patient_id": "patient-noor-lindqvist-091",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_10_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Hugo Castellanos",
    "prescription_id": "prescription-0273",
@@ -14322,7 +14322,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-malik-nakamura-092",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Marcus Carteret",
    "prescription_id": "prescription-0275",
@@ -14388,7 +14388,7 @@
    "notification_channel": null,
    "patient_id": "patient-malik-nakamura-092",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Trevor Haddad",
    "prescription_id": "prescription-0278",
@@ -14411,7 +14411,7 @@
    "patient_id": "patient-petra-delgado-093",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Colette Duarte",
    "prescription_id": "prescription-0279",
@@ -14455,7 +14455,7 @@
    "notification_channel": null,
    "patient_id": "patient-tomas-sorensen-094",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Aiko Whitfield",
    "prescription_id": "prescription-0281",
@@ -14477,7 +14477,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-tomas-sorensen-094",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Kwame Thorne",
    "prescription_id": "prescription-0282",
@@ -14521,7 +14521,7 @@
    "notification_channel": null,
    "patient_id": "patient-malik-ilyin-095",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Owen Lindqvist",
    "prescription_id": "prescription-0284",
@@ -14544,7 +14544,7 @@
    "patient_id": "patient-renata-carteret-096",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Marcus Kovacs",
    "prescription_id": "prescription-0285",
@@ -14654,7 +14654,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-miles-fontaine-097",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Lorna Bergstrom",
    "prescription_id": "prescription-0290",
@@ -14676,7 +14676,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-trevor-okonkwo-098",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Rosa Mbeki",
    "prescription_id": "prescription-0291",
@@ -14698,7 +14698,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-trevor-okonkwo-098",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Renata Brennan",
    "prescription_id": "prescription-0292",
@@ -14742,7 +14742,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-trevor-okonkwo-098",
    "payment_options": [
-    "pay_40_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Sana Marchetti",
    "prescription_id": "prescription-0294",
@@ -14809,7 +14809,7 @@
    "patient_id": "patient-bram-whitfield-099",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Sana Carter",
    "prescription_id": "prescription-0297",
@@ -14832,7 +14832,7 @@
    "patient_id": "patient-bram-whitfield-099",
    "payment_options": [
     "app_prepay_if_offered_when_ready",
-    "pay_15_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Farah Brennan",
    "prescription_id": "prescription-0298",
@@ -14854,7 +14854,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-kwame-castellanos-100",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Farah Carter",
    "prescription_id": "prescription-0299",
@@ -14876,7 +14876,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-kwame-castellanos-100",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Marcus Okonkwo",
    "prescription_id": "prescription-0300",
@@ -14898,7 +14898,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-kwame-castellanos-100",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Ingrid Reyes",
    "prescription_id": "prescription-0301",
@@ -14942,7 +14942,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-rahul-thorne-102",
    "payment_options": [
-    "pay_25_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Victor Thorne",
    "prescription_id": "prescription-0303",
@@ -14986,7 +14986,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-grant-okonkwo-103",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Priya Abbasi",
    "prescription_id": "prescription-0305",
@@ -15008,7 +15008,7 @@
    "notification_channel": null,
    "patient_id": "patient-grant-okonkwo-103",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Devon Oyelaran",
    "prescription_id": "prescription-0306",
@@ -15030,7 +15030,7 @@
    "notification_channel": "sms",
    "patient_id": "patient-grant-okonkwo-103",
    "payment_options": [
-    "pay_62_at_pickup"
+    "pay_at_pickup"
    ],
    "prescriber": "Dr. Colette Achebe",
    "prescription_id": "prescription-0307",
@@ -22072,7 +22072,6 @@
    "display_name": "Park Avenue",
    "district": "north-loop",
    "front_store_closes_at": null,
-   "front_store_closes_later": false,
    "proximity_rank": 10,
    "queue_estimated_minutes": 25,
    "queue_next_position": 2,
@@ -22086,7 +22085,6 @@
    "display_name": "Oak Street Pharmacy",
    "district": "north-loop",
    "front_store_closes_at": "22:00",
-   "front_store_closes_later": true,
    "proximity_rank": 0,
    "queue_estimated_minutes": 30,
    "queue_next_position": 1,
@@ -22103,7 +22101,6 @@
    "display_name": "Ashford Green",
    "district": "granite",
    "front_store_closes_at": null,
-   "front_store_closes_later": false,
    "proximity_rank": 116,
    "queue_estimated_minutes": 30,
    "queue_next_position": 7,
@@ -22117,7 +22114,6 @@
    "display_name": "Beacon Yard",
    "district": "sunset",
    "front_store_closes_at": "23:59",
-   "front_store_closes_later": true,
    "proximity_rank": 120,
    "queue_estimated_minutes": 40,
    "queue_next_position": 9,
@@ -22131,7 +22127,6 @@
    "display_name": "Bellmont Gate",
    "district": "eastvale",
    "front_store_closes_at": null,
-   "front_store_closes_later": false,
    "proximity_rank": 111,
    "queue_estimated_minutes": 35,
    "queue_next_position": 6,
@@ -22147,7 +22142,6 @@
    "display_name": "Brookfield Plaza",
    "district": "river-bend",
    "front_store_closes_at": "21:30",
-   "front_store_closes_later": true,
    "proximity_rank": 102,
    "queue_estimated_minutes": 35,
    "queue_next_position": 12,
@@ -22163,7 +22157,6 @@
    "display_name": "Cedar Hill",
    "district": "river-bend",
    "front_store_closes_at": "23:00",
-   "front_store_closes_later": true,
    "proximity_rank": 100,
    "queue_estimated_minutes": 25,
    "queue_next_position": 10,
@@ -22180,7 +22173,6 @@
    "display_name": "Crestline North",
    "district": "crestline",
    "front_store_closes_at": "22:00",
-   "front_store_closes_later": true,
    "proximity_rank": 112,
    "queue_estimated_minutes": 40,
    "queue_next_position": 13,
@@ -22197,7 +22189,6 @@
    "display_name": "Crestline South",
    "district": "crestline",
    "front_store_closes_at": null,
-   "front_store_closes_later": false,
    "proximity_rank": 113,
    "queue_estimated_minutes": 20,
    "queue_next_position": 11,
@@ -22213,7 +22204,6 @@
    "display_name": "Dockside Market",
    "district": "harbor",
    "front_store_closes_at": "20:00",
-   "front_store_closes_later": true,
    "proximity_rank": 104,
    "queue_estimated_minutes": 20,
    "queue_next_position": 3,
@@ -22229,7 +22219,6 @@
    "display_name": "Fairmount Annex",
    "district": "westgate",
    "front_store_closes_at": null,
-   "front_store_closes_later": false,
    "proximity_rank": 108,
    "queue_estimated_minutes": 25,
    "queue_next_position": 2,
@@ -22243,7 +22232,6 @@
    "display_name": "Granite Park",
    "district": "granite",
    "front_store_closes_at": "21:00",
-   "front_store_closes_later": true,
    "proximity_rank": 115,
    "queue_estimated_minutes": 25,
    "queue_next_position": 8,
@@ -22260,7 +22248,6 @@
    "display_name": "Harborview",
    "district": "harbor",
    "front_store_closes_at": null,
-   "front_store_closes_later": false,
    "proximity_rank": 103,
    "queue_estimated_minutes": 40,
    "queue_next_position": 8,
@@ -22274,7 +22261,6 @@
    "display_name": "Juniper Row",
    "district": "eastvale",
    "front_store_closes_at": null,
-   "front_store_closes_later": false,
    "proximity_rank": 110,
    "queue_estimated_minutes": 35,
    "queue_next_position": 6,
@@ -22288,7 +22274,6 @@
    "display_name": "Lakeside Commons",
    "district": "river-bend",
    "front_store_closes_at": null,
-   "front_store_closes_later": false,
    "proximity_rank": 101,
    "queue_estimated_minutes": 40,
    "queue_next_position": 5,
@@ -22305,7 +22290,6 @@
    "display_name": "Maple Grove",
    "district": "north-loop",
    "front_store_closes_at": null,
-   "front_store_closes_later": false,
    "proximity_rank": 20,
    "queue_estimated_minutes": 25,
    "queue_next_position": 4,
@@ -22321,7 +22305,6 @@
    "display_name": "Mill Quarter",
    "district": "crestline",
    "front_store_closes_at": null,
-   "front_store_closes_later": false,
    "proximity_rank": 114,
    "queue_estimated_minutes": 35,
    "queue_next_position": 3,
@@ -22338,7 +22321,6 @@
    "display_name": "Orchard Terrace",
    "district": "eastvale",
    "front_store_closes_at": "23:30",
-   "front_store_closes_later": true,
    "proximity_rank": 109,
    "queue_estimated_minutes": 40,
    "queue_next_position": 3,
@@ -22352,7 +22334,6 @@
    "display_name": "Palmetto Court",
    "district": "sunset",
    "front_store_closes_at": null,
-   "front_store_closes_later": false,
    "proximity_rank": 119,
    "queue_estimated_minutes": 30,
    "queue_next_position": 10,
@@ -22368,7 +22349,6 @@
    "display_name": "Ridgeway Center",
    "district": "granite",
    "front_store_closes_at": "23:00",
-   "front_store_closes_later": true,
    "proximity_rank": 117,
    "queue_estimated_minutes": 35,
    "queue_next_position": 8,
@@ -22384,7 +22364,6 @@
    "display_name": "Saltmarsh Corner",
    "district": "harbor",
    "front_store_closes_at": null,
-   "front_store_closes_later": false,
    "proximity_rank": 105,
    "queue_estimated_minutes": 40,
    "queue_next_position": 4,
@@ -22400,7 +22379,6 @@
    "display_name": "Stonegate Square",
    "district": "westgate",
    "front_store_closes_at": "22:30",
-   "front_store_closes_later": true,
    "proximity_rank": 107,
    "queue_estimated_minutes": 25,
    "queue_next_position": 4,
@@ -22416,7 +22394,6 @@
    "display_name": "Sunset Arcade",
    "district": "sunset",
    "front_store_closes_at": null,
-   "front_store_closes_later": false,
    "proximity_rank": 118,
    "queue_estimated_minutes": 40,
    "queue_next_position": 4,
@@ -22433,7 +22410,6 @@
    "display_name": "Thornbury Lane",
    "district": "thornbury",
    "front_store_closes_at": null,
-   "front_store_closes_later": false,
    "proximity_rank": 121,
    "queue_estimated_minutes": 35,
    "queue_next_position": 5,
@@ -22449,7 +22425,6 @@
    "display_name": "Willow Crossing",
    "district": "westgate",
    "front_store_closes_at": null,
-   "front_store_closes_later": false,
    "proximity_rank": 106,
    "queue_estimated_minutes": 25,
    "queue_next_position": 6,

@@ -230,7 +230,7 @@ def get_prescription(db, args) -> dict:
             "store_id": store["store_id"],
             "display_name": store["display_name"],
             "counter_closes_at": store["counter_closes_at"],
-            "front_store_closes_later": store["front_store_closes_later"],
+            "front_store_closes_at": store["front_store_closes_at"],
         }),
         ("claim", claim_view),
         ("queue", queue_view),
