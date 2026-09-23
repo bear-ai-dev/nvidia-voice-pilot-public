@@ -111,6 +111,13 @@ changes. Where the original service had a bug that the recordings do not
 depend on, such as returning a server error for an unknown id, the port returns
 the error the code intended instead.
 
+The tools were then revised so they return records rather than the agent's
+conclusions: no recommendations, verdicts, answers keyed to the caller's
+question, disclaimers or speech-ready times. The recorded outputs in the
+annotated transcripts were updated to match, so they are still exactly what the
+tools return. [docs/TOOL_OUTPUT_REVISIONS.md](../docs/TOOL_OUTPUT_REVISIONS.md)
+lists every change.
+
 ## Demo
 
 `demo/index.html` replays each recorded call against its database: the audio,
