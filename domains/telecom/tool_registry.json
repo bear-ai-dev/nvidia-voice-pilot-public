@@ -381,13 +381,43 @@
           },
           "window_start": {
             "type": "string",
-            "description": "Start of the measured window (ISO 8601 date-time).",
+            "description": "Start of the requested window (ISO 8601 date-time).",
             "format": "date-time"
           },
           "window_end": {
             "type": "string",
-            "description": "End of the measured window (ISO 8601 date-time).",
+            "description": "End of the requested window (ISO 8601 date-time).",
             "format": "date-time"
+          },
+          "samples": {
+            "type": "array",
+            "description": "Metered usage samples overlapping the window, oldest first.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "start": {
+                  "type": "string",
+                  "description": "Sample start (ISO 8601 date-time).",
+                  "format": "date-time"
+                },
+                "end": {
+                  "type": "string",
+                  "description": "Sample end (ISO 8601 date-time).",
+                  "format": "date-time"
+                },
+                "gigabytes": {
+                  "type": "number",
+                  "description": "Data used in the sample, in gigabytes.",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "start",
+                "end",
+                "gigabytes"
+              ],
+              "additionalProperties": false
+            }
           },
           "used_gigabytes": {
             "type": "number",
@@ -415,6 +445,7 @@
           "measurement_source",
           "window_start",
           "window_end",
+          "samples",
           "used_gigabytes",
           "remaining_high_speed_gigabytes",
           "app_attribution_available",
@@ -492,11 +523,6 @@
             "type": "string",
             "description": "Billing-cycle end (ISO 8601 date-time). Present when \"cycle\" was requested.",
             "format": "date-time"
-          },
-          "cycle_resets_in_days": {
-            "type": "integer",
-            "description": "Whole days until the cycle resets. Present when \"cycle\" was requested.",
-            "minimum": 0
           },
           "overage_charge": {
             "type": "number",

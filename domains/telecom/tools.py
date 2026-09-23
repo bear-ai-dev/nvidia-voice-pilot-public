@@ -550,17 +550,14 @@ def get_line_data_usage(db, args) -> dict:
     if hi <= lo:
         raise Refusal("window_end must be later than window_start")
 
-    # The reported window is the extent of the metered records inside the
-    # requested interval, not the interval itself. That is why a request for the
-    # last twenty-four hours comes back as midnight to four in the morning: the
-    # samples are where the traffic was. With nothing metered the requested
-    # bounds are reported and the total is zero.
-    samples = [
-        sample for sample in rows(db, "usage_samples", line_id=line["line_id"])
-        if _instant(sample["window_end"]) > lo and _instant(sample["window_start"]) < hi
-    ]
-    window_start = min((_instant(s["window_start"]) for s in samples), default=lo)
-    window_end = max((_instant(s["window_end"]) for s in samples), default=hi)
+    # The requested window is reported as asked, with every metered sample that
+    # overlaps it. Where in the window the traffic fell is for the reader of the
+    # samples to see, not something the meter summarises.
+    samples = sorted(
+        (sample for sample in rows(db, "usage_samples", line_id=line["line_id"])
+         if _instant(sample["window_end"]) > lo and _instant(sample["window_start"]) < hi),
+        key=lambda sample: _instant(sample["window_start"]),
+    )
     used = _numeric_12_2(sum((_decimal(s["gigabytes"]) for s in samples), Decimal(0)))
     cycles = sorted({s["billing_cycle_id"] for s in samples})
 
@@ -580,8 +577,14 @@ def get_line_data_usage(db, args) -> dict:
         "line_id": line["line_id"],
         "billing_cycle_id": cycle_id,
         "measurement_source": source,
-        "window_start": _scenario_iso(db, window_start),
-        "window_end": _scenario_iso(db, window_end),
+        "window_start": _scenario_iso(db, lo),
+        "window_end": _scenario_iso(db, hi),
+        "samples": [
+            {"start": _scenario_iso(db, _instant(s["window_start"])),
+             "end": _scenario_iso(db, _instant(s["window_end"])),
+             "gigabytes": as_float(s["gigabytes"])}
+            for s in samples
+        ],
         "used_gigabytes": as_float(used),
         # Always the current cycle's balance, per the registry: the window says
         # what was consumed, the balance says what is left to consume.
@@ -634,17 +637,9 @@ def get_customer_bills(db, args) -> dict:
         if accounts_lines:
             behaviour = db["plans"][accounts_lines[0]["plan_id"]]["after_high_speed_allowance"]
 
+    # The cycle's bounds are returned as dates; how long until it resets is the
+    # reader's arithmetic against the call's own clock.
     cycle_requested = "cycle" in sections
-    resets_in_days = None
-    if cycle_requested:
-        # Days to reset counted by calendar date in the account's zone, which is
-        # how the answer is spoken: the cycle ends on 5 September and the call is
-        # on 27 August, so it resets in nine days. A past cycle has already
-        # reset, and the registry's floor of zero says so.
-        zone = _scenario_zone(db)
-        cycle_end_day = _instant(cycle["cycle_end"]).astimezone(zone).date()
-        today = _scenario_now(db).astimezone(zone).date()
-        resets_in_days = max((cycle_end_day - today).days, 0)
     as_of = _tool_time(db, "get_customer_bills")[1]
 
     return compact([
@@ -654,7 +649,6 @@ def get_customer_bills(db, args) -> dict:
          if cycle_requested else None),
         ("cycle_end", _scenario_iso(db, _instant(cycle["cycle_end"]))
          if cycle_requested else None),
-        ("cycle_resets_in_days", as_int(resets_in_days)),
         ("overage_charge", as_float(overage) if money_requested else None),
         ("currency", currency),
         ("after_high_speed_allowance", behaviour),

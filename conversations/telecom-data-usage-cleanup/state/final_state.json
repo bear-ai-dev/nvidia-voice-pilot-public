@@ -43,8 +43,30 @@
       "active_addon_transaction_id": "dfdab773-2580-4908-91cf-99a2b4826547",
       "usage_last_24_hours": {
         "measurement_source": "carrier_metering",
-        "window_start": "2026-08-27T00:00:00-05:00",
-        "window_end": "2026-08-27T04:00:00-05:00",
+        "window_start": "2026-08-26T19:30:00-05:00",
+        "window_end": "2026-08-27T19:30:00-05:00",
+        "samples": [
+          {
+            "start": "2026-08-27T00:00:00-05:00",
+            "end": "2026-08-27T01:00:00-05:00",
+            "gigabytes": 2.9
+          },
+          {
+            "start": "2026-08-27T01:00:00-05:00",
+            "end": "2026-08-27T02:00:00-05:00",
+            "gigabytes": 3.4
+          },
+          {
+            "start": "2026-08-27T02:00:00-05:00",
+            "end": "2026-08-27T03:00:00-05:00",
+            "gigabytes": 3.1
+          },
+          {
+            "start": "2026-08-27T03:00:00-05:00",
+            "end": "2026-08-27T04:00:00-05:00",
+            "gigabytes": 2.4
+          }
+        ],
         "used_gigabytes": 11.8,
         "app_attribution_available": false
       }
@@ -68,7 +90,6 @@
       "billing_cycle_id": "305af2ad-04af-420c-9562-a935b04b855b",
       "cycle_start": "2026-08-06T00:00:00-05:00",
       "cycle_end": "2026-09-05T00:00:00-05:00",
-      "cycle_resets_in_days": 9,
       "overage_charge": 0.0,
       "currency": "USD",
       "after_high_speed_allowance": "speed_reduced"
