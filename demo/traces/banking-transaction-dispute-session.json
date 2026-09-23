@@ -58,7 +58,7 @@
   "service_cases": 69,
   "session_deliveries": 80,
   "specialist_transfers": 0,
-  "transactions": 572,
+  "transactions": 632,
   "travel_notices": 49,
   "trusted_channels": 110,
   "welcome_offers": 15,
@@ -126,6 +126,28 @@
    }
   },
   "transactions": {
+   "9cf83fca-ef5b-50a8-907a-00a38412b2ee": {
+    "amount": 1.0,
+    "card_id": "card-justin-porter-9102",
+    "category": "online marketplace",
+    "currency": "USD",
+    "descriptor": "MRKTPLC*8472",
+    "kind": "authorization",
+    "linked_transaction_id": "b2047621-d2c7-437c-bb56-c81a700e2099",
+    "merchant": "Meridian Marketplace",
+    "merchant_key": "marketplace",
+    "merchant_location": null,
+    "occurred_at": "2026-02-22T21:12:00-05:00",
+    "posted_date": null,
+    "reason": null,
+    "record_seq": 630,
+    "represented_as": null,
+    "resource_label": null,
+    "settlement_state": "released",
+    "short_ref": null,
+    "status": "approved",
+    "transaction_id": "9cf83fca-ef5b-50a8-907a-00a38412b2ee"
+   },
    "b2047621-d2c7-437c-bb56-c81a700e2099": {
     "amount": 243.18,
     "card_id": "card-justin-porter-9102",
@@ -133,12 +155,12 @@
     "currency": "USD",
     "descriptor": "MRKTPLC*8472",
     "kind": "posted",
+    "linked_transaction_id": null,
     "merchant": "Meridian Marketplace",
     "merchant_key": "marketplace",
     "merchant_location": null,
     "occurred_at": "2026-02-22T21:14:00-05:00",
     "posted_date": "2026-02-23",
-    "preceded_by_authorization_amount": 1.0,
     "reason": null,
     "record_seq": 569,
     "represented_as": null,
@@ -155,12 +177,12 @@
     "currency": "USD",
     "descriptor": "FENWICK HDW",
     "kind": "posted",
+    "linked_transaction_id": null,
     "merchant": "Fenwick Hardware",
     "merchant_key": "hardware",
     "merchant_location": "Kansas City, Missouri",
     "occurred_at": "2026-02-22T13:02:00-05:00",
     "posted_date": "2026-02-23",
-    "preceded_by_authorization_amount": null,
     "reason": null,
     "record_seq": 571,
     "represented_as": null,
@@ -177,12 +199,12 @@
     "currency": "USD",
     "descriptor": "MRKTPLC*7735",
     "kind": "posted",
+    "linked_transaction_id": null,
     "merchant": "Meridian Marketplace",
     "merchant_key": "marketplace",
     "merchant_location": null,
     "occurred_at": "2026-02-18T10:41:00-05:00",
     "posted_date": "2026-02-19",
-    "preceded_by_authorization_amount": 1.0,
     "reason": null,
     "record_seq": 572,
     "represented_as": null,
@@ -199,12 +221,12 @@
     "currency": "USD",
     "descriptor": "MRKTPLC*8472",
     "kind": "posted",
+    "linked_transaction_id": null,
     "merchant": "Meridian Marketplace",
     "merchant_key": "marketplace",
     "merchant_location": null,
     "occurred_at": "2026-02-22T21:15:00-05:00",
     "posted_date": "2026-02-23",
-    "preceded_by_authorization_amount": 1.0,
     "reason": null,
     "record_seq": 570,
     "represented_as": null,
@@ -538,7 +560,15 @@
       "amount": 243.18,
       "currency": "USD",
       "category": "online marketplace",
-      "preceded_by_authorization_amount": 1.0
+      "authorizations": [
+       {
+        "transaction_id": "9cf83fca-ef5b-50a8-907a-00a38412b2ee",
+        "amount": 1.0,
+        "currency": "USD",
+        "status": "approved",
+        "occurred_at": "2026-02-22T21:12:00-05:00"
+       }
+      ]
      }
     ]
    },
@@ -579,6 +609,15 @@
         "transaction-ending-6620",
         "transaction-ending-7735",
         "transaction-ending-8473"
+       ]
+      },
+      {
+       "where": {
+        "kind": "authorization",
+        "linked_transaction_id": "b2047621-d2c7-437c-bb56-c81a700e2099"
+       },
+       "matched": [
+        "9cf83fca-ef5b-50a8-907a-00a38412b2ee"
        ]
       }
      ],
@@ -671,19 +710,9 @@
    "status": 200,
    "output": {
     "record_id": "8d5fe793-b41b-48c9-aef8-e3ffd9d1d4ab",
+    "title": "Unauthorized card transactions: review and dispute procedure",
     "effective_at": "2026-01-15",
-    "investigation_timing_basis": "transaction_type",
-    "post_submit_outputs": [
-     "claim reference",
-     "written timing disclosures in secure messages"
-    ],
-    "posted_charge_can_be_erased": false,
-    "provisional_credit_guaranteed": false,
-    "steps": [
-     "review household use",
-     "review saved wallets",
-     "submit only if unauthorized"
-    ]
+    "content": "An unfamiliar charge is reviewed first for household use and for cards saved in digital wallets or merchant accounts. A dispute is submitted by the customer through the secure dispute session, and only for a transaction the customer did not authorize. A posted charge is not erased outside the dispute process. Provisional credit is not guaranteed, and investigation timing depends on the transaction type. After submission the customer receives a claim reference and written timing disclosures in secure messages."
    },
    "matches_recording": true,
    "write_tool": false,
@@ -1223,9 +1252,9 @@
    "status": 200,
    "output": {
     "record_id": "022398d3-51e3-4dcd-b56b-064d53b159f0",
+    "title": "Dispute sessions: lifecycle and dispute rights",
     "effective_at": "2026-01-15",
-    "guidance": "Contact the bank promptly if a genuinely unauthorized transaction is later discovered.",
-    "unused_unsubmitted_session_waives_future_rights": false
+    "content": "A dispute session is issued to the customer's secure message centre and completed by the customer in online banking. Issuing or opening a session does not create a claim; a claim exists only once the customer submits the form. A session that is closed or left unsubmitted ends without a claim and does not waive the customer's right to dispute that transaction or any other transaction later. A customer who later identifies a genuinely unauthorized transaction should contact the bank promptly."
    },
    "matches_recording": true,
    "write_tool": false,
@@ -1365,8 +1394,8 @@
    "COMMUNICATE": 1.0
   },
   "db": {
-   "target_hash": "5cb62850f02a9ba449136d9e221975d8181fe926e5b65bf0505fb6e0e44b1276",
-   "predicted_hash": "5cb62850f02a9ba449136d9e221975d8181fe926e5b65bf0505fb6e0e44b1276"
+   "target_hash": "438ba35c581c9e3608fe3e853312f924cb7e5e6a23aa5fea2c0316d74e6c7ad7",
+   "predicted_hash": "438ba35c581c9e3608fe3e853312f924cb7e5e6a23aa5fea2c0316d74e6c7ad7"
   },
   "communicate_checks": [
    {

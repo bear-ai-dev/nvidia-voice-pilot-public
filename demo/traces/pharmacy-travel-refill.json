@@ -106,7 +106,7 @@
     "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
     "payment_options": [
      "app_prepay_if_offered_when_ready",
-     "pay_15_at_pickup"
+     "pay_at_pickup"
     ],
     "prescriber": "Dr. Elena Vasquez",
     "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
@@ -127,7 +127,6 @@
     "display_name": "Oak Street Pharmacy",
     "district": "north-loop",
     "front_store_closes_at": "22:00",
-    "front_store_closes_later": true,
     "proximity_rank": 0,
     "queue_estimated_minutes": 30,
     "queue_next_position": 1,
@@ -144,7 +143,6 @@
     "display_name": "Park Avenue",
     "district": "north-loop",
     "front_store_closes_at": null,
-    "front_store_closes_later": false,
     "proximity_rank": 10,
     "queue_estimated_minutes": 25,
     "queue_next_position": 2,
@@ -184,7 +182,7 @@
     "display_name": "Midwest Choice PPO",
     "paid_payment_options": [
      "app_prepay_if_offered_when_ready",
-     "pay_15_at_pickup"
+     "pay_at_pickup"
     ],
     "plan_id": "plan-midwest-choice-ppo",
     "unpaid_payment_options": [
@@ -469,7 +467,7 @@
      "store_id": "8e22d41d-843c-4e73-95c0-3c9877366ba9",
      "display_name": "Oak Street Pharmacy",
      "counter_closes_at": "19:00",
-     "front_store_closes_later": true
+     "front_store_closes_at": "22:00"
     },
     "claim": {
      "status": "rejected",
@@ -766,7 +764,7 @@
     },
     "payment_options": [
      "app_prepay_if_offered_when_ready",
-     "pay_15_at_pickup"
+     "pay_at_pickup"
     ]
    },
    "matches_recording": true,
@@ -946,7 +944,7 @@
       "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
       "payment_options": [
        "app_prepay_if_offered_when_ready",
-       "pay_15_at_pickup"
+       "pay_at_pickup"
       ],
       "prescriber": "Dr. Elena Vasquez",
       "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
@@ -973,7 +971,6 @@
       "display_name": "Oak Street Pharmacy",
       "district": "north-loop",
       "front_store_closes_at": "22:00",
-      "front_store_closes_later": true,
       "proximity_rank": 0,
       "queue_estimated_minutes": 30,
       "queue_next_position": 1,
@@ -990,7 +987,6 @@
       "display_name": "Oak Street Pharmacy",
       "district": "north-loop",
       "front_store_closes_at": "22:00",
-      "front_store_closes_later": true,
       "proximity_rank": 0,
       "queue_estimated_minutes": 30,
       "queue_next_position": 2,
@@ -1167,7 +1163,7 @@
       "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
       "payment_options": [
        "app_prepay_if_offered_when_ready",
-       "pay_15_at_pickup"
+       "pay_at_pickup"
       ],
       "prescriber": "Dr. Elena Vasquez",
       "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
@@ -1190,7 +1186,7 @@
       "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
       "payment_options": [
        "app_prepay_if_offered_when_ready",
-       "pay_15_at_pickup"
+       "pay_at_pickup"
       ],
       "prescriber": "Dr. Elena Vasquez",
       "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
@@ -1454,7 +1450,7 @@
       "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
       "payment_options": [
        "app_prepay_if_offered_when_ready",
-       "pay_15_at_pickup"
+       "pay_at_pickup"
       ],
       "prescriber": "Dr. Elena Vasquez",
       "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
@@ -1477,7 +1473,7 @@
       "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
       "payment_options": [
        "app_prepay_if_offered_when_ready",
-       "pay_15_at_pickup"
+       "pay_at_pickup"
       ],
       "prescriber": "Dr. Elena Vasquez",
       "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
@@ -1593,8 +1589,8 @@
    "COMMUNICATE": 1.0
   },
   "db": {
-   "target_hash": "e31cde1a5fbdf227eb9eec2de2555d04e02835f781c0edd2fc0031298ba87932",
-   "predicted_hash": "e31cde1a5fbdf227eb9eec2de2555d04e02835f781c0edd2fc0031298ba87932"
+   "target_hash": "21791e178c332ac872ec04436581339ba7c8fede118300d1887e5e5795736c33",
+   "predicted_hash": "21791e178c332ac872ec04436581339ba7c8fede118300d1887e5e5795736c33"
   },
   "communicate_checks": [
    {

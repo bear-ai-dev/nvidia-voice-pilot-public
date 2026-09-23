@@ -54,7 +54,6 @@
   "order_items": 714,
   "orders": 362,
   "payments": 416,
-  "pickup_site_suffixes": 7,
   "product_variants": 107,
   "products": 80,
   "refunds": 431,
@@ -218,8 +217,8 @@
     "order_reference": "5820465624",
     "payload": [
      {
-      "accepted_age_days": 9,
       "accepted_at": "Eastwood store",
+      "accepted_on": "2026-08-18",
       "inventory_disposition": "restocked",
       "return_reference": "ending-9182",
       "return_status": "complete"
@@ -270,6 +269,7 @@
   },
   "case_type_policy": {
    "refund_trace": {
+    "accepts_pickup_preference": false,
     "approval_channel": null,
     "approval_required": null,
     "carrier_may_contact_customer": null,
@@ -286,8 +286,6 @@
      "status",
      "deadline"
     ],
-    "pickup_guaranteed": false,
-    "preference_instruction_template": null,
     "related_view_fields": [
      "case_number",
      "order_reference",
@@ -504,8 +502,8 @@
     ],
     "refunds": [
      {
-      "accepted_age_days": 9,
       "accepted_at": "Eastwood store",
+      "accepted_on": "2026-08-18",
       "inventory_disposition": "restocked",
       "return_reference": "ending-9182",
       "return_status": "complete"
@@ -1345,7 +1343,6 @@
       "item_description": "black standing desk converter",
       "carrier_response": null,
       "deadline_at": null,
-      "deadline_display": null,
       "carrier_may_contact_customer": null,
       "replacement_created": false,
       "requested_resolution": null,
@@ -1361,8 +1358,6 @@
       "return_reference": "5820469182",
       "payment_reference": "card-ending-2047",
       "amount_under_review": 146.42,
-      "fee_reimbursement_approved": false,
-      "pickup_guaranteed": false,
       "opened_at": "2026-08-27T17:05:00+00:00"
      }
     }
@@ -1571,7 +1566,6 @@
       "subject_prefix": "Your Westline refund trace",
       "optional_photo_link": null,
       "photo_link_section": null,
-      "sent_at_display": null,
       "created_at": "2026-08-27T17:05:00+00:00"
      }
     }
@@ -1626,8 +1620,7 @@
    "status": 200,
    "output": {
     "status": "note_added",
-    "visible_to_next_reviewer": true,
-    "fee_reimbursement_approved": false
+    "visible_to_next_reviewer": true
    },
    "matches_recording": true,
    "write_tool": true,
@@ -1788,8 +1781,8 @@
    "COMMUNICATE": 1.0
   },
   "db": {
-   "target_hash": "61b3cdeed17233d7f2e0ae2d3698a19d9890baca17401f27c34be06a239bbe82",
-   "predicted_hash": "61b3cdeed17233d7f2e0ae2d3698a19d9890baca17401f27c34be06a239bbe82"
+   "target_hash": "8a5299ac60b0e25bae85fffae4e67c50ae35922b6bdf2c68dcf6458a73187ad2",
+   "predicted_hash": "8a5299ac60b0e25bae85fffae4e67c50ae35922b6bdf2c68dcf6458a73187ad2"
   },
   "communicate_checks": [
    {

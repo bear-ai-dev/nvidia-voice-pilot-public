@@ -59,7 +59,7 @@
   "service_cases": 70,
   "session_deliveries": 86,
   "specialist_transfers": 0,
-  "transactions": 607,
+  "transactions": 683,
   "travel_notices": 51,
   "trusted_channels": 102,
   "welcome_offers": 15,
@@ -1225,6 +1225,7 @@
    "status": 200,
    "output": {
     "record_id": "63b6eab2-5559-4d42-a781-47c7c0413493",
+    "title": "Travel card products: current terms",
     "effective_at": "2026-07-01",
     "matches": [
      {
@@ -1311,21 +1312,13 @@
    "status": 200,
    "output": {
     "record_id": "0d57772d-88ff-474b-8c24-5476b7dc1921",
+    "title": "Summit Reserve: airline benefits",
     "effective_at": "2026-07-01",
-    "airline_incidental_credit": true,
-    "automatic_free_checked_bag": false,
-    "airline_specific_rules_apply": true
+    "content": "Summit Reserve includes an annual airline incidental credit. Airline-specific rules determine which airline charges the credit covers. Summit Reserve does not include an automatic free checked bag."
    },
    "matches_recording": true,
    "write_tool": false,
    "reads": {
-    "card_products": {
-     "keys": [
-      "acda644c-1054-410a-98a1-39fad9fe411e"
-     ],
-     "queries": [],
-     "scanned": false
-    },
     "kb_records": {
      "keys": [],
      "queries": [],
@@ -1373,6 +1366,7 @@
    "status": 200,
    "output": {
     "record_id": "88b888dd-e6b1-4d27-927c-22d21bdaa700",
+    "title": "Travel card welcome offers: current terms",
     "effective_at": "2026-07-01",
     "offers": [
      {
@@ -1392,8 +1386,7 @@
       "days": 90
      }
     ],
-    "approval_guaranteed": false,
-    "offers_can_change": true
+    "content": "Welcome offers can change. Required spend counts eligible purchases made within the stated number of days. An offer is earned only on an approved account, and approval of an application is not guaranteed."
    },
    "matches_recording": true,
    "write_tool": false,
@@ -1704,12 +1697,9 @@
    "status": 200,
    "output": {
     "record_id": "204dbd70-136e-4b56-9036-cf148e95a870",
+    "title": "Card applications: decision notices and underwriting",
     "effective_at": "2026-07-01",
-    "decision_notice": {
-     "explains_factors": true,
-     "may_include_reconsideration_contact": true
-    },
-    "phone_agent_can_override_underwriting": false
+    "content": "Applicants who are declined receive a written decision notice. The notice explains the factors behind the decision and, where reconsideration is available for that decision, includes the reconsideration contact. Underwriting decisions are made by the underwriting team. Phone agents cannot approve an application, promise approval, or override an underwriting decision."
    },
    "matches_recording": true,
    "write_tool": false,
@@ -1788,8 +1778,9 @@
    "status": 200,
    "output": {
     "record_id": "4a2df74d-36c6-4669-8ad0-c71d09611681",
+    "title": "Card applications: monthly housing payment field",
     "effective_at": "2026-07-01",
-    "guidance": "Enter the amount the applicant is personally responsible for each month and follow the field instructions."
+    "content": "The monthly housing payment field asks for the amount the applicant is personally responsible for each month. The instructions shown with the field describe what to include."
    },
    "matches_recording": true,
    "write_tool": false,
@@ -1832,8 +1823,9 @@
    "status": 200,
    "output": {
     "record_id": "2adb7239-a280-4c4f-8e5f-1755aa55c925",
+    "title": "Card applications: annual income field",
     "effective_at": "2026-07-01",
-    "guidance": "Report income the applicant can reasonably access and verify, consistent with the application disclosure."
+    "content": "The annual income field asks for income the applicant can reasonably access and verify, consistent with the application disclosure. The explanation shown beside the field describes how each category of income is treated."
    },
    "matches_recording": true,
    "write_tool": false,
@@ -2040,10 +2032,9 @@
    "status": 200,
    "output": {
     "record_id": "f603e573-6b4f-4f50-a390-b18c917712a9",
+    "title": "Profile email changes: login identifier and notice routing",
     "effective_at": "2026-07-01",
-    "future_notices_use_primary_email": true,
-    "login_identifier_may_remain_same": true,
-    "unexpected_prompt_guidance": "Use the secure banking site rather than an unexpected message link."
+    "content": "Account notices are sent to the profile's primary email, so after a primary email change future notices go to the new address. The login identifier is separate from the primary email: a profile that signs in with a username keeps the same username after an email change, and only a profile whose login identifier is its email address moves to the new address. Security prompts about the change are answered through the secure banking site, not through a link in an unexpected message."
    },
    "matches_recording": true,
    "write_tool": false,
@@ -2109,8 +2100,8 @@
    "COMMUNICATE": 1.0
   },
   "db": {
-   "target_hash": "001536fc10d80f0fb2a3faabd4093a5d9db9e85440377e4de8b630c2c281a143",
-   "predicted_hash": "001536fc10d80f0fb2a3faabd4093a5d9db9e85440377e4de8b630c2c281a143"
+   "target_hash": "b01ca0c243342d2ccbb160d2a6c752ec047fbae7d3c298026622a9c043364c6f",
+   "predicted_hash": "b01ca0c243342d2ccbb160d2a6c752ec047fbae7d3c298026622a9c043364c6f"
   },
   "communicate_checks": [
    {

@@ -54,7 +54,6 @@
   "order_items": 711,
   "orders": 359,
   "payments": 439,
-  "pickup_site_suffixes": 7,
   "product_variants": 107,
   "products": 81,
   "refunds": 445,
@@ -70,14 +69,13 @@
    "8cf648a4-ca60-4387-bc11-ec38f426123a": {
     "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
     "pickup_location": "West 23rd Street pickup counter",
-    "pickup_site": "West 23rd Street",
     "recorded_at": "2026-08-25T19:52:00+00:00",
-    "review_instruction": "Check West 23rd Street pickup availability first after replacement eligibility.",
     "visible_to_next_reviewer": true
    }
   },
   "case_type_policy": {
    "delivery_trace": {
+    "accepts_pickup_preference": true,
     "approval_channel": "trace_notification",
     "approval_required": true,
     "carrier_may_contact_customer": true,
@@ -98,8 +96,6 @@
      "carrier_response",
      "deadline"
     ],
-    "pickup_guaranteed": false,
-    "preference_instruction_template": "Check {site} pickup availability first after replacement eligibility.",
     "related_view_fields": [
      "case_number",
      "order_reference",
@@ -122,20 +118,17 @@
     "case_type": "delivery_trace",
     "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
     "deadline_at": "2026-08-26T22:00:00+00:00",
-    "deadline_display": "18:00 today",
     "duplicate_refund_blocked": null,
     "eligibility_triggers": [
      "carrier_confirms_missing",
      "carrier_response_deadline_expires"
     ],
-    "fee_reimbursement_approved": false,
     "item_description": "blue noise-canceling headphones",
     "needed_by": "2026-08-27",
     "next_action": "review requested resolution and fulfillment after an eligibility trigger",
     "opened_at": "2026-08-25T19:52:00+00:00",
     "order_reference": "5820447319",
     "payment_reference": null,
-    "pickup_guaranteed": false,
     "reason": "delivered_not_received",
     "replacement_created": false,
     "requested_resolution": "replacement",
@@ -219,6 +212,10 @@
     "key": "target_case_number",
     "value": "WST481662"
    },
+   "timezone": {
+    "key": "timezone",
+    "value": "America/New_York"
+   },
    "scenario_time": {
     "key": "scenario_time",
     "value": "2026-08-26T11:20:00-04:00"
@@ -245,7 +242,7 @@
     "payload": [
      {
       "default_fulfillment": "home_address_on_order",
-      "estimated_delivery": "Thursday end of day",
+      "estimated_delivery": "2026-08-27",
       "optional_photo_upload_available": true,
       "photo_required": false,
       "photo_upload_blocks_fulfillment": false,
@@ -299,7 +296,6 @@
   "eligible_resolutions": {
    "5820454086|1": {
     "default_fulfillment": "home_address_on_order",
-    "estimated_delivery_display": "Thursday end of day",
     "estimated_delivery_on": "2026-08-27",
     "optional_photo_upload_available": true,
     "order_reference": "5820454086",
@@ -383,7 +379,6 @@
      "return_disposition"
     ],
     "sent_at": "2026-08-26T15:20:00+00:00",
-    "sent_at_display": null,
     "created_at": "2026-08-26T15:20:00+00:00"
    }
   }
@@ -590,7 +585,8 @@
       "order_customer_fields",
       "order_reference_mask",
       "target_case_id",
-      "target_case_number"
+      "target_case_number",
+      "timezone"
      ],
      "queries": [],
      "scanned": false
@@ -728,7 +724,7 @@
     "eligible_resolutions": [
      {
       "default_fulfillment": "home_address_on_order",
-      "estimated_delivery": "Thursday end of day",
+      "estimated_delivery": "2026-08-27",
       "optional_photo_upload_available": true,
       "photo_required": false,
       "photo_upload_blocks_fulfillment": false,
@@ -963,8 +959,7 @@
     "fulfillment": {
      "method": "ship_to_address",
      "location": "home_address_on_order",
-     "estimated_delivery": "Thursday end of day",
-     "estimate_guaranteed": false,
+     "estimated_delivery": "2026-08-27",
      "distribution_center": "Edison",
      "distribution_center_status": "provisional_until_shipped",
      "tracking_notifications": true
@@ -1165,7 +1160,6 @@
        "return_disposition"
       ],
       "sent_at": "2026-08-26T15:20:00+00:00",
-      "sent_at_display": null,
       "created_at": "2026-08-26T15:20:00+00:00"
      }
     },
@@ -1220,8 +1214,6 @@
       "fulfillment_method": "ship_to_address",
       "fulfillment_location": "home_address_on_order",
       "estimated_delivery_on": "2026-08-27",
-      "estimated_delivery_display": "Thursday end of day",
-      "estimate_guaranteed": false,
       "distribution_center": "Edison",
       "distribution_center_status": "provisional_until_shipped",
       "tracking_notifications": true,
@@ -1515,7 +1507,6 @@
        "return_disposition"
       ],
       "sent_at": "2026-08-26T15:20:00+00:00",
-      "sent_at_display": null,
       "created_at": "2026-08-26T15:20:00+00:00"
      },
      "after": {
@@ -1543,7 +1534,6 @@
        "return_disposition"
       ],
       "sent_at": "2026-08-26T15:20:00+00:00",
-      "sent_at_display": null,
       "created_at": "2026-08-26T15:20:00+00:00"
      }
     }
@@ -1707,7 +1697,7 @@
       "type": "delivery_trace",
       "status": "open",
       "carrier_response": "none",
-      "deadline": "18:00 today",
+      "deadline": "2026-08-26T18:00:00-04:00",
       "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
       "case_number": "WST481662"
      }
@@ -1774,7 +1764,8 @@
       "min_reference_suffix_digits",
       "order_reference_mask",
       "target_case_id",
-      "target_case_number"
+      "target_case_number",
+      "timezone"
      ],
      "queries": [],
      "scanned": false
@@ -1866,8 +1857,8 @@
    "COMMUNICATE": 1.0
   },
   "db": {
-   "target_hash": "a401213dadc4ed879c5dadcd9ea5b93604d71269b01a660590d6ac3683d9a0de",
-   "predicted_hash": "a401213dadc4ed879c5dadcd9ea5b93604d71269b01a660590d6ac3683d9a0de"
+   "target_hash": "ea8123feb6affbd14b677ac1f6462c0a9626d093df12c52b2a892cfa9ea5c099",
+   "predicted_hash": "ea8123feb6affbd14b677ac1f6462c0a9626d093df12c52b2a892cfa9ea5c099"
   },
   "communicate_checks": [
    {

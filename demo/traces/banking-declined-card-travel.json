@@ -58,7 +58,7 @@
   "service_cases": 61,
   "session_deliveries": 99,
   "specialist_transfers": 0,
-  "transactions": 576,
+  "transactions": 651,
   "travel_notices": 42,
   "trusted_channels": 92,
   "welcome_offers": 15,
@@ -199,12 +199,12 @@
     "currency": "USD",
     "descriptor": "HARBOR VIEW HTL",
     "kind": "decline",
+    "linked_transaction_id": null,
     "merchant": "Harbor View Hotel",
     "merchant_key": "hotel",
     "merchant_location": "Portland, Maine",
     "occurred_at": "2026-08-28T14:06:00-04:00",
     "posted_date": null,
-    "preceded_by_authorization_amount": null,
     "reason": "prior_review_open",
     "record_seq": 574,
     "represented_as": null,
@@ -221,12 +221,12 @@
     "currency": "USD",
     "descriptor": "HARBOR VIEW HTL",
     "kind": "decline",
+    "linked_transaction_id": null,
     "merchant": "Harbor View Hotel",
     "merchant_key": "hotel",
     "merchant_location": "Portland, Maine",
     "occurred_at": "2026-08-28T13:52:00-04:00",
     "posted_date": null,
-    "preceded_by_authorization_amount": null,
     "reason": "travel_review",
     "record_seq": 573,
     "represented_as": null,
@@ -243,12 +243,12 @@
     "currency": "USD",
     "descriptor": "LOGAN AIRPORT F&B",
     "kind": "authorization",
+    "linked_transaction_id": null,
     "merchant": "Logan Airport",
     "merchant_key": "logan",
     "merchant_location": null,
     "occurred_at": "2026-08-28T08:05:00-04:00",
     "posted_date": null,
-    "preceded_by_authorization_amount": null,
     "reason": null,
     "record_seq": 575,
     "represented_as": null,
@@ -955,7 +955,7 @@
       "card_id": "card-colin-6148",
       "section": "authorizations",
       "reads_served": 2,
-      "last_seen_seq": 577
+      "last_seen_seq": 652
      }
     },
     {
@@ -1323,12 +1323,12 @@
       "currency": "USD",
       "descriptor": "LOGAN AIRPORT F&B",
       "kind": "authorization",
+      "linked_transaction_id": null,
       "merchant": "Logan Airport",
       "merchant_key": "logan",
       "merchant_location": null,
       "occurred_at": "2026-08-28T08:05:00-04:00",
       "posted_date": null,
-      "preceded_by_authorization_amount": null,
       "reason": null,
       "record_seq": 575,
       "represented_as": null,
@@ -1345,12 +1345,12 @@
       "currency": "USD",
       "descriptor": "LOGAN AIRPORT F&B",
       "kind": "authorization",
+      "linked_transaction_id": null,
       "merchant": "Logan Airport",
       "merchant_key": "logan",
       "merchant_location": null,
       "occurred_at": "2026-08-28T08:05:00-04:00",
       "posted_date": null,
-      "preceded_by_authorization_amount": null,
       "reason": null,
       "record_seq": 575,
       "represented_as": null,
@@ -1375,12 +1375,12 @@
       "currency": "USD",
       "descriptor": "HARBOR VIEW HTL",
       "kind": "decline",
+      "linked_transaction_id": null,
       "merchant": "Harbor View Hotel",
       "merchant_key": "hotel",
       "merchant_location": "Portland, Maine",
       "occurred_at": "2026-08-28T13:52:00-04:00",
       "posted_date": null,
-      "preceded_by_authorization_amount": null,
       "reason": "travel_review",
       "record_seq": 573,
       "represented_as": null,
@@ -1397,12 +1397,12 @@
       "currency": "USD",
       "descriptor": "HARBOR VIEW HTL",
       "kind": "decline",
+      "linked_transaction_id": null,
       "merchant": "Harbor View Hotel",
       "merchant_key": "hotel",
       "merchant_location": "Portland, Maine",
       "occurred_at": "2026-08-28T13:52:00-04:00",
       "posted_date": null,
-      "preceded_by_authorization_amount": null,
       "reason": "travel_review",
       "record_seq": 573,
       "represented_as": "f96da295-2259-4311-b31d-661ab6053092",
@@ -1421,7 +1421,7 @@
      "before": null,
      "after": {
       "transaction_id": "f96da295-2259-4311-b31d-661ab6053092",
-      "record_seq": 577,
+      "record_seq": 652,
       "card_id": "card-colin-6148",
       "kind": "authorization",
       "merchant_key": "hotel",
@@ -1436,10 +1436,10 @@
       "settlement_state": "pending",
       "occurred_at": null,
       "posted_date": null,
-      "preceded_by_authorization_amount": null,
       "resource_label": null,
       "short_ref": null,
-      "represented_as": null
+      "represented_as": null,
+      "linked_transaction_id": null
      }
     }
    ]
@@ -1474,11 +1474,9 @@
    "status": 200,
    "output": {
     "record_id": "471a2d47-a132-4551-a522-5f6ac88b48e7",
+    "title": "Hotel authorization holds",
     "effective_at": "2026-07-01",
-    "authorization_guaranteed": false,
-    "available_credit_must_cover_full_authorization": true,
-    "incidental_holds_may_exceed_room_total": true,
-    "pending_duration": "may remain pending for a few days after checkout depending on merchant finalization"
+    "content": "Hotels commonly authorize an amount for incidentals on top of the room charges, so a hotel hold can exceed the room total. An authorization is approved only when the card's available credit covers the full authorized amount. No authorization is guaranteed to be approved. A hotel hold may remain pending for a few days after checkout, depending on when the merchant finalizes the charge."
    },
    "matches_recording": true,
    "write_tool": false,
@@ -1740,7 +1738,7 @@
       "card_id": "card-colin-6148",
       "section": "authorizations",
       "reads_served": 2,
-      "last_seen_seq": 577
+      "last_seen_seq": 652
      }
     }
    ]
@@ -1854,8 +1852,7 @@
    "status": 200,
    "output": {
     "status": "created",
-    "notice_id": "31d46fb6-e721-4a9c-b54d-6c631dbe9686",
-    "authorization_guaranteed": false
+    "notice_id": "31d46fb6-e721-4a9c-b54d-6c631dbe9686"
    },
    "matches_recording": true,
    "write_tool": true,
@@ -1919,7 +1916,6 @@
        "Portland, Maine"
       ],
       "return_date": "2026-08-30",
-      "authorization_guaranteed": false,
       "status": "created",
       "created_at": "2026-08-28T14:30:00-04:00"
      }
@@ -1979,8 +1975,8 @@
    "COMMUNICATE": 1.0
   },
   "db": {
-   "target_hash": "32f41b3017014422c896406c2939c910e75c55864e369b248f141818fc61a650",
-   "predicted_hash": "32f41b3017014422c896406c2939c910e75c55864e369b248f141818fc61a650"
+   "target_hash": "6b5e0924c907f0fd56408d42ac242c4ab1aac28e15ac1e12aa59bc9dd25415a9",
+   "predicted_hash": "6b5e0924c907f0fd56408d42ac242c4ab1aac28e15ac1e12aa59bc9dd25415a9"
   },
   "communicate_checks": [
    {

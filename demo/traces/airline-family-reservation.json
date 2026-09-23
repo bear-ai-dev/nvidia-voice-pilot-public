@@ -3,7 +3,7 @@
  "domain": "airline",
  "task": {
   "description": {
-   "purpose": "Recommend Washington Reagan National for a National Mall stay from the backend comparison, price a nonstop PHX-DCA round trip (October 14 to 19) in standard economy for the caller and her 12-year-old grandson with two checked bags, a free folding walker and optional insurance, verify her identity, validate her 200 dollar certificate, and book reservation B9RT6M with the remainder on her Visa ending 1182.",
+   "purpose": "Recommend Washington Reagan National for a National Mall stay by comparing the returned airport distances and ground travel times, price a nonstop PHX-DCA round trip (October 14 to 19) in standard economy for the caller and her 12-year-old grandson with two checked bags, a free folding walker and optional insurance, verify her identity, validate her 200 dollar certificate, and book reservation B9RT6M with the remainder on her Visa ending 1182.",
    "relevant_policies": "domains/airline/policy.md",
    "notes": "Every figure (the one-stop saving, the fare with bags, insurance, the walker's treatment, the certificate value) must come from the tools before it is spoken. Identity must be verified before stored cards or certificates are used, and the agent must not paraphrase ID or custody rules for the minor or promise seats."
   },
@@ -68,26 +68,23 @@
  },
  "rows": {
   "airport_area_links": {
-   "national-mall|1": {
-    "airport_code": "DCA",
-    "area_id": "national-mall",
-    "distance_miles": 3.2,
-    "ground_access_minutes": 18,
-    "proximity_rank": 1
-   },
-   "national-mall|2": {
-    "airport_code": "IAD",
-    "area_id": "national-mall",
-    "distance_miles": 26.4,
-    "ground_access_minutes": 52,
-    "proximity_rank": 2
-   },
-   "national-mall|3": {
+   "national-mall|BWI": {
     "airport_code": "BWI",
     "area_id": "national-mall",
     "distance_miles": 32.1,
-    "ground_access_minutes": 64,
-    "proximity_rank": 3
+    "ground_access_minutes": 64
+   },
+   "national-mall|DCA": {
+    "airport_code": "DCA",
+    "area_id": "national-mall",
+    "distance_miles": 3.2,
+    "ground_access_minutes": 18
+   },
+   "national-mall|IAD": {
+    "airport_code": "IAD",
+    "area_id": "national-mall",
+    "distance_miles": 26.4,
+    "ground_access_minutes": 52
    }
   },
   "airports": {
@@ -126,6 +123,15 @@
     "state_or_region": "AZ",
     "timezone": "America/Phoenix",
     "utc_offset_minutes": -420
+   },
+   "ORD": {
+    "city": "Chicago",
+    "code": "ORD",
+    "name": "Chicago O'Hare International",
+    "served": true,
+    "state_or_region": "IL",
+    "timezone": "America/Chicago",
+    "utc_offset_minutes": -300
    }
   },
   "fare_options": {
@@ -492,7 +498,6 @@
   },
   "connecting_itineraries": {
    "87ba9919-0d38-418a-868c-42185e5a9ab9": {
-    "additional_duration_display": "almost three hours",
     "departure_date": "2026-10-14",
     "destination_code": "DCA",
     "itinerary_id": "87ba9919-0d38-418a-868c-42185e5a9ab9",
@@ -1097,23 +1102,27 @@
    "at": 60.4,
    "status": 200,
    "output": {
+    "destination_area": "National Mall, Washington, DC",
     "airports": [
      {
       "code": "DCA",
-      "name": "Washington Reagan National"
+      "name": "Washington Reagan National",
+      "distance_miles": 3.2,
+      "ground_access_minutes": 18
      },
      {
       "code": "IAD",
-      "name": "Washington Dulles International"
+      "name": "Washington Dulles International",
+      "distance_miles": 26.4,
+      "ground_access_minutes": 52
      },
      {
       "code": "BWI",
-      "name": "Baltimore/Washington International"
+      "name": "Baltimore/Washington International",
+      "distance_miles": 32.1,
+      "ground_access_minutes": 64
      }
-    ],
-    "recommended_airport_code": "DCA",
-    "recommendation_basis": "closest airport returned for the National Mall destination area and most direct city access among the supported options",
-    "retrieved_at": "2026-08-26T12:31:00-07:00"
+    ]
    },
    "matches_recording": true,
    "write_tool": false,
@@ -1126,9 +1135,9 @@
         "area_id": "national-mall"
        },
        "matched": [
-        "national-mall|1",
-        "national-mall|2",
-        "national-mall|3"
+        "national-mall|BWI",
+        "national-mall|DCA",
+        "national-mall|IAD"
        ]
       }
      ],
@@ -1137,6 +1146,15 @@
     "airports": {
      "keys": [],
      "queries": [
+      {
+       "where": {
+        "code": "BWI",
+        "served": true
+       },
+       "matched": [
+        "BWI"
+       ]
+      },
       {
        "where": {
         "code": "DCA",
@@ -1153,15 +1171,6 @@
        },
        "matched": [
         "IAD"
-       ]
-      },
-      {
-       "where": {
-        "code": "BWI",
-        "served": true
-       },
-       "matched": [
-        "BWI"
        ]
       }
      ],
@@ -1210,52 +1219,70 @@
    "status": 200,
    "output": {
     "search_id": "96a87cf6-ba8d-4705-995b-8805e877ab0b",
-    "outbound": {
-     "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
-     "origin": {
-      "code": "PHX",
-      "name": "Phoenix Sky Harbor"
-     },
-     "destination": {
-      "code": "DCA",
-      "name": "Washington Reagan National"
-     },
-     "departure_date": "2026-10-14",
-     "departure_time": "09:10",
-     "arrival_time": "16:30",
-     "duration_minutes": 260,
-     "stops": 0
-    },
-    "return": {
-     "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
-     "origin": {
-      "code": "DCA",
-      "name": "Washington Reagan National"
-     },
-     "destination": {
-      "code": "PHX",
-      "name": "Phoenix Sky Harbor"
-     },
-     "departure_date": "2026-10-19",
-     "departure_time": "15:40",
-     "arrival_time": "17:30",
-     "duration_minutes": 290,
-     "stops": 0
-    },
-    "fare_options": [
+    "outbound": [
      {
-      "fare_class": "basic_economy",
-      "price_per_traveler": 512.4,
-      "currency": "USD",
-      "relative_price_rank": "lower",
-      "advance_seat_selection_allowed": false
-     },
+      "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+      "origin": {
+       "code": "PHX",
+       "name": "Phoenix Sky Harbor"
+      },
+      "destination": {
+       "code": "DCA",
+       "name": "Washington Reagan National"
+      },
+      "departure_date": "2026-10-14",
+      "departure_time": "09:10",
+      "arrival_date": "2026-10-14",
+      "arrival_time": "16:30",
+      "duration_minutes": 260,
+      "stops": 0,
+      "fare_options": [
+       {
+        "fare_class": "basic_economy",
+        "price_per_traveler": 256.2,
+        "currency": "USD",
+        "advance_seat_selection_allowed": false
+       },
+       {
+        "fare_class": "standard_economy",
+        "price_per_traveler": 279.1,
+        "currency": "USD",
+        "advance_seat_selection_allowed": true
+       }
+      ]
+     }
+    ],
+    "return": [
      {
-      "fare_class": "standard_economy",
-      "price_per_traveler": 558.2,
-      "currency": "USD",
-      "relative_price_rank": "higher",
-      "advance_seat_selection_allowed": true
+      "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+      "origin": {
+       "code": "DCA",
+       "name": "Washington Reagan National"
+      },
+      "destination": {
+       "code": "PHX",
+       "name": "Phoenix Sky Harbor"
+      },
+      "departure_date": "2026-10-19",
+      "departure_time": "15:40",
+      "arrival_date": "2026-10-19",
+      "arrival_time": "17:30",
+      "duration_minutes": 290,
+      "stops": 0,
+      "fare_options": [
+       {
+        "fare_class": "basic_economy",
+        "price_per_traveler": 256.2,
+        "currency": "USD",
+        "advance_seat_selection_allowed": false
+       },
+       {
+        "fare_class": "standard_economy",
+        "price_per_traveler": 279.1,
+        "currency": "USD",
+        "advance_seat_selection_allowed": true
+       }
+      ]
      }
     ],
     "availability_checked_at": "2026-08-26T12:31:33-07:00",
@@ -1347,15 +1374,6 @@
       },
       {
        "where": {
-        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13"
-       },
-       "matched": [
-        "3ac31d55-0dbc-4f79-892e-743257ec9f13|basic_economy",
-        "3ac31d55-0dbc-4f79-892e-743257ec9f13|standard_economy"
-       ]
-      },
-      {
-       "where": {
         "flight_id": "BM-DCA-PHX-0730"
        },
        "matched": [
@@ -1365,73 +1383,10 @@
       },
       {
        "where": {
-        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05"
-       },
-       "matched": [
-        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|basic_economy",
-        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|standard_economy"
-       ]
-      },
-      {
-       "where": {
         "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13"
        },
        "matched": [
         "3ac31d55-0dbc-4f79-892e-743257ec9f13|basic_economy",
-        "3ac31d55-0dbc-4f79-892e-743257ec9f13|standard_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
-        "fare_class": "basic_economy"
-       },
-       "matched": [
-        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|basic_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
-        "fare_class": "basic_economy"
-       },
-       "matched": [
-        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|basic_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
-        "fare_class": "basic_economy"
-       },
-       "matched": [
-        "3ac31d55-0dbc-4f79-892e-743257ec9f13|basic_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
-        "fare_class": "standard_economy"
-       },
-       "matched": [
-        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|standard_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
-        "fare_class": "standard_economy"
-       },
-       "matched": [
-        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|standard_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
-        "fare_class": "standard_economy"
-       },
-       "matched": [
         "3ac31d55-0dbc-4f79-892e-743257ec9f13|standard_economy"
        ]
       }
@@ -1483,26 +1438,6 @@
       },
       {
        "where": {
-        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
-        "departure_date": "2026-10-19",
-        "fare_class": "basic_economy"
-       },
-       "matched": [
-        "3ac31d55-0dbc-4f79-892e-743257ec9f13|2026-10-19|basic_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
-        "departure_date": "2026-10-19",
-        "fare_class": "standard_economy"
-       },
-       "matched": [
-        "3ac31d55-0dbc-4f79-892e-743257ec9f13|2026-10-19|standard_economy"
-       ]
-      },
-      {
-       "where": {
         "flight_id": "BM-DCA-PHX-0730",
         "departure_date": "2026-10-19",
         "fare_class": "basic_economy"
@@ -1519,26 +1454,6 @@
        },
        "matched": [
         "BM-DCA-PHX-0730|2026-10-19|standard_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
-        "departure_date": "2026-10-14",
-        "fare_class": "basic_economy"
-       },
-       "matched": [
-        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|2026-10-14|basic_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
-        "departure_date": "2026-10-14",
-        "fare_class": "standard_economy"
-       },
-       "matched": [
-        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|2026-10-14|standard_economy"
        ]
       },
       {
@@ -1603,22 +1518,6 @@
        "matched": [
         "3ac31d55-0dbc-4f79-892e-743257ec9f13",
         "BM-DCA-PHX-0730"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05"
-       },
-       "matched": [
-        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13"
-       },
-       "matched": [
-        "3ac31d55-0dbc-4f79-892e-743257ec9f13"
        ]
       }
      ],
@@ -1697,13 +1596,111 @@
    "status": 200,
    "output": {
     "search_id": "b1e28687-a8fe-44c9-a18c-66b5dcc0dedb",
-    "best_connection": {
-     "itinerary_id": "87ba9919-0d38-418a-868c-42185e5a9ab9",
-     "total_savings": 62.0,
-     "currency": "USD",
-     "additional_duration_each_way": "almost three hours",
-     "additional_duration_minutes_each_way": 170
-    },
+    "connections": [
+     {
+      "itinerary_id": "87ba9919-0d38-418a-868c-42185e5a9ab9",
+      "outbound": {
+       "total_duration_minutes": 430,
+       "legs": [
+        {
+         "segment_index": 1,
+         "flight_id": "BM-PHX-ORD-0600",
+         "origin": {
+          "code": "PHX",
+          "name": "Phoenix Sky Harbor"
+         },
+         "destination": {
+          "code": "ORD",
+          "name": "Chicago O'Hare International"
+         },
+         "departure_date": "2026-10-14",
+         "departure_time": "06:00",
+         "arrival_date": "2026-10-14",
+         "arrival_time": "10:45",
+         "duration_minutes": 165,
+         "stops": 0,
+         "layover_after_minutes": 145
+        },
+        {
+         "segment_index": 2,
+         "flight_id": "BM-ORD-DCA-1310",
+         "origin": {
+          "code": "ORD",
+          "name": "Chicago O'Hare International"
+         },
+         "destination": {
+          "code": "DCA",
+          "name": "Washington Reagan National"
+         },
+         "departure_date": "2026-10-14",
+         "departure_time": "13:10",
+         "arrival_date": "2026-10-14",
+         "arrival_time": "16:10",
+         "duration_minutes": 120,
+         "stops": 0,
+         "layover_after_minutes": 0
+        }
+       ]
+      },
+      "return": {
+       "total_duration_minutes": 450,
+       "legs": [
+        {
+         "segment_index": 1,
+         "flight_id": "BM-DCA-ORD-1215",
+         "origin": {
+          "code": "DCA",
+          "name": "Washington Reagan National"
+         },
+         "destination": {
+          "code": "ORD",
+          "name": "Chicago O'Hare International"
+         },
+         "departure_date": "2026-10-19",
+         "departure_time": "12:15",
+         "arrival_date": "2026-10-19",
+         "arrival_time": "13:30",
+         "duration_minutes": 135,
+         "stops": 0,
+         "layover_after_minutes": 75
+        },
+        {
+         "segment_index": 2,
+         "flight_id": "BM-ORD-PHX-1445",
+         "origin": {
+          "code": "ORD",
+          "name": "Chicago O'Hare International"
+         },
+         "destination": {
+          "code": "PHX",
+          "name": "Phoenix Sky Harbor"
+         },
+         "departure_date": "2026-10-19",
+         "departure_time": "14:45",
+         "arrival_date": "2026-10-19",
+         "arrival_time": "16:45",
+         "duration_minutes": 240,
+         "stops": 0,
+         "layover_after_minutes": 0
+        }
+       ]
+      },
+      "fare_options": [
+       {
+        "fare_class": "basic_economy",
+        "price_per_traveler": 481.4,
+        "currency": "USD",
+        "advance_seat_selection_allowed": false
+       },
+       {
+        "fare_class": "standard_economy",
+        "price_per_traveler": 527.2,
+        "currency": "USD",
+        "advance_seat_selection_allowed": true
+       }
+      ]
+     }
+    ],
     "availability_checked_at": "2026-08-26T12:32:17-07:00",
     "expires_at": "quote_required_before_booking"
    },
@@ -1729,6 +1726,78 @@
        },
        "matched": [
         "DCA"
+       ]
+      },
+      {
+       "where": {
+        "code": "PHX",
+        "served": true
+       },
+       "matched": [
+        "PHX"
+       ]
+      },
+      {
+       "where": {
+        "code": "ORD",
+        "served": true
+       },
+       "matched": [
+        "ORD"
+       ]
+      },
+      {
+       "where": {
+        "code": "ORD",
+        "served": true
+       },
+       "matched": [
+        "ORD"
+       ]
+      },
+      {
+       "where": {
+        "code": "DCA",
+        "served": true
+       },
+       "matched": [
+        "DCA"
+       ]
+      },
+      {
+       "where": {
+        "code": "DCA",
+        "served": true
+       },
+       "matched": [
+        "DCA"
+       ]
+      },
+      {
+       "where": {
+        "code": "ORD",
+        "served": true
+       },
+       "matched": [
+        "ORD"
+       ]
+      },
+      {
+       "where": {
+        "code": "ORD",
+        "served": true
+       },
+       "matched": [
+        "ORD"
+       ]
+      },
+      {
+       "where": {
+        "code": "PHX",
+        "served": true
+       },
+       "matched": [
+        "PHX"
        ]
       }
      ],
@@ -1772,96 +1841,6 @@
     "fare_options": {
      "keys": [],
      "queries": [
-      {
-       "where": {
-        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05"
-       },
-       "matched": [
-        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|basic_economy",
-        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|standard_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "BM-PHX-DCA-1725"
-       },
-       "matched": [
-        "BM-PHX-DCA-1725|basic_economy",
-        "BM-PHX-DCA-1725|standard_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13"
-       },
-       "matched": [
-        "3ac31d55-0dbc-4f79-892e-743257ec9f13|basic_economy",
-        "3ac31d55-0dbc-4f79-892e-743257ec9f13|standard_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "BM-DCA-PHX-0730"
-       },
-       "matched": [
-        "BM-DCA-PHX-0730|basic_economy",
-        "BM-DCA-PHX-0730|standard_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05"
-       },
-       "matched": [
-        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|basic_economy",
-        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|standard_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13"
-       },
-       "matched": [
-        "3ac31d55-0dbc-4f79-892e-743257ec9f13|basic_economy",
-        "3ac31d55-0dbc-4f79-892e-743257ec9f13|standard_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
-        "fare_class": "basic_economy"
-       },
-       "matched": [
-        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|basic_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
-        "fare_class": "basic_economy"
-       },
-       "matched": [
-        "3ac31d55-0dbc-4f79-892e-743257ec9f13|basic_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
-        "fare_class": "standard_economy"
-       },
-       "matched": [
-        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|standard_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
-        "fare_class": "standard_economy"
-       },
-       "matched": [
-        "3ac31d55-0dbc-4f79-892e-743257ec9f13|standard_economy"
-       ]
-      },
       {
        "where": {
         "flight_id": "BM-PHX-ORD-0600"
@@ -1937,6 +1916,51 @@
       {
        "where": {
         "flight_id": "BM-PHX-ORD-0600",
+        "fare_class": "basic_economy"
+       },
+       "matched": [
+        "BM-PHX-ORD-0600|basic_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-PHX-ORD-0600",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "BM-PHX-ORD-0600|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-ORD-DCA-1310",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "BM-ORD-DCA-1310|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-DCA-ORD-1215",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "BM-DCA-ORD-1215|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-ORD-PHX-1445",
+        "fare_class": "standard_economy"
+       },
+       "matched": [
+        "BM-ORD-PHX-1445|standard_economy"
+       ]
+      },
+      {
+       "where": {
+        "flight_id": "BM-PHX-ORD-0600",
         "fare_class": "standard_economy"
        },
        "matched": [
@@ -1976,126 +2000,6 @@
     "flight_availability": {
      "keys": [],
      "queries": [
-      {
-       "where": {
-        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
-        "departure_date": "2026-10-14",
-        "fare_class": "basic_economy"
-       },
-       "matched": [
-        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|2026-10-14|basic_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
-        "departure_date": "2026-10-14",
-        "fare_class": "standard_economy"
-       },
-       "matched": [
-        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|2026-10-14|standard_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "BM-PHX-DCA-1725",
-        "departure_date": "2026-10-14",
-        "fare_class": "basic_economy"
-       },
-       "matched": [
-        "BM-PHX-DCA-1725|2026-10-14|basic_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "BM-PHX-DCA-1725",
-        "departure_date": "2026-10-14",
-        "fare_class": "standard_economy"
-       },
-       "matched": [
-        "BM-PHX-DCA-1725|2026-10-14|standard_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
-        "departure_date": "2026-10-19",
-        "fare_class": "basic_economy"
-       },
-       "matched": [
-        "3ac31d55-0dbc-4f79-892e-743257ec9f13|2026-10-19|basic_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
-        "departure_date": "2026-10-19",
-        "fare_class": "standard_economy"
-       },
-       "matched": [
-        "3ac31d55-0dbc-4f79-892e-743257ec9f13|2026-10-19|standard_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "BM-DCA-PHX-0730",
-        "departure_date": "2026-10-19",
-        "fare_class": "basic_economy"
-       },
-       "matched": [
-        "BM-DCA-PHX-0730|2026-10-19|basic_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "BM-DCA-PHX-0730",
-        "departure_date": "2026-10-19",
-        "fare_class": "standard_economy"
-       },
-       "matched": [
-        "BM-DCA-PHX-0730|2026-10-19|standard_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
-        "departure_date": "2026-10-14",
-        "fare_class": "basic_economy"
-       },
-       "matched": [
-        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|2026-10-14|basic_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
-        "departure_date": "2026-10-14",
-        "fare_class": "standard_economy"
-       },
-       "matched": [
-        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05|2026-10-14|standard_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
-        "departure_date": "2026-10-19",
-        "fare_class": "basic_economy"
-       },
-       "matched": [
-        "3ac31d55-0dbc-4f79-892e-743257ec9f13|2026-10-19|basic_economy"
-       ]
-      },
-      {
-       "where": {
-        "flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
-        "departure_date": "2026-10-19",
-        "fare_class": "standard_economy"
-       },
-       "matched": [
-        "3ac31d55-0dbc-4f79-892e-743257ec9f13|2026-10-19|standard_economy"
-       ]
-      },
       {
        "where": {
         "flight_id": "BM-PHX-ORD-0600",
@@ -2200,26 +2104,6 @@
     "flights": {
      "keys": [],
      "queries": [
-      {
-       "where": {
-        "origin_code": "PHX",
-        "destination_code": "DCA"
-       },
-       "matched": [
-        "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
-        "BM-PHX-DCA-1725"
-       ]
-      },
-      {
-       "where": {
-        "origin_code": "DCA",
-        "destination_code": "PHX"
-       },
-       "matched": [
-        "3ac31d55-0dbc-4f79-892e-743257ec9f13",
-        "BM-DCA-PHX-0730"
-       ]
-      },
       {
        "where": {
         "flight_id": "BM-PHX-ORD-0600"
@@ -2812,7 +2696,7 @@
    "output": {
     "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
     "verification_id": "661f8b5c-f3d8-4612-8645-00f9a5ecded8",
-    "duplicate_reservation": false,
+    "reservations": [],
     "payment_methods": [
      {
       "token": "c1200f87-9c48-41f4-a6f9-04d89f28b2b2",
@@ -2820,17 +2704,37 @@
       "last4": "1182"
      }
     ],
-    "travel_certificate_input_required": true
+    "travel_certificates": [
+     {
+      "certificate_id": "certificate-CT-990031",
+      "masked_code": "CT-***031",
+      "status": "expired",
+      "available_balance": 120.0,
+      "currency": "USD",
+      "expires_at": "2026-04-30"
+     },
+     {
+      "certificate_id": "18e422e6-a2c3-4cb8-93fa-daf7a28c328b",
+      "masked_code": "CT-***108",
+      "status": "valid",
+      "available_balance": 200.0,
+      "currency": "USD",
+      "expires_at": "2026-12-31"
+     },
+     {
+      "certificate_id": "certificate-CT-118240",
+      "masked_code": "CT-***240",
+      "status": "valid",
+      "available_balance": 45.0,
+      "currency": "USD",
+      "expires_at": "2027-05-31"
+     }
+    ]
    },
    "matches_recording": true,
    "write_tool": false,
    "reads": {
     "customers": {
-     "keys": [],
-     "queries": [],
-     "scanned": true
-    },
-    "fare_quotes": {
      "keys": [],
      "queries": [],
      "scanned": true
@@ -2869,11 +2773,7 @@
      "queries": [
       {
        "where": {
-        "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
-        "outbound_flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
-        "return_flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
-        "departure_date": "2026-10-14",
-        "return_date": "2026-10-19"
+        "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0"
        },
        "matched": []
       }
@@ -2885,12 +2785,12 @@
      "queries": [
       {
        "where": {
-        "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
-        "status": "valid"
+        "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0"
        },
        "matched": [
         "18e422e6-a2c3-4cb8-93fa-daf7a28c328b",
-        "certificate-CT-118240"
+        "certificate-CT-118240",
+        "certificate-CT-990031"
        ]
       }
      ],
@@ -4046,8 +3946,8 @@
    "COMMUNICATE": 1.0
   },
   "db": {
-   "target_hash": "658ffe4689f808ad15047ad5801a7d5a803edd30dd815325f160337b8280b6b5",
-   "predicted_hash": "658ffe4689f808ad15047ad5801a7d5a803edd30dd815325f160337b8280b6b5"
+   "target_hash": "63aa9337fefb26989a44802d5036479843e8b71390806a63518966bf61ac55b6",
+   "predicted_hash": "63aa9337fefb26989a44802d5036479843e8b71390806a63518966bf61ac55b6"
   },
   "communicate_checks": [
    {

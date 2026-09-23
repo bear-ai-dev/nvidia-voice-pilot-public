@@ -54,7 +54,6 @@
   "order_items": 736,
   "orders": 366,
   "payments": 432,
-  "pickup_site_suffixes": 7,
   "product_variants": 110,
   "products": 81,
   "refunds": 458,
@@ -73,10 +72,8 @@
     "locker": null,
     "order_reference": "5820447319",
     "photo_reference": null,
-    "possible_misscan": true,
     "scan_seq": 594,
     "scanned_at": "2026-08-24T19:18:00+00:00",
-    "scanned_at_display": "15:18 yesterday",
     "unit_number": null
    }
   },
@@ -145,6 +142,10 @@
     "key": "order_reference_mask",
     "value": "{last4}"
    },
+   "timezone": {
+    "key": "timezone",
+    "value": "America/New_York"
+   },
    "next_support_case_id": {
     "key": "next_support_case_id",
     "value": "8cf648a4-ca60-4387-bc11-ec38f426123a"
@@ -186,13 +187,14 @@
     "view_index": 0
    },
    "5820447319|carrier_scans|1": {
-    "note": "Second and later looks disclose the evidence panel: the geofence the scan landed in, whether a unit or locker was captured, and whether that is consistent with a mis-scan.",
+    "note": "Second and later looks disclose the evidence panel: the latest scan's time, the location the carrier recorded, the location the scan's evidence places it, and whether a unit, locker or photo was captured.",
     "order_reference": "5820447319",
     "payload": {
+     "evidence_location": "near building",
+     "location": "front entrance",
      "locker": null,
      "photo": null,
-     "possible_misscan": true,
-     "scan_location": "near building",
+     "scanned_at": "2026-08-24T15:18:00-04:00",
      "unit_number": null
     },
     "section": "carrier_scans",
@@ -213,6 +215,7 @@
   },
   "case_type_policy": {
    "delivery_trace": {
+    "accepts_pickup_preference": true,
     "approval_channel": "trace_notification",
     "approval_required": true,
     "carrier_may_contact_customer": true,
@@ -233,8 +236,6 @@
      "carrier_may_contact_customer",
      "replacement_created"
     ],
-    "pickup_guaranteed": false,
-    "preference_instruction_template": "Check {site} pickup availability first after replacement eligibility.",
     "related_view_fields": [
      "case_number",
      "order_reference",
@@ -268,7 +269,6 @@
     "item_description": null,
     "carrier_response": "none",
     "deadline_at": "2026-08-26T22:00:00+00:00",
-    "deadline_display": "18:00 tomorrow",
     "carrier_may_contact_customer": true,
     "replacement_created": false,
     "requested_resolution": "undecided",
@@ -287,8 +287,6 @@
     "return_reference": null,
     "payment_reference": null,
     "amount_under_review": null,
-    "fee_reimbursement_approved": false,
-    "pickup_guaranteed": false,
     "opened_at": "2026-08-25T19:40:00+00:00"
    }
   },
@@ -342,7 +340,6 @@
     "subject_prefix": "Your Westline delivery trace",
     "optional_photo_link": null,
     "photo_link_section": null,
-    "sent_at_display": null,
     "created_at": "2026-08-25T19:40:00+00:00"
    }
   }
@@ -453,7 +450,7 @@
     "fulfillment": {
      "status": "delivered",
      "latest_scan": {
-      "time": "15:18 yesterday",
+      "scanned_at": "2026-08-24T15:18:00-04:00",
       "location": "front entrance",
       "photo": null
      }
@@ -518,7 +515,8 @@
      "keys": [
       "min_reference_suffix_digits",
       "order_customer_fields",
-      "order_reference_mask"
+      "order_reference_mask",
+      "timezone"
      ],
      "queries": [],
      "scanned": false
@@ -640,10 +638,11 @@
     "order_reference": "7319",
     "fulfillment": {
      "carrier_evidence": {
+      "evidence_location": "near building",
+      "location": "front entrance",
       "locker": null,
       "photo": null,
-      "possible_misscan": true,
-      "scan_location": "near building",
+      "scanned_at": "2026-08-24T15:18:00-04:00",
       "unit_number": null
      }
     }
@@ -873,7 +872,7 @@
     "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
     "case_number": "WST481662",
     "status": "open",
-    "carrier_response_deadline": "18:00 tomorrow",
+    "carrier_response_deadline": "2026-08-26T18:00:00-04:00",
     "replacement_created": false,
     "eligibility_triggers": [
      "carrier_confirms_missing",
@@ -946,7 +945,8 @@
       "min_reference_suffix_digits",
       "next_support_case_id",
       "next_support_case_number",
-      "scenario_time"
+      "scenario_time",
+      "timezone"
      ],
      "queries": [],
      "scanned": false
@@ -980,7 +980,6 @@
       "item_description": null,
       "carrier_response": "none",
       "deadline_at": "2026-08-26T22:00:00+00:00",
-      "deadline_display": "18:00 tomorrow",
       "carrier_may_contact_customer": true,
       "replacement_created": false,
       "requested_resolution": "replacement",
@@ -999,8 +998,6 @@
       "return_reference": null,
       "payment_reference": null,
       "amount_under_review": null,
-      "fee_reimbursement_approved": false,
-      "pickup_guaranteed": false,
       "opened_at": "2026-08-25T19:40:00+00:00"
      }
     }
@@ -1112,8 +1109,10 @@
    "output": {
     "status": "preference_added",
     "visible_to_next_reviewer": true,
-    "review_instruction": "Check West 23rd Street pickup availability first after replacement eligibility.",
-    "pickup_guaranteed": false
+    "requested_resolution": "replacement",
+    "preferences": {
+     "pickup": "West 23rd Street pickup counter"
+    }
    },
    "matches_recording": true,
    "write_tool": true,
@@ -1158,11 +1157,6 @@
      "queries": [],
      "scanned": true
     },
-    "pickup_site_suffixes": {
-     "keys": [],
-     "queries": [],
-     "scanned": true
-    },
     "scenario": {
      "keys": [
       "scenario_time"
@@ -1196,8 +1190,6 @@
      "after": {
       "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
       "pickup_location": "West 23rd Street pickup counter",
-      "pickup_site": "West 23rd Street",
-      "review_instruction": "Check West 23rd Street pickup availability first after replacement eligibility.",
       "visible_to_next_reviewer": true,
       "recorded_at": "2026-08-25T19:40:00+00:00"
      }
@@ -1219,7 +1211,6 @@
       "item_description": null,
       "carrier_response": "none",
       "deadline_at": "2026-08-26T22:00:00+00:00",
-      "deadline_display": "18:00 tomorrow",
       "carrier_may_contact_customer": true,
       "replacement_created": false,
       "requested_resolution": "undecided",
@@ -1238,8 +1229,6 @@
       "return_reference": null,
       "payment_reference": null,
       "amount_under_review": null,
-      "fee_reimbursement_approved": false,
-      "pickup_guaranteed": false,
       "opened_at": "2026-08-25T19:40:00+00:00"
      },
      "after": {
@@ -1252,7 +1241,6 @@
       "item_description": null,
       "carrier_response": "none",
       "deadline_at": "2026-08-26T22:00:00+00:00",
-      "deadline_display": "18:00 tomorrow",
       "carrier_may_contact_customer": true,
       "replacement_created": false,
       "requested_resolution": "replacement",
@@ -1271,8 +1259,6 @@
       "return_reference": null,
       "payment_reference": null,
       "amount_under_review": null,
-      "fee_reimbursement_approved": false,
-      "pickup_guaranteed": false,
       "opened_at": "2026-08-25T19:40:00+00:00"
      }
     }
@@ -1456,7 +1442,6 @@
       "subject_prefix": "Your Westline delivery trace",
       "optional_photo_link": null,
       "photo_link_section": null,
-      "sent_at_display": null,
       "created_at": "2026-08-25T19:40:00+00:00"
      }
     }
@@ -1527,7 +1512,7 @@
     "cases": [
      {
       "status": "open",
-      "deadline": "18:00 tomorrow",
+      "deadline": "2026-08-26T18:00:00-04:00",
       "carrier_may_contact_customer": true,
       "replacement_created": false,
       "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
@@ -1614,7 +1599,8 @@
       "min_reference_suffix_digits",
       "order_reference_mask",
       "target_case_id",
-      "target_case_number"
+      "target_case_number",
+      "timezone"
      ],
      "queries": [],
      "scanned": false
@@ -1653,7 +1639,6 @@
       "subject_prefix": "Your Westline delivery trace",
       "optional_photo_link": null,
       "photo_link_section": null,
-      "sent_at_display": null,
       "created_at": "2026-08-25T19:40:00+00:00"
      },
      "after": {
@@ -1680,7 +1665,6 @@
       "subject_prefix": "Your Westline delivery trace",
       "optional_photo_link": null,
       "photo_link_section": null,
-      "sent_at_display": null,
       "created_at": "2026-08-25T19:40:00+00:00"
      }
     }
@@ -1772,8 +1756,8 @@
    "COMMUNICATE": 1.0
   },
   "db": {
-   "target_hash": "139e0e9e9b1809dee73ac216f85c7dc07c88a662c148e408fbd1cf35759c35c0",
-   "predicted_hash": "139e0e9e9b1809dee73ac216f85c7dc07c88a662c148e408fbd1cf35759c35c0"
+   "target_hash": "e01f5f938443af0a668e1217adad2588ee02f09c9315a301a07f5b3db7109694",
+   "predicted_hash": "e01f5f938443af0a668e1217adad2588ee02f09c9315a301a07f5b3db7109694"
   },
   "communicate_checks": [
    {
