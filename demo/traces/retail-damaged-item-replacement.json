@@ -59,24 +59,16 @@
   "refunds": 445,
   "replacement_orders": 0,
   "returns": 170,
-  "scenario": 9,
-  "section_read_cursor": 1,
-  "section_view": 2,
+  "scenario": 7,
   "specialist_transfers": 0
  },
- "read_side_effects": {
-  "notifications": [
-   "status",
-   "status_index"
-  ],
-  "section_read_cursor": "*"
- },
+ "read_side_effects": {},
  "rows": {
   "case_preferences": {
    "8cf648a4-ca60-4387-bc11-ec38f426123a": {
-    "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+    "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
     "pickup_location": "West 23rd Street pickup counter",
-    "recorded_at": "2026-08-25T19:52:00+00:00",
+    "recorded_at": "2026-08-25T19:45:46+00:00",
     "visible_to_next_reviewer": true
    }
   },
@@ -121,7 +113,8 @@
     "approval_required": true,
     "carrier_may_contact_customer": true,
     "carrier_response": "none",
-    "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+    "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+    "case_number": "WST481662",
     "case_type": "delivery_trace",
     "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
     "deadline_at": "2026-08-26T22:00:00+00:00",
@@ -133,7 +126,7 @@
     "item_description": "blue noise-canceling headphones",
     "needed_by": "2026-08-27",
     "next_action": "review requested resolution and fulfillment after an eligibility trigger",
-    "opened_at": "2026-08-25T19:52:00+00:00",
+    "opened_at": "2026-08-25T19:43:58+00:00",
     "order_reference": "5820447319",
     "payment_reference": null,
     "reason": "delivered_not_received",
@@ -144,6 +137,32 @@
     "review_window_max_days": null,
     "review_window_min_days": null,
     "status": "open"
+   }
+  },
+  "eligible_resolutions": {
+   "5820454086|1": {
+    "default_fulfillment": "home_address_on_order",
+    "estimated_delivery_on": "2026-08-27",
+    "optional_photo_upload_available": true,
+    "order_reference": "5820454086",
+    "photo_required": false,
+    "photo_upload_blocks_fulfillment": false,
+    "position": 1,
+    "preserves_original_price": true,
+    "resolution_type": "replacement",
+    "return_required": false
+   },
+   "5820454086|2": {
+    "default_fulfillment": null,
+    "estimated_delivery_on": null,
+    "optional_photo_upload_available": null,
+    "order_reference": "5820454086",
+    "photo_required": null,
+    "photo_upload_blocks_fulfillment": null,
+    "position": 2,
+    "preserves_original_price": null,
+    "resolution_type": "refund",
+    "return_required": null
    }
   },
   "order_items": {
@@ -211,58 +230,9 @@
     "key": "order_reference_mask",
     "value": "ending-{last4}"
    },
-   "target_case_id": {
-    "key": "target_case_id",
-    "value": "8cf648a4-ca60-4387-bc11-ec38f426123a"
-   },
-   "target_case_number": {
-    "key": "target_case_number",
-    "value": "WST481662"
-   },
    "timezone": {
     "key": "timezone",
     "value": "America/New_York"
-   },
-   "scenario_time": {
-    "key": "scenario_time",
-    "value": "2026-08-26T11:20:00-04:00"
-   }
-  },
-  "section_read_cursor": {
-   "5820454086|eligible_resolutions": {
-    "order_reference": "5820454086",
-    "reads_served": 1,
-    "section": "eligible_resolutions"
-   }
-  },
-  "section_view": {
-   "5820454086|eligible_resolutions|0": {
-    "note": "First look: the returns service has not priced the options yet, so the section is omitted entirely rather than returned empty.",
-    "order_reference": "5820454086",
-    "payload": null,
-    "section": "eligible_resolutions",
-    "view_index": 0
-   },
-   "5820454086|eligible_resolutions|1": {
-    "note": "Second and later looks disclose the priced panel: what each resolution preserves, what it requires, and what it estimates.",
-    "order_reference": "5820454086",
-    "payload": [
-     {
-      "default_fulfillment": "home_address_on_order",
-      "estimated_delivery": "2026-08-27",
-      "optional_photo_upload_available": true,
-      "photo_required": false,
-      "photo_upload_blocks_fulfillment": false,
-      "preserves_original_price": true,
-      "return_required": false,
-      "type": "replacement"
-     },
-     {
-      "type": "refund"
-     }
-    ],
-    "section": "eligible_resolutions",
-    "view_index": 1
    }
   },
   "product_variants": {
@@ -300,35 +270,16 @@
     "region": "nj-metro"
    }
   },
-  "eligible_resolutions": {
-   "5820454086|1": {
-    "default_fulfillment": "home_address_on_order",
-    "estimated_delivery_on": "2026-08-27",
-    "optional_photo_upload_available": true,
-    "order_reference": "5820454086",
-    "photo_required": false,
-    "photo_upload_blocks_fulfillment": false,
-    "position": 1,
-    "preserves_original_price": true,
-    "resolution_type": "replacement",
-    "return_required": false
-   }
-  },
   "id_allocator": {
-   "order|replacement": {
+   "order|": {
     "entity_type": "order",
     "next_value": 5820458821,
-    "scope": "replacement",
+    "scope": "",
     "template": "{n}"
    }
   },
   "notification_templates": {
    "replacement_confirmation": {
-    "delivery_progression": [
-     "queued",
-     "sent",
-     "delivered"
-    ],
     "included_fields": [
      "replacement_order_reference",
      "balance_due",
@@ -358,35 +309,6 @@
     "hazard_class": "electrical",
     "product_reference": "12-cup-coffee-maker",
     "safety_instruction": "do_not_power_on"
-   }
-  },
-  "notifications": {
-   "notification-5820458821": {
-    "notification_id": "notification-5820458821",
-    "case_number": null,
-    "order_reference": "5820458821",
-    "channel": "email",
-    "template": "replacement_confirmation",
-    "message_type": "replacement_confirmation",
-    "masked_destination": "e***@northmail.com",
-    "status": "queued",
-    "status_index": 0,
-    "status_progression": [
-     "queued",
-     "sent",
-     "delivered"
-    ],
-    "subject_prefix": "Your Westline replacement",
-    "optional_photo_link": true,
-    "photo_link_section": "later_in_email",
-    "included_fields": [
-     "replacement_order_reference",
-     "balance_due",
-     "estimated_delivery",
-     "return_disposition"
-    ],
-    "sent_at": "2026-08-26T15:20:00+00:00",
-    "created_at": "2026-08-26T15:20:00+00:00"
    }
   }
  },
@@ -515,6 +437,21 @@
       "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
       "case_number": "WST481662"
      }
+    ],
+    "eligible_resolutions": [
+     {
+      "type": "replacement",
+      "preserves_original_price": true,
+      "return_required": false,
+      "photo_required": false,
+      "optional_photo_upload_available": true,
+      "photo_upload_blocks_fulfillment": false,
+      "estimated_delivery": "2026-08-27",
+      "default_fulfillment": "home_address_on_order"
+     },
+     {
+      "type": "refund"
+     }
     ]
    },
    "matches_recording": true,
@@ -552,6 +489,21 @@
      "keys": [],
      "queries": [],
      "scanned": true
+    },
+    "eligible_resolutions": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820454086"
+       },
+       "matched": [
+        "5820454086|1",
+        "5820454086|2"
+       ]
+      }
+     ],
+     "scanned": false
     },
     "order_items": {
      "keys": [],
@@ -591,57 +543,13 @@
       "min_reference_suffix_digits",
       "order_customer_fields",
       "order_reference_mask",
-      "target_case_id",
-      "target_case_number",
       "timezone"
      ],
      "queries": [],
      "scanned": false
-    },
-    "section_read_cursor": {
-     "keys": [
-      "5820454086|eligible_resolutions"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "section_view": {
-     "keys": [],
-     "queries": [
-      {
-       "where": {
-        "order_reference": "5820454086",
-        "section": "eligible_resolutions"
-       },
-       "matched": [
-        "5820454086|eligible_resolutions|0",
-        "5820454086|eligible_resolutions|1"
-       ]
-      }
-     ],
-     "scanned": false
     }
    },
-   "writes": [
-    {
-     "table": "section_read_cursor",
-     "key": "5820454086|eligible_resolutions",
-     "kind": "updated",
-     "columns": [
-      "reads_served"
-     ],
-     "before": {
-      "order_reference": "5820454086",
-      "reads_served": 0,
-      "section": "eligible_resolutions"
-     },
-     "after": {
-      "order_reference": "5820454086",
-      "reads_served": 1,
-      "section": "eligible_resolutions"
-     }
-    }
-   ]
+   "writes": []
   },
   {
    "kind": "say",
@@ -730,14 +638,14 @@
     "order_reference": "ending-4086",
     "eligible_resolutions": [
      {
-      "default_fulfillment": "home_address_on_order",
-      "estimated_delivery": "2026-08-27",
-      "optional_photo_upload_available": true,
-      "photo_required": false,
-      "photo_upload_blocks_fulfillment": false,
+      "type": "replacement",
       "preserves_original_price": true,
       "return_required": false,
-      "type": "replacement"
+      "photo_required": false,
+      "optional_photo_upload_available": true,
+      "photo_upload_blocks_fulfillment": false,
+      "estimated_delivery": "2026-08-27",
+      "default_fulfillment": "home_address_on_order"
      },
      {
       "type": "refund"
@@ -751,6 +659,21 @@
      "keys": [],
      "queries": [],
      "scanned": true
+    },
+    "eligible_resolutions": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820454086"
+       },
+       "matched": [
+        "5820454086|1",
+        "5820454086|2"
+       ]
+      }
+     ],
+     "scanned": false
     },
     "orders": {
      "keys": [
@@ -778,51 +701,9 @@
      ],
      "queries": [],
      "scanned": false
-    },
-    "section_read_cursor": {
-     "keys": [
-      "5820454086|eligible_resolutions"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "section_view": {
-     "keys": [],
-     "queries": [
-      {
-       "where": {
-        "order_reference": "5820454086",
-        "section": "eligible_resolutions"
-       },
-       "matched": [
-        "5820454086|eligible_resolutions|0",
-        "5820454086|eligible_resolutions|1"
-       ]
-      }
-     ],
-     "scanned": false
     }
    },
-   "writes": [
-    {
-     "table": "section_read_cursor",
-     "key": "5820454086|eligible_resolutions",
-     "kind": "updated",
-     "columns": [
-      "reads_served"
-     ],
-     "before": {
-      "order_reference": "5820454086",
-      "reads_served": 1,
-      "section": "eligible_resolutions"
-     },
-     "after": {
-      "order_reference": "5820454086",
-      "reads_served": 2,
-      "section": "eligible_resolutions"
-     }
-    }
-   ]
+   "writes": []
   },
   {
    "kind": "say",
@@ -1036,7 +917,7 @@
     },
     "id_allocator": {
      "keys": [
-      "order|replacement"
+      "order|"
      ],
      "queries": [],
      "scanned": false
@@ -1050,7 +931,7 @@
     },
     "notifications": {
      "keys": [
-      "notification-5820458821"
+      "96c3710a-750c-4f2c-8d7b-45926efebd92"
      ],
      "queries": [],
      "scanned": false
@@ -1108,8 +989,7 @@
     "scenario": {
      "keys": [
       "min_reference_suffix_digits",
-      "order_reference_mask",
-      "scenario_time"
+      "order_reference_mask"
      ],
      "queries": [],
      "scanned": false
@@ -1118,7 +998,7 @@
    "writes": [
     {
      "table": "id_allocator",
-     "key": "order|replacement",
+     "key": "order|",
      "kind": "updated",
      "columns": [
       "next_value"
@@ -1126,48 +1006,34 @@
      "before": {
       "entity_type": "order",
       "next_value": 5820458821,
-      "scope": "replacement",
+      "scope": "",
       "template": "{n}"
      },
      "after": {
       "entity_type": "order",
       "next_value": 5820458822,
-      "scope": "replacement",
+      "scope": "",
       "template": "{n}"
      }
     },
     {
      "table": "notifications",
-     "key": "notification-5820458821",
+     "key": "96c3710a-750c-4f2c-8d7b-45926efebd92",
      "kind": "inserted",
      "columns": [],
      "before": null,
      "after": {
-      "notification_id": "notification-5820458821",
-      "case_number": null,
+      "notification_id": "96c3710a-750c-4f2c-8d7b-45926efebd92",
+      "case_id": null,
       "order_reference": "5820458821",
+      "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
       "channel": "email",
       "template": "replacement_confirmation",
-      "message_type": "replacement_confirmation",
-      "masked_destination": "e***@northmail.com",
       "status": "queued",
-      "status_index": 0,
-      "status_progression": [
-       "queued",
-       "sent",
-       "delivered"
-      ],
-      "subject_prefix": "Your Westline replacement",
       "optional_photo_link": true,
-      "photo_link_section": "later_in_email",
-      "included_fields": [
-       "replacement_order_reference",
-       "balance_due",
-       "estimated_delivery",
-       "return_disposition"
-      ],
-      "sent_at": "2026-08-26T15:20:00+00:00",
-      "created_at": "2026-08-26T15:20:00+00:00"
+      "created_at": "2026-08-26T15:23:29+00:00",
+      "sent_at": null,
+      "delivered_at": null
      }
     },
     {
@@ -1227,7 +1093,7 @@
       "return_required": false,
       "disposition": "discard_or_recycle",
       "safety": "do_not_power_on",
-      "created_at": "2026-08-26T15:20:00+00:00"
+      "created_at": "2026-08-26T15:23:29+00:00"
      }
     }
    ]
@@ -1390,6 +1256,50 @@
    "emotions": []
   },
   {
+   "kind": "event",
+   "at": 366,
+   "actor": "mail_system",
+   "description": "Westline's outbound mail queue hands the queued replacement confirmation to the mail provider. At 359s the customer still has not seen it; at 372s the agent reads it as just sent.",
+   "event_id": "replacement-email-dispatched",
+   "writes": [
+    {
+     "table": "notifications",
+     "key": "96c3710a-750c-4f2c-8d7b-45926efebd92",
+     "kind": "updated",
+     "columns": [
+      "sent_at",
+      "status"
+     ],
+     "before": {
+      "notification_id": "96c3710a-750c-4f2c-8d7b-45926efebd92",
+      "case_id": null,
+      "order_reference": "5820458821",
+      "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+      "channel": "email",
+      "template": "replacement_confirmation",
+      "status": "queued",
+      "optional_photo_link": true,
+      "created_at": "2026-08-26T15:23:29+00:00",
+      "sent_at": null,
+      "delivered_at": null
+     },
+     "after": {
+      "notification_id": "96c3710a-750c-4f2c-8d7b-45926efebd92",
+      "case_id": null,
+      "order_reference": "5820458821",
+      "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+      "channel": "email",
+      "template": "replacement_confirmation",
+      "status": "sent",
+      "optional_photo_link": true,
+      "created_at": "2026-08-26T15:23:29+00:00",
+      "sent_at": "2026-08-26T11:26:06-04:00",
+      "delivered_at": null
+     }
+    }
+   ]
+  },
+  {
    "kind": "say",
    "role": "assistant",
    "speaker": "Daniel",
@@ -1480,71 +1390,7 @@
      "scanned": false
     }
    },
-   "writes": [
-    {
-     "table": "notifications",
-     "key": "notification-5820458821",
-     "kind": "updated",
-     "columns": [
-      "status",
-      "status_index"
-     ],
-     "before": {
-      "notification_id": "notification-5820458821",
-      "case_number": null,
-      "order_reference": "5820458821",
-      "channel": "email",
-      "template": "replacement_confirmation",
-      "message_type": "replacement_confirmation",
-      "masked_destination": "e***@northmail.com",
-      "status": "queued",
-      "status_index": 0,
-      "status_progression": [
-       "queued",
-       "sent",
-       "delivered"
-      ],
-      "subject_prefix": "Your Westline replacement",
-      "optional_photo_link": true,
-      "photo_link_section": "later_in_email",
-      "included_fields": [
-       "replacement_order_reference",
-       "balance_due",
-       "estimated_delivery",
-       "return_disposition"
-      ],
-      "sent_at": "2026-08-26T15:20:00+00:00",
-      "created_at": "2026-08-26T15:20:00+00:00"
-     },
-     "after": {
-      "notification_id": "notification-5820458821",
-      "case_number": null,
-      "order_reference": "5820458821",
-      "channel": "email",
-      "template": "replacement_confirmation",
-      "message_type": "replacement_confirmation",
-      "masked_destination": "e***@northmail.com",
-      "status": "sent",
-      "status_index": 1,
-      "status_progression": [
-       "queued",
-       "sent",
-       "delivered"
-      ],
-      "subject_prefix": "Your Westline replacement",
-      "optional_photo_link": true,
-      "photo_link_section": "later_in_email",
-      "included_fields": [
-       "replacement_order_reference",
-       "balance_due",
-       "estimated_delivery",
-       "return_disposition"
-      ],
-      "sent_at": "2026-08-26T15:20:00+00:00",
-      "created_at": "2026-08-26T15:20:00+00:00"
-     }
-    }
-   ]
+   "writes": []
   },
   {
    "kind": "say",
@@ -1554,6 +1400,50 @@
    "start": 372.3,
    "end": 379.74,
    "emotions": []
+  },
+  {
+   "kind": "event",
+   "at": 378,
+   "actor": "mail_provider",
+   "description": "The mail provider reports the replacement confirmation as delivered; the customer says at 380s that they can see it.",
+   "event_id": "replacement-email-delivered",
+   "writes": [
+    {
+     "table": "notifications",
+     "key": "96c3710a-750c-4f2c-8d7b-45926efebd92",
+     "kind": "updated",
+     "columns": [
+      "delivered_at",
+      "status"
+     ],
+     "before": {
+      "notification_id": "96c3710a-750c-4f2c-8d7b-45926efebd92",
+      "case_id": null,
+      "order_reference": "5820458821",
+      "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+      "channel": "email",
+      "template": "replacement_confirmation",
+      "status": "sent",
+      "optional_photo_link": true,
+      "created_at": "2026-08-26T15:23:29+00:00",
+      "sent_at": "2026-08-26T11:26:06-04:00",
+      "delivered_at": null
+     },
+     "after": {
+      "notification_id": "96c3710a-750c-4f2c-8d7b-45926efebd92",
+      "case_id": null,
+      "order_reference": "5820458821",
+      "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+      "channel": "email",
+      "template": "replacement_confirmation",
+      "status": "delivered",
+      "optional_photo_link": true,
+      "created_at": "2026-08-26T15:23:29+00:00",
+      "sent_at": "2026-08-26T11:26:06-04:00",
+      "delivered_at": "2026-08-26T11:26:18-04:00"
+     }
+    }
+   ]
   },
   {
    "kind": "say",
@@ -1673,9 +1563,7 @@
     },
     "scenario": {
      "keys": [
-      "order_reference_mask",
-      "target_case_id",
-      "target_case_number"
+      "order_reference_mask"
      ],
      "queries": [],
      "scanned": false
@@ -1770,8 +1658,6 @@
      "keys": [
       "min_reference_suffix_digits",
       "order_reference_mask",
-      "target_case_id",
-      "target_case_number",
       "timezone"
      ],
      "queries": [],
@@ -1864,8 +1750,8 @@
    "COMMUNICATE": 1.0
   },
   "db": {
-   "target_hash": "ea8123feb6affbd14b677ac1f6462c0a9626d093df12c52b2a892cfa9ea5c099",
-   "predicted_hash": "ea8123feb6affbd14b677ac1f6462c0a9626d093df12c52b2a892cfa9ea5c099"
+   "target_hash": "bbe0919d937a4ff21a1afa791fc62ed0e62eccaa70c81399682117e686065434",
+   "predicted_hash": "bbe0919d937a4ff21a1afa791fc62ed0e62eccaa70c81399682117e686065434"
   },
   "communicate_checks": [
    {

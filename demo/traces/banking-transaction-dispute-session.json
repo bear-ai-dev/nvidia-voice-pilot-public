@@ -40,20 +40,16 @@
   "card_accounts": 272,
   "card_products": 12,
   "card_restrictions": 46,
-  "card_section_policy": 6,
-  "card_section_read_cursor": 0,
-  "card_section_view": 6,
   "channel_confirmations": 25,
   "customers": 102,
   "delivery_channels": 2,
-  "id_allocator": 2,
   "identity_verifications": 30,
   "kb_records": 53,
   "notification_templates": 7,
   "notifications": 47,
   "referrals": 122,
   "restriction_transactions": 80,
-  "scenario": 8,
+  "scenario": 6,
   "self_service_sessions": 56,
   "service_cases": 69,
   "session_deliveries": 80,
@@ -64,17 +60,7 @@
   "welcome_offers": 15,
   "workflow_profiles": 3
  },
- "read_side_effects": {
-  "self_service_sessions": [
-   "status",
-   "opened_at"
-  ],
-  "channel_confirmations": [
-   "status",
-   "verified_at"
-  ],
-  "card_section_read_cursor": "*"
- },
+ "read_side_effects": {},
  "rows": {
   "customers": {
    "4e8c3a97-e6ad-4737-aede-c8acd4993277": {
@@ -88,35 +74,18 @@
     "full_name": "Justin Porter",
     "login_identifier_kind": "email",
     "mobile_last4": "4106",
-    "notice_slug": "justin",
     "notification_email": "jporter92@email.com",
     "primary_email": "jporter92@email.com",
     "required_verification_methods": [
      "billing_zip",
      "birth_month_day"
-    ],
-    "verification_key": "justin-porter"
-   }
-  },
-  "scenario": {
-   "next_identity_verification_id": {
-    "key": "next_identity_verification_id",
-    "value": "dbf560d6-9aa5-4471-a5b1-7a3af5c51fb8"
-   },
-   "scenario_time": {
-    "key": "scenario_time",
-    "value": "2026-02-25T16:20:00-05:00"
-   },
-   "next_self_service_session_id": {
-    "key": "next_self_service_session_id",
-    "value": "0ae36057-bbbb-42e3-994f-55f064bc374c"
+    ]
    }
   },
   "service_cases": {
    "case-justin-porter-dispute": {
     "case_id": "case-justin-porter-dispute",
     "case_kind": "dispute",
-    "case_slug": "dispute",
     "customer_id": "4e8c3a97-e6ad-4737-aede-c8acd4993277",
     "opened_at": "2026-02-25T16:18:00-05:00",
     "status": "open"
@@ -152,8 +121,8 @@
     "posted_date": null,
     "reason": null,
     "record_seq": 630,
-    "represented_as": null,
     "resource_label": null,
+    "retry_of_transaction_id": null,
     "settlement_state": "released",
     "short_ref": null,
     "status": "approved",
@@ -174,8 +143,8 @@
     "posted_date": "2026-02-23",
     "reason": null,
     "record_seq": 569,
-    "represented_as": null,
     "resource_label": "transaction ending 8472",
+    "retry_of_transaction_id": null,
     "settlement_state": "settled",
     "short_ref": "8472",
     "status": "posted",
@@ -196,8 +165,8 @@
     "posted_date": "2026-02-23",
     "reason": null,
     "record_seq": 571,
-    "represented_as": null,
     "resource_label": "transaction ending 6620",
+    "retry_of_transaction_id": null,
     "settlement_state": "settled",
     "short_ref": "6620",
     "status": "posted",
@@ -218,8 +187,8 @@
     "posted_date": "2026-02-19",
     "reason": null,
     "record_seq": 572,
-    "represented_as": null,
     "resource_label": "transaction ending 7735",
+    "retry_of_transaction_id": null,
     "settlement_state": "settled",
     "short_ref": "7735",
     "status": "posted",
@@ -240,8 +209,8 @@
     "posted_date": "2026-02-23",
     "reason": null,
     "record_seq": 570,
-    "represented_as": null,
     "resource_label": "transaction ending 8473",
+    "retry_of_transaction_id": null,
     "settlement_state": "settled",
     "short_ref": "8473",
     "status": "posted",
@@ -266,39 +235,10 @@
     "claim_tracked": true,
     "credit_pull_authorized": null,
     "display_label_template": "Review {resource_label}",
-    "resource_suffix_source": "resource_short_ref",
     "resume_supported": true,
     "save_and_continue": null,
-    "session_slug": "dispute",
     "visible_stages": null,
     "workflow": "transaction_dispute"
-   }
-  },
-  "self_service_sessions": {
-   "0ae36057-bbbb-42e3-994f-55f064bc374c": {
-    "session_id": "0ae36057-bbbb-42e3-994f-55f064bc374c",
-    "customer_id": "4e8c3a97-e6ad-4737-aede-c8acd4993277",
-    "workflow": "transaction_dispute",
-    "resource_id": "b2047621-d2c7-437c-bb56-c81a700e2099",
-    "status": "issued",
-    "submitted": false,
-    "resume_supported": true,
-    "save_and_continue": null,
-    "credit_pull_authorized": null,
-    "claim_tracked": true,
-    "claim_id": null,
-    "access_location": "online_banking",
-    "display_label": "Review transaction ending 8472",
-    "allowed_customer_actions": [
-     "review",
-     "submit",
-     "close_page"
-    ],
-    "visible_stages": null,
-    "customer_opens": true,
-    "issued_at": "2026-02-25T16:20:00-05:00",
-    "opened_at": null,
-    "expires_at": null
    }
   }
  },
@@ -457,19 +397,12 @@
      "queries": [
       {
        "where": {
-        "verification_id": "dbf560d6-9aa5-4471-a5b1-7a3af5c51fb8"
+        "customer_id": "4e8c3a97-e6ad-4737-aede-c8acd4993277",
+        "case_id": "case-justin-porter-dispute"
        },
        "matched": []
       }
      ],
-     "scanned": false
-    },
-    "scenario": {
-     "keys": [
-      "next_identity_verification_id",
-      "scenario_time"
-     ],
-     "queries": [],
      "scanned": false
     },
     "service_cases": {
@@ -498,6 +431,7 @@
      "after": {
       "verification_id": "dbf560d6-9aa5-4471-a5b1-7a3af5c51fb8",
       "customer_id": "4e8c3a97-e6ad-4737-aede-c8acd4993277",
+      "case_id": "case-justin-porter-dispute",
       "required_methods": [
        "billing_zip",
        "birth_month_day"
@@ -507,9 +441,8 @@
        "billing_zip",
        "birth_month_day"
       ],
-      "verified_at": "2026-02-25T16:20:00-05:00",
-      "expires_at": "2026-02-25T16:50:00-05:00",
-      "time_asserted": false
+      "verified_at": "2026-02-25T16:20:59-05:00",
+      "expires_at": "2026-02-25T16:50:59-05:00"
      }
     }
    ]
@@ -848,26 +781,11 @@
      "queries": [],
      "scanned": false
     },
-    "scenario": {
-     "keys": [
-      "next_self_service_session_id",
-      "scenario_time"
-     ],
-     "queries": [],
-     "scanned": false
-    },
     "self_service_sessions": {
      "keys": [
       "0ae36057-bbbb-42e3-994f-55f064bc374c"
      ],
-     "queries": [
-      {
-       "where": {
-        "session_id": "0ae36057-bbbb-42e3-994f-55f064bc374c"
-       },
-       "matched": []
-      }
-     ],
+     "queries": [],
      "scanned": false
     },
     "session_deliveries": {
@@ -919,8 +837,7 @@
        "close_page"
       ],
       "visible_stages": null,
-      "customer_opens": true,
-      "issued_at": "2026-02-25T16:20:00-05:00",
+      "issued_at": "2026-02-25T16:23:46-05:00",
       "opened_at": null,
       "expires_at": null
      }
@@ -949,6 +866,72 @@
    "start": 228.76,
    "end": 238.94,
    "emotions": []
+  },
+  {
+   "kind": "event",
+   "at": 238,
+   "actor": "customer",
+   "description": "The customer opens the dispute session in online banking (\"Okay, wait. I see it.\").",
+   "event_id": "customer-opens-dispute-session",
+   "writes": [
+    {
+     "table": "self_service_sessions",
+     "key": "0ae36057-bbbb-42e3-994f-55f064bc374c",
+     "kind": "updated",
+     "columns": [
+      "opened_at",
+      "status"
+     ],
+     "before": {
+      "session_id": "0ae36057-bbbb-42e3-994f-55f064bc374c",
+      "customer_id": "4e8c3a97-e6ad-4737-aede-c8acd4993277",
+      "workflow": "transaction_dispute",
+      "resource_id": "b2047621-d2c7-437c-bb56-c81a700e2099",
+      "status": "issued",
+      "submitted": false,
+      "resume_supported": true,
+      "save_and_continue": null,
+      "credit_pull_authorized": null,
+      "claim_tracked": true,
+      "claim_id": null,
+      "access_location": "online_banking",
+      "display_label": "Review transaction ending 8472",
+      "allowed_customer_actions": [
+       "review",
+       "submit",
+       "close_page"
+      ],
+      "visible_stages": null,
+      "issued_at": "2026-02-25T16:23:46-05:00",
+      "opened_at": null,
+      "expires_at": null
+     },
+     "after": {
+      "session_id": "0ae36057-bbbb-42e3-994f-55f064bc374c",
+      "customer_id": "4e8c3a97-e6ad-4737-aede-c8acd4993277",
+      "workflow": "transaction_dispute",
+      "resource_id": "b2047621-d2c7-437c-bb56-c81a700e2099",
+      "status": "open_not_submitted",
+      "submitted": false,
+      "resume_supported": true,
+      "save_and_continue": null,
+      "credit_pull_authorized": null,
+      "claim_tracked": true,
+      "claim_id": null,
+      "access_location": "online_banking",
+      "display_label": "Review transaction ending 8472",
+      "allowed_customer_actions": [
+       "review",
+       "submit",
+       "close_page"
+      ],
+      "visible_stages": null,
+      "issued_at": "2026-02-25T16:23:46-05:00",
+      "opened_at": "2026-02-25T16:23:58-05:00",
+      "expires_at": null
+     }
+    }
+   ]
   },
   {
    "kind": "say",
@@ -1025,13 +1008,6 @@
    "matches_recording": true,
    "write_tool": false,
    "reads": {
-    "scenario": {
-     "keys": [
-      "scenario_time"
-     ],
-     "queries": [],
-     "scanned": false
-    },
     "self_service_sessions": {
      "keys": [],
      "queries": [
@@ -1048,67 +1024,7 @@
      "scanned": false
     }
    },
-   "writes": [
-    {
-     "table": "self_service_sessions",
-     "key": "0ae36057-bbbb-42e3-994f-55f064bc374c",
-     "kind": "updated",
-     "columns": [
-      "opened_at",
-      "status"
-     ],
-     "before": {
-      "session_id": "0ae36057-bbbb-42e3-994f-55f064bc374c",
-      "customer_id": "4e8c3a97-e6ad-4737-aede-c8acd4993277",
-      "workflow": "transaction_dispute",
-      "resource_id": "b2047621-d2c7-437c-bb56-c81a700e2099",
-      "status": "issued",
-      "submitted": false,
-      "resume_supported": true,
-      "save_and_continue": null,
-      "credit_pull_authorized": null,
-      "claim_tracked": true,
-      "claim_id": null,
-      "access_location": "online_banking",
-      "display_label": "Review transaction ending 8472",
-      "allowed_customer_actions": [
-       "review",
-       "submit",
-       "close_page"
-      ],
-      "visible_stages": null,
-      "customer_opens": true,
-      "issued_at": "2026-02-25T16:20:00-05:00",
-      "opened_at": null,
-      "expires_at": null
-     },
-     "after": {
-      "session_id": "0ae36057-bbbb-42e3-994f-55f064bc374c",
-      "customer_id": "4e8c3a97-e6ad-4737-aede-c8acd4993277",
-      "workflow": "transaction_dispute",
-      "resource_id": "b2047621-d2c7-437c-bb56-c81a700e2099",
-      "status": "open_not_submitted",
-      "submitted": false,
-      "resume_supported": true,
-      "save_and_continue": null,
-      "credit_pull_authorized": null,
-      "claim_tracked": true,
-      "claim_id": null,
-      "access_location": "online_banking",
-      "display_label": "Review transaction ending 8472",
-      "allowed_customer_actions": [
-       "review",
-       "submit",
-       "close_page"
-      ],
-      "visible_stages": null,
-      "customer_opens": true,
-      "issued_at": "2026-02-25T16:20:00-05:00",
-      "opened_at": "2026-02-25T16:20:00-05:00",
-      "expires_at": null
-     }
-    }
-   ]
+   "writes": []
   },
   {
    "kind": "say",
@@ -1405,8 +1321,8 @@
    "COMMUNICATE": 1.0
   },
   "db": {
-   "target_hash": "438ba35c581c9e3608fe3e853312f924cb7e5e6a23aa5fea2c0316d74e6c7ad7",
-   "predicted_hash": "438ba35c581c9e3608fe3e853312f924cb7e5e6a23aa5fea2c0316d74e6c7ad7"
+   "target_hash": "b87b4f7f741f78ee325136a20f9a98542f5da07f3b194fbcdc95e30d2cac19e8",
+   "predicted_hash": "b87b4f7f741f78ee325136a20f9a98542f5da07f3b194fbcdc95e30d2cac19e8"
   },
   "communicate_checks": [
    {

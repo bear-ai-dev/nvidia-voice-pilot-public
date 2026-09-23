@@ -147,6 +147,10 @@ mark.fact { background: var(--agent-soft); color: inherit; border-radius: 3px; p
 .kind { font: 600 10px var(--sans); letter-spacing: .08em; text-transform: uppercase; padding: 1px 6px; border-radius: 3px; }
 .kind.read { color: var(--read); background: var(--read-soft); }
 .kind.write { color: var(--update); background: var(--update-soft); }
+.kind.world { color: var(--muted); background: var(--sunken); border: 1px dashed var(--faint); }
+.world-ev { border: 1px dashed var(--faint); border-radius: 6px; padding: 6px 9px; background: var(--ground); font-size: 13px; display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; }
+.world-ev .who { font: 600 11px var(--sans); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.track .tick.world { background: var(--faint); width: 2px; top: 8px; bottom: 8px; }
 .pill { font: 500 11px var(--sans); padding: 1px 7px; border-radius: 99px; white-space: nowrap; }
 .pill.ok { color: var(--insert); background: var(--insert-soft); }
 .pill.bad { color: var(--fail); background: var(--fail-soft); }
@@ -267,6 +271,7 @@ ol.assert { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
     <span><i style="background:var(--caller)"></i>caller speech</span>
     <span><i style="background:var(--read)"></i>read call</span>
     <span><i style="background:var(--update)"></i>write call</span>
+    <span><i style="background:var(--faint)"></i>outside the call</span>
   </div>
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" id="tab-replay" aria-selected="true">Replay</button>
@@ -334,7 +339,7 @@ ol.assert { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
   // -- time of each event: speech has start/end, tool calls a placement time
   function eventTime(e, i) {
     if (e.kind === "say" && e.start != null) return e.start;
-    if (e.kind === "tool" && e.at != null) return e.at;
+    if ((e.kind === "tool" || e.kind === "event") && e.at != null) return e.at;
     for (let j = i - 1; j >= 0; j--) { const t = eventTime(events[j], j); if (t != null) return t; }
     return 0;
   }
@@ -343,7 +348,7 @@ ol.assert { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
   function buildStates() {
     let rows = JSON.parse(JSON.stringify(trace.rows));
     states = events.map((e) => {
-      if (e.kind === "tool") {
+      if (e.kind === "tool" || e.kind === "event") {
         rows = JSON.parse(JSON.stringify(rows));
         for (const w of e.writes) {
           rows[w.table] = rows[w.table] || {};
@@ -369,7 +374,9 @@ ol.assert { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
       const d = document.createElement("div");
       d.className = "ev"; d.dataset.i = i;
       const t = `<div class="t num">${fmt(e._t)}</div>`;
-      if (e.kind === "say") {
+      if (e.kind === "event") {
+        d.innerHTML = `${t}<div class="world-ev"><span class="kind world">outside the call</span><span class="who">${esc(e.actor)}</span><span>${esc(e.description)}</span></div>`;
+      } else if (e.kind === "say") {
         const emo = e.emotions && e.emotions.length ? `<span class="emo">${esc(e.emotions.join(", "))}</span>` : "";
         const who = e.speaker || (e.role === "assistant" ? "Agent" : "Caller");
         d.innerHTML = `${t}<div class="say ${e.role}"><div class="who">${esc(who)} · ${e.role === "assistant" ? "agent" : "caller"}${emo}</div><p>${e.role === "assistant" ? highlightFacts(e.text) : esc(e.text)}</p></div>`;
@@ -395,6 +402,12 @@ ol.assert { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
         seg.style.left = `${(e.start / dur) * 100}%`;
         seg.style.width = `${Math.max(0.3, ((e.end - e.start) / dur) * 100)}%`;
         tr.appendChild(seg);
+      } else if (e.kind === "event") {
+        const tk = document.createElement("div");
+        tk.className = "tick world";
+        tk.style.left = `${(e._t / dur) * 100}%`;
+        tk.title = `${e.actor}: ${e.description}`;
+        tr.appendChild(tk);
       } else if (e.kind === "tool") {
         const tk = document.createElement("div");
         tk.className = `tick${e.write_tool ? " write" : ""}`;
@@ -408,7 +421,7 @@ ol.assert { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
   }
 
   function lastToolAtOrBefore(i) {
-    for (let j = i; j >= 0; j--) if (events[j].kind === "tool") return j;
+    for (let j = i; j >= 0; j--) if (events[j].kind === "tool" || events[j].kind === "event") return j;
     return -1;
   }
 
@@ -420,6 +433,13 @@ ol.assert { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
       return;
     }
     const e = events[ti];
+    if (e.kind === "event") {
+      b.innerHTML = `
+        <div class="step-head"><span class="kind world">outside the call</span><span class="fn">${esc(e.actor)}</span><span class="pill neutral num">${fmt(e._t)} into the call</span></div>
+        <p class="hint">${esc(e.description.replace(/\.$/, ""))}. This happens on its own schedule, not because of a tool call; the backend records it when its time comes.</p>
+        <div class="records"><h3>What it changed · ${plural(e.writes.length, "row")}</h3>${e.writes.map((w) => diffBlock(w.table, w.key, w.before, w.after)).join("") || '<p class="hint">Nothing changed.</p>'}</div>`;
+      return;
+    }
     const state = states[ti];
     const readRows = {};
     const addRead = (t, k) => (readRows[t] = readRows[t] || new Set()).add(k);
@@ -530,13 +550,13 @@ ol.assert { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
   function cumulative(upTo) {
     const rows = new Map();
     events.forEach((e, i) => {
-      if (i > upTo || e.kind !== "tool") return;
+      if (i > upTo || (e.kind !== "tool" && e.kind !== "event")) return;
       for (const w of e.writes) {
         const id = `${w.table}\u0000${w.key}`;
         if (!rows.has(id)) rows.set(id, { table: w.table, key: w.key, before: w.before, after: w.after, by: [] });
         const r = rows.get(id);
         r.after = w.after;
-        if (!r.by.some((x) => x.i === i)) r.by.push({ i, name: e.name, t: e._t });
+        if (!r.by.some((x) => x.i === i)) r.by.push({ i, name: e.kind === "event" ? `${e.actor} (outside the call)` : e.name, t: e._t });
       }
     });
     return [...rows.values()].filter((r) => JSON.stringify(r.before) !== JSON.stringify(r.after));

@@ -40,20 +40,16 @@
   "card_accounts": 268,
   "card_products": 12,
   "card_restrictions": 50,
-  "card_section_policy": 6,
-  "card_section_read_cursor": 0,
-  "card_section_view": 7,
   "channel_confirmations": 25,
   "customers": 102,
   "delivery_channels": 2,
-  "id_allocator": 2,
   "identity_verifications": 37,
   "kb_records": 53,
   "notification_templates": 7,
   "notifications": 46,
   "referrals": 106,
   "restriction_transactions": 90,
-  "scenario": 9,
+  "scenario": 6,
   "self_service_sessions": 62,
   "service_cases": 61,
   "session_deliveries": 99,
@@ -64,17 +60,7 @@
   "welcome_offers": 15,
   "workflow_profiles": 3
  },
- "read_side_effects": {
-  "self_service_sessions": [
-   "status",
-   "opened_at"
-  ],
-  "channel_confirmations": [
-   "status",
-   "verified_at"
-  ],
-  "card_section_read_cursor": "*"
- },
+ "read_side_effects": {},
  "rows": {
   "card_accounts": {
    "card-colin-6148": {
@@ -102,104 +88,22 @@
     "full_name": "Colin Reeves",
     "login_identifier_kind": "username",
     "mobile_last4": "7749",
-    "notice_slug": "colin",
     "notification_email": "colin.reeves@mailhaven.example",
     "primary_email": "colin.reeves@mailhaven.example",
     "required_verification_methods": [
      "caller_phone",
      "billing_zip",
      "card_last4"
-    ],
-    "verification_key": "colin-reeves"
-   }
-  },
-  "scenario": {
-   "next_identity_verification_id": {
-    "key": "next_identity_verification_id",
-    "value": "308f6850-19d3-4667-9f16-97bc37d46902"
-   },
-   "scenario_time": {
-    "key": "scenario_time",
-    "value": "2026-08-28T14:30:00-04:00"
-   },
-   "next_represented_transaction_id": {
-    "key": "next_represented_transaction_id",
-    "value": "f96da295-2259-4311-b31d-661ab6053092"
-   },
-   "next_travel_notice_id": {
-    "key": "next_travel_notice_id",
-    "value": "31d46fb6-e721-4a9c-b54d-6c631dbe9686"
+    ]
    }
   },
   "service_cases": {
    "case-colin-reeves-card": {
     "case_id": "case-colin-reeves-card",
     "case_kind": "card",
-    "case_slug": "card",
     "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
     "opened_at": "2026-08-28T14:28:00-04:00",
     "status": "open"
-   }
-  },
-  "card_section_policy": {
-   "declines": {
-    "disclosure": "full",
-    "section": "declines"
-   },
-   "authorizations": {
-    "disclosure": "full",
-    "section": "authorizations"
-   }
-  },
-  "card_section_view": {
-   "*|declines|0": {
-    "fields": [
-     "transaction_id",
-     "merchant",
-     "amount",
-     "currency",
-     "status"
-    ],
-    "scope": "*",
-    "section": "declines",
-    "view_index": 0
-   },
-   "*|declines|1": {
-    "fields": [
-     "transaction_id",
-     "merchant",
-     "merchant_location",
-     "amount",
-     "currency",
-     "reason"
-    ],
-    "scope": "*",
-    "section": "declines",
-    "view_index": 1
-   },
-   "*|authorizations|0": {
-    "fields": [
-     "transaction_id",
-     "merchant",
-     "merchant_location",
-     "amount",
-     "currency",
-     "status",
-     "occurred_at"
-    ],
-    "scope": "*",
-    "section": "authorizations",
-    "view_index": 0
-   },
-   "*|status|0": {
-    "fields": [
-     "status",
-     "reported_lost",
-     "payment_status"
-    ],
-    "scope": "*",
-    "section": "status",
-    "view_index": 0
    }
   },
   "transactions": {
@@ -218,8 +122,8 @@
     "posted_date": null,
     "reason": "prior_review_open",
     "record_seq": 574,
-    "represented_as": null,
     "resource_label": "attempt at Harbor View Hotel",
+    "retry_of_transaction_id": null,
     "settlement_state": "not_applicable",
     "short_ref": "0002",
     "status": "declined",
@@ -240,8 +144,8 @@
     "posted_date": null,
     "reason": "travel_review",
     "record_seq": 573,
-    "represented_as": null,
     "resource_label": "attempt at Harbor View Hotel",
+    "retry_of_transaction_id": null,
     "settlement_state": "not_applicable",
     "short_ref": "0001",
     "status": "declined",
@@ -262,8 +166,8 @@
     "posted_date": null,
     "reason": null,
     "record_seq": 575,
-    "represented_as": null,
     "resource_label": "transaction ending 0003",
+    "retry_of_transaction_id": null,
     "settlement_state": "pending",
     "short_ref": "0003",
     "status": "approved",
@@ -299,20 +203,6 @@
     "link_rank": 0,
     "restriction_id": "a4e9ecb1-a664-45d0-b3f4-cfe80b54ea8f",
     "transaction_id": "5af2030f-3fad-402f-a1de-23501596194a"
-   }
-  },
-  "card_section_read_cursor": {
-   "card-colin-6148|declines": {
-    "card_id": "card-colin-6148",
-    "section": "declines",
-    "reads_served": 1,
-    "last_seen_seq": 574
-   },
-   "card-colin-6148|authorizations": {
-    "card_id": "card-colin-6148",
-    "section": "authorizations",
-    "reads_served": 1,
-    "last_seen_seq": 575
    }
   }
  },
@@ -494,19 +384,12 @@
      "queries": [
       {
        "where": {
-        "verification_id": "308f6850-19d3-4667-9f16-97bc37d46902"
+        "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
+        "case_id": "case-colin-reeves-card"
        },
        "matched": []
       }
      ],
-     "scanned": false
-    },
-    "scenario": {
-     "keys": [
-      "next_identity_verification_id",
-      "scenario_time"
-     ],
-     "queries": [],
      "scanned": false
     },
     "service_cases": {
@@ -535,6 +418,7 @@
      "after": {
       "verification_id": "308f6850-19d3-4667-9f16-97bc37d46902",
       "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
+      "case_id": "case-colin-reeves-card",
       "required_methods": [
        "caller_phone",
        "billing_zip",
@@ -546,9 +430,8 @@
        "billing_zip",
        "card_last4"
       ],
-      "verified_at": "2026-08-28T14:30:00-04:00",
-      "expires_at": "2026-08-28T15:00:00-04:00",
-      "time_asserted": false
+      "verified_at": "2026-08-28T14:30:38-04:00",
+      "expires_at": "2026-08-28T15:00:38-04:00"
      }
     }
    ]
@@ -574,16 +457,20 @@
      {
       "transaction_id": "5af2030f-3fad-402f-a1de-23501596194a",
       "merchant": "Harbor View Hotel",
+      "merchant_location": "Portland, Maine",
       "amount": 840,
       "currency": "USD",
-      "status": "declined"
+      "status": "declined",
+      "reason": "travel_review"
      },
      {
       "transaction_id": "3065d723-2455-4a43-9d59-91c8dbb11da0",
       "merchant": "Harbor View Hotel",
+      "merchant_location": "Portland, Maine",
       "amount": 840,
       "currency": "USD",
-      "status": "declined"
+      "status": "declined",
+      "reason": "prior_review_open"
      }
     ]
    },
@@ -600,46 +487,6 @@
        },
        "matched": [
         "card-colin-6148"
-       ]
-      }
-     ],
-     "scanned": false
-    },
-    "card_section_policy": {
-     "keys": [
-      "declines"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "card_section_read_cursor": {
-     "keys": [
-      "card-colin-6148|declines"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "card_section_view": {
-     "keys": [
-      "*|declines|0",
-      "card-colin-6148|declines|0"
-     ],
-     "queries": [
-      {
-       "where": {
-        "scope": "card-colin-6148",
-        "section": "declines"
-       },
-       "matched": []
-      },
-      {
-       "where": {
-        "scope": "*",
-        "section": "declines"
-       },
-       "matched": [
-        "*|declines|0",
-        "*|declines|1"
        ]
       }
      ],
@@ -669,21 +516,7 @@
      "scanned": false
     }
    },
-   "writes": [
-    {
-     "table": "card_section_read_cursor",
-     "key": "card-colin-6148|declines",
-     "kind": "inserted",
-     "columns": [],
-     "before": null,
-     "after": {
-      "card_id": "card-colin-6148",
-      "section": "declines",
-      "reads_served": 1,
-      "last_seen_seq": 574
-     }
-    }
-   ]
+   "writes": []
   },
   {
    "kind": "say",
@@ -784,6 +617,7 @@
       "merchant_location": "Portland, Maine",
       "amount": 840,
       "currency": "USD",
+      "status": "declined",
       "reason": "travel_review"
      },
      {
@@ -792,6 +626,7 @@
       "merchant_location": "Portland, Maine",
       "amount": 840,
       "currency": "USD",
+      "status": "declined",
       "reason": "prior_review_open"
      }
     ],
@@ -834,71 +669,6 @@
        },
        "matched": [
         "a4e9ecb1-a664-45d0-b3f4-cfe80b54ea8f"
-       ]
-      }
-     ],
-     "scanned": false
-    },
-    "card_section_policy": {
-     "keys": [
-      "authorizations",
-      "declines"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "card_section_read_cursor": {
-     "keys": [
-      "card-colin-6148|authorizations",
-      "card-colin-6148|available_credit",
-      "card-colin-6148|declines",
-      "card-colin-6148|restrictions",
-      "card-colin-6148|status"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "card_section_view": {
-     "keys": [
-      "*|authorizations|0",
-      "*|declines|1",
-      "*|status|0",
-      "card-colin-6148|authorizations|0",
-      "card-colin-6148|declines|1",
-      "card-colin-6148|status|0"
-     ],
-     "queries": [
-      {
-       "where": {
-        "scope": "card-colin-6148",
-        "section": "authorizations"
-       },
-       "matched": []
-      },
-      {
-       "where": {
-        "scope": "*",
-        "section": "authorizations"
-       },
-       "matched": [
-        "*|authorizations|0"
-       ]
-      },
-      {
-       "where": {
-        "scope": "card-colin-6148",
-        "section": "declines"
-       },
-       "matched": []
-      },
-      {
-       "where": {
-        "scope": "*",
-        "section": "declines"
-       },
-       "matched": [
-        "*|declines|0",
-        "*|declines|1"
        ]
       }
      ],
@@ -955,80 +725,7 @@
      "scanned": false
     }
    },
-   "writes": [
-    {
-     "table": "card_section_read_cursor",
-     "key": "card-colin-6148|authorizations",
-     "kind": "inserted",
-     "columns": [],
-     "before": null,
-     "after": {
-      "card_id": "card-colin-6148",
-      "section": "authorizations",
-      "reads_served": 1,
-      "last_seen_seq": 575
-     }
-    },
-    {
-     "table": "card_section_read_cursor",
-     "key": "card-colin-6148|available_credit",
-     "kind": "inserted",
-     "columns": [],
-     "before": null,
-     "after": {
-      "card_id": "card-colin-6148",
-      "section": "available_credit",
-      "reads_served": 1,
-      "last_seen_seq": 0
-     }
-    },
-    {
-     "table": "card_section_read_cursor",
-     "key": "card-colin-6148|declines",
-     "kind": "updated",
-     "columns": [
-      "reads_served"
-     ],
-     "before": {
-      "card_id": "card-colin-6148",
-      "section": "declines",
-      "reads_served": 1,
-      "last_seen_seq": 574
-     },
-     "after": {
-      "card_id": "card-colin-6148",
-      "section": "declines",
-      "reads_served": 2,
-      "last_seen_seq": 574
-     }
-    },
-    {
-     "table": "card_section_read_cursor",
-     "key": "card-colin-6148|restrictions",
-     "kind": "inserted",
-     "columns": [],
-     "before": null,
-     "after": {
-      "card_id": "card-colin-6148",
-      "section": "restrictions",
-      "reads_served": 1,
-      "last_seen_seq": 0
-     }
-    },
-    {
-     "table": "card_section_read_cursor",
-     "key": "card-colin-6148|status",
-     "kind": "inserted",
-     "columns": [],
-     "before": null,
-     "after": {
-      "card_id": "card-colin-6148",
-      "section": "status",
-      "reads_served": 1,
-      "last_seen_seq": 0
-     }
-    }
-   ]
+   "writes": []
   },
   {
    "kind": "say",
@@ -1177,26 +874,6 @@
       }
      ],
      "scanned": false
-    },
-    "scenario": {
-     "keys": [
-      "next_represented_transaction_id",
-      "scenario_time"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "transactions": {
-     "keys": [],
-     "queries": [
-      {
-       "where": {
-        "transaction_id": "f96da295-2259-4311-b31d-661ab6053092"
-       },
-       "matched": []
-      }
-     ],
-     "scanned": true
     }
    },
    "writes": [
@@ -1205,7 +882,6 @@
      "key": "card-colin-6148",
      "kind": "updated",
      "columns": [
-      "available_credit",
       "status"
      ],
      "before": {
@@ -1221,7 +897,7 @@
       "status": "temporarily_restricted"
      },
      "after": {
-      "available_credit": 72.0,
+      "available_credit": 912.0,
       "available_credit_currency": "USD",
       "card_id": "card-colin-6148",
       "card_last4": "6148",
@@ -1255,7 +931,7 @@
       "customer_resolvable": true,
       "kind": "travel_review",
       "opened_at": "2026-08-28T13:52:00-04:00",
-      "resolved_at": "2026-08-28T14:30:00-04:00",
+      "resolved_at": "2026-08-28T14:32:08-04:00",
       "restriction_id": "a4e9ecb1-a664-45d0-b3f4-cfe80b54ea8f",
       "status": "removed"
      }
@@ -1274,7 +950,7 @@
       "transaction_id": "131fc14b-fc2e-4ec9-ad07-248d01f7d54b"
      },
      "after": {
-      "confirmed_at": "2026-08-28T14:30:00-04:00",
+      "confirmed_at": "2026-08-28T14:32:08-04:00",
       "link_rank": 2,
       "restriction_id": "a4e9ecb1-a664-45d0-b3f4-cfe80b54ea8f",
       "transaction_id": "131fc14b-fc2e-4ec9-ad07-248d01f7d54b"
@@ -1294,7 +970,7 @@
       "transaction_id": "3065d723-2455-4a43-9d59-91c8dbb11da0"
      },
      "after": {
-      "confirmed_at": "2026-08-28T14:30:00-04:00",
+      "confirmed_at": "2026-08-28T14:32:08-04:00",
       "link_rank": 1,
       "restriction_id": "a4e9ecb1-a664-45d0-b3f4-cfe80b54ea8f",
       "transaction_id": "3065d723-2455-4a43-9d59-91c8dbb11da0"
@@ -1314,143 +990,10 @@
       "transaction_id": "5af2030f-3fad-402f-a1de-23501596194a"
      },
      "after": {
-      "confirmed_at": "2026-08-28T14:30:00-04:00",
+      "confirmed_at": "2026-08-28T14:32:08-04:00",
       "link_rank": 0,
       "restriction_id": "a4e9ecb1-a664-45d0-b3f4-cfe80b54ea8f",
       "transaction_id": "5af2030f-3fad-402f-a1de-23501596194a"
-     }
-    },
-    {
-     "table": "transactions",
-     "key": "131fc14b-fc2e-4ec9-ad07-248d01f7d54b",
-     "kind": "updated",
-     "columns": [
-      "settlement_state"
-     ],
-     "before": {
-      "amount": 32.0,
-      "card_id": "card-colin-6148",
-      "category": "travel",
-      "currency": "USD",
-      "descriptor": "LOGAN AIRPORT F&B",
-      "kind": "authorization",
-      "linked_transaction_id": null,
-      "merchant": "Logan Airport",
-      "merchant_key": "logan",
-      "merchant_location": null,
-      "occurred_at": "2026-08-28T08:05:00-04:00",
-      "posted_date": null,
-      "reason": null,
-      "record_seq": 575,
-      "represented_as": null,
-      "resource_label": "transaction ending 0003",
-      "settlement_state": "pending",
-      "short_ref": "0003",
-      "status": "approved",
-      "transaction_id": "131fc14b-fc2e-4ec9-ad07-248d01f7d54b"
-     },
-     "after": {
-      "amount": 32.0,
-      "card_id": "card-colin-6148",
-      "category": "travel",
-      "currency": "USD",
-      "descriptor": "LOGAN AIRPORT F&B",
-      "kind": "authorization",
-      "linked_transaction_id": null,
-      "merchant": "Logan Airport",
-      "merchant_key": "logan",
-      "merchant_location": null,
-      "occurred_at": "2026-08-28T08:05:00-04:00",
-      "posted_date": null,
-      "reason": null,
-      "record_seq": 575,
-      "represented_as": null,
-      "resource_label": "transaction ending 0003",
-      "settlement_state": "settled",
-      "short_ref": "0003",
-      "status": "approved",
-      "transaction_id": "131fc14b-fc2e-4ec9-ad07-248d01f7d54b"
-     }
-    },
-    {
-     "table": "transactions",
-     "key": "5af2030f-3fad-402f-a1de-23501596194a",
-     "kind": "updated",
-     "columns": [
-      "represented_as"
-     ],
-     "before": {
-      "amount": 840.0,
-      "card_id": "card-colin-6148",
-      "category": "lodging",
-      "currency": "USD",
-      "descriptor": "HARBOR VIEW HTL",
-      "kind": "decline",
-      "linked_transaction_id": null,
-      "merchant": "Harbor View Hotel",
-      "merchant_key": "hotel",
-      "merchant_location": "Portland, Maine",
-      "occurred_at": "2026-08-28T13:52:00-04:00",
-      "posted_date": null,
-      "reason": "travel_review",
-      "record_seq": 573,
-      "represented_as": null,
-      "resource_label": "attempt at Harbor View Hotel",
-      "settlement_state": "not_applicable",
-      "short_ref": "0001",
-      "status": "declined",
-      "transaction_id": "5af2030f-3fad-402f-a1de-23501596194a"
-     },
-     "after": {
-      "amount": 840.0,
-      "card_id": "card-colin-6148",
-      "category": "lodging",
-      "currency": "USD",
-      "descriptor": "HARBOR VIEW HTL",
-      "kind": "decline",
-      "linked_transaction_id": null,
-      "merchant": "Harbor View Hotel",
-      "merchant_key": "hotel",
-      "merchant_location": "Portland, Maine",
-      "occurred_at": "2026-08-28T13:52:00-04:00",
-      "posted_date": null,
-      "reason": "travel_review",
-      "record_seq": 573,
-      "represented_as": "f96da295-2259-4311-b31d-661ab6053092",
-      "resource_label": "attempt at Harbor View Hotel",
-      "settlement_state": "not_applicable",
-      "short_ref": "0001",
-      "status": "declined",
-      "transaction_id": "5af2030f-3fad-402f-a1de-23501596194a"
-     }
-    },
-    {
-     "table": "transactions",
-     "key": "f96da295-2259-4311-b31d-661ab6053092",
-     "kind": "inserted",
-     "columns": [],
-     "before": null,
-     "after": {
-      "transaction_id": "f96da295-2259-4311-b31d-661ab6053092",
-      "record_seq": 652,
-      "card_id": "card-colin-6148",
-      "kind": "authorization",
-      "merchant_key": "hotel",
-      "merchant": "Harbor View Hotel",
-      "merchant_location": null,
-      "descriptor": null,
-      "category": null,
-      "amount": 840.0,
-      "currency": "USD",
-      "status": "approved",
-      "reason": null,
-      "settlement_state": "pending",
-      "occurred_at": null,
-      "posted_date": null,
-      "resource_label": null,
-      "short_ref": null,
-      "represented_as": null,
-      "linked_transaction_id": null
      }
     }
    ]
@@ -1566,6 +1109,97 @@
    "emotions": []
   },
   {
+   "kind": "event",
+   "at": 200,
+   "actor": "card_network",
+   "description": "The $32 Logan Airport authorization from this morning clears: the posted charge is written to the ledger and the hold is released.",
+   "event_id": "logan-authorization-clears",
+   "writes": [
+    {
+     "table": "transactions",
+     "key": "131fc14b-fc2e-4ec9-ad07-248d01f7d54b",
+     "kind": "updated",
+     "columns": [
+      "linked_transaction_id",
+      "settlement_state"
+     ],
+     "before": {
+      "amount": 32.0,
+      "card_id": "card-colin-6148",
+      "category": "travel",
+      "currency": "USD",
+      "descriptor": "LOGAN AIRPORT F&B",
+      "kind": "authorization",
+      "linked_transaction_id": null,
+      "merchant": "Logan Airport",
+      "merchant_key": "logan",
+      "merchant_location": null,
+      "occurred_at": "2026-08-28T08:05:00-04:00",
+      "posted_date": null,
+      "reason": null,
+      "record_seq": 575,
+      "resource_label": "transaction ending 0003",
+      "retry_of_transaction_id": null,
+      "settlement_state": "pending",
+      "short_ref": "0003",
+      "status": "approved",
+      "transaction_id": "131fc14b-fc2e-4ec9-ad07-248d01f7d54b"
+     },
+     "after": {
+      "amount": 32.0,
+      "card_id": "card-colin-6148",
+      "category": "travel",
+      "currency": "USD",
+      "descriptor": "LOGAN AIRPORT F&B",
+      "kind": "authorization",
+      "linked_transaction_id": "3d0fd4dd-bd1d-5697-b5cf-288ade0f1427",
+      "merchant": "Logan Airport",
+      "merchant_key": "logan",
+      "merchant_location": null,
+      "occurred_at": "2026-08-28T08:05:00-04:00",
+      "posted_date": null,
+      "reason": null,
+      "record_seq": 575,
+      "resource_label": "transaction ending 0003",
+      "retry_of_transaction_id": null,
+      "settlement_state": "released",
+      "short_ref": "0003",
+      "status": "approved",
+      "transaction_id": "131fc14b-fc2e-4ec9-ad07-248d01f7d54b"
+     }
+    },
+    {
+     "table": "transactions",
+     "key": "3d0fd4dd-bd1d-5697-b5cf-288ade0f1427",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "transaction_id": "3d0fd4dd-bd1d-5697-b5cf-288ade0f1427",
+      "record_seq": 652,
+      "card_id": "card-colin-6148",
+      "kind": "posted",
+      "merchant_key": "logan",
+      "merchant": "Logan Airport",
+      "merchant_location": null,
+      "descriptor": "LOGAN AIRPORT F&B",
+      "category": "travel",
+      "amount": 32.0,
+      "currency": "USD",
+      "status": "posted",
+      "reason": null,
+      "settlement_state": "settled",
+      "occurred_at": "2026-08-28T08:05:00-04:00",
+      "posted_date": "2026-08-28",
+      "resource_label": "transaction ending 0005",
+      "short_ref": "0005",
+      "linked_transaction_id": null,
+      "retry_of_transaction_id": null
+     }
+    }
+   ]
+  },
+  {
    "kind": "say",
    "role": "user",
    "speaker": "Colin",
@@ -1611,6 +1245,76 @@
    "emotions": []
   },
   {
+   "kind": "event",
+   "at": 229,
+   "actor": "merchant",
+   "description": "Harbor View Hotel runs the $840 authorization again once the card is active; it is approved and holds $840 of available credit.",
+   "event_id": "hotel-retries-authorization",
+   "writes": [
+    {
+     "table": "card_accounts",
+     "key": "card-colin-6148",
+     "kind": "updated",
+     "columns": [
+      "available_credit"
+     ],
+     "before": {
+      "available_credit": 912.0,
+      "available_credit_currency": "USD",
+      "card_id": "card-colin-6148",
+      "card_last4": "6148",
+      "credit_limit": 5000.0,
+      "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
+      "payment_status": "current",
+      "product_id": "summit-journey",
+      "reported_lost": false,
+      "status": "active"
+     },
+     "after": {
+      "available_credit": 72.0,
+      "available_credit_currency": "USD",
+      "card_id": "card-colin-6148",
+      "card_last4": "6148",
+      "credit_limit": 5000.0,
+      "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
+      "payment_status": "current",
+      "product_id": "summit-journey",
+      "reported_lost": false,
+      "status": "active"
+     }
+    },
+    {
+     "table": "transactions",
+     "key": "f96da295-2259-4311-b31d-661ab6053092",
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
+     "after": {
+      "transaction_id": "f96da295-2259-4311-b31d-661ab6053092",
+      "record_seq": 653,
+      "card_id": "card-colin-6148",
+      "kind": "authorization",
+      "merchant_key": "hotel",
+      "merchant": "Harbor View Hotel",
+      "merchant_location": "Portland, Maine",
+      "descriptor": "HARBOR VIEW HTL",
+      "category": "lodging",
+      "amount": 840.0,
+      "currency": "USD",
+      "status": "approved",
+      "reason": null,
+      "settlement_state": "pending",
+      "occurred_at": "2026-08-28T14:33:49-04:00",
+      "posted_date": null,
+      "resource_label": null,
+      "short_ref": null,
+      "linked_transaction_id": null,
+      "retry_of_transaction_id": "5af2030f-3fad-402f-a1de-23501596194a"
+     }
+    }
+   ]
+  },
+  {
    "kind": "say",
    "role": "user",
    "speaker": "Colin",
@@ -1642,9 +1346,11 @@
      {
       "transaction_id": "f96da295-2259-4311-b31d-661ab6053092",
       "merchant": "Harbor View Hotel",
+      "merchant_location": "Portland, Maine",
       "amount": 840,
       "currency": "USD",
-      "status": "approved"
+      "status": "approved",
+      "occurred_at": "2026-08-28T14:33:49-04:00"
      }
     ]
    },
@@ -1661,45 +1367,6 @@
        },
        "matched": [
         "card-colin-6148"
-       ]
-      }
-     ],
-     "scanned": false
-    },
-    "card_section_policy": {
-     "keys": [
-      "authorizations"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "card_section_read_cursor": {
-     "keys": [
-      "card-colin-6148|authorizations"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "card_section_view": {
-     "keys": [
-      "*|authorizations|0",
-      "card-colin-6148|authorizations|0"
-     ],
-     "queries": [
-      {
-       "where": {
-        "scope": "card-colin-6148",
-        "section": "authorizations"
-       },
-       "matched": []
-      },
-      {
-       "where": {
-        "scope": "*",
-        "section": "authorizations"
-       },
-       "matched": [
-        "*|authorizations|0"
        ]
       }
      ],
@@ -1730,29 +1397,7 @@
      "scanned": false
     }
    },
-   "writes": [
-    {
-     "table": "card_section_read_cursor",
-     "key": "card-colin-6148|authorizations",
-     "kind": "updated",
-     "columns": [
-      "last_seen_seq",
-      "reads_served"
-     ],
-     "before": {
-      "card_id": "card-colin-6148",
-      "section": "authorizations",
-      "reads_served": 1,
-      "last_seen_seq": 575
-     },
-     "after": {
-      "card_id": "card-colin-6148",
-      "section": "authorizations",
-      "reads_served": 2,
-      "last_seen_seq": 652
-     }
-    }
-   ]
+   "writes": []
   },
   {
    "kind": "say",
@@ -1890,26 +1535,11 @@
      "queries": [],
      "scanned": false
     },
-    "scenario": {
-     "keys": [
-      "next_travel_notice_id",
-      "scenario_time"
-     ],
-     "queries": [],
-     "scanned": false
-    },
     "travel_notices": {
      "keys": [
       "31d46fb6-e721-4a9c-b54d-6c631dbe9686"
      ],
-     "queries": [
-      {
-       "where": {
-        "notice_id": "31d46fb6-e721-4a9c-b54d-6c631dbe9686"
-       },
-       "matched": []
-      }
-     ],
+     "queries": [],
      "scanned": false
     }
    },
@@ -1928,7 +1558,7 @@
       ],
       "return_date": "2026-08-30",
       "status": "created",
-      "created_at": "2026-08-28T14:30:00-04:00"
+      "created_at": "2026-08-28T14:35:15-04:00"
      }
     }
    ]
@@ -1986,8 +1616,8 @@
    "COMMUNICATE": 1.0
   },
   "db": {
-   "target_hash": "6b5e0924c907f0fd56408d42ac242c4ab1aac28e15ac1e12aa59bc9dd25415a9",
-   "predicted_hash": "6b5e0924c907f0fd56408d42ac242c4ab1aac28e15ac1e12aa59bc9dd25415a9"
+   "target_hash": "3238d4c8cc2c7a21e009b83455d4ed47b37e3e2bbfcd3b322ce1ae357a84c3d1",
+   "predicted_hash": "3238d4c8cc2c7a21e009b83455d4ed47b37e3e2bbfcd3b322ce1ae357a84c3d1"
   },
   "communicate_checks": [
    {

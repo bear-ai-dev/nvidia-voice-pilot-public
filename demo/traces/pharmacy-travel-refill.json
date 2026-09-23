@@ -48,7 +48,7 @@
   "patients": 105,
   "plan_override_rules": 20,
   "prescriptions": 308,
-  "scenario": 4,
+  "scenario": 5,
   "specialist_transfers": 0,
   "store_inventory": 1000,
   "stores": 25,
@@ -165,15 +165,9 @@
   "plan_override_rules": {
    "plan-midwest-choice-ppo|lost_medication": {
     "decision": "approved_one_time",
-    "override_id": "9e90544a-3497-4aee-a1f0-4437d4f4684c",
     "plan_id": "plan-midwest-choice-ppo",
-    "reason": "lost_medication"
-   }
-  },
-  "scenario": {
-   "scenario_time": {
-    "key": "scenario_time",
-    "value": "2026-08-27T18:12:00-05:00"
+    "reason": "lost_medication",
+    "rule_id": "override-lost-medication"
    }
   },
   "insurance_plans": {
@@ -195,10 +189,12 @@
    "9e90544a-3497-4aee-a1f0-4437d4f4684c": {
     "override_id": "9e90544a-3497-4aee-a1f0-4437d4f4684c",
     "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+    "plan_id": "plan-midwest-choice-ppo",
+    "rule_id": "override-lost-medication",
     "reason": "lost_medication",
     "status": "approved_one_time",
     "urgency_context": "Patient leaves town on the morning of 2026-08-28 and needs the inhaler on the evening of 2026-08-27",
-    "requested_at": "2026-08-27T18:12:00-05:00",
+    "requested_at": "2026-08-27T18:14:07-05:00",
     "consumed_at": null
    }
   },
@@ -674,7 +670,15 @@
      "keys": [
       "9e90544a-3497-4aee-a1f0-4437d4f4684c"
      ],
-     "queries": [],
+     "queries": [
+      {
+       "where": {
+        "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+        "reason": "lost_medication"
+       },
+       "matched": []
+      }
+     ],
      "scanned": false
     },
     "patients": {
@@ -705,13 +709,6 @@
      ],
      "queries": [],
      "scanned": false
-    },
-    "scenario": {
-     "keys": [
-      "scenario_time"
-     ],
-     "queries": [],
-     "scanned": false
     }
    },
    "writes": [
@@ -724,10 +721,12 @@
      "after": {
       "override_id": "9e90544a-3497-4aee-a1f0-4437d4f4684c",
       "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+      "plan_id": "plan-midwest-choice-ppo",
+      "rule_id": "override-lost-medication",
       "reason": "lost_medication",
       "status": "approved_one_time",
       "urgency_context": "Patient leaves town on the morning of 2026-08-28 and needs the inhaler on the evening of 2026-08-27",
-      "requested_at": "2026-08-27T18:12:00-05:00",
+      "requested_at": "2026-08-27T18:14:07-05:00",
       "consumed_at": null
      }
     }
@@ -819,13 +818,6 @@
      "queries": [],
      "scanned": false
     },
-    "scenario": {
-     "keys": [
-      "scenario_time"
-     ],
-     "queries": [],
-     "scanned": false
-    },
     "stores": {
      "keys": [
       "8e22d41d-843c-4e73-95c0-3c9877366ba9"
@@ -845,20 +837,24 @@
      "before": {
       "override_id": "9e90544a-3497-4aee-a1f0-4437d4f4684c",
       "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+      "plan_id": "plan-midwest-choice-ppo",
+      "rule_id": "override-lost-medication",
       "reason": "lost_medication",
       "status": "approved_one_time",
       "urgency_context": "Patient leaves town on the morning of 2026-08-28 and needs the inhaler on the evening of 2026-08-27",
-      "requested_at": "2026-08-27T18:12:00-05:00",
+      "requested_at": "2026-08-27T18:14:07-05:00",
       "consumed_at": null
      },
      "after": {
       "override_id": "9e90544a-3497-4aee-a1f0-4437d4f4684c",
       "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+      "plan_id": "plan-midwest-choice-ppo",
+      "rule_id": "override-lost-medication",
       "reason": "lost_medication",
       "status": "approved_one_time",
       "urgency_context": "Patient leaves town on the morning of 2026-08-28 and needs the inhaler on the evening of 2026-08-27",
-      "requested_at": "2026-08-27T18:12:00-05:00",
-      "consumed_at": "2026-08-27T18:12:00-05:00"
+      "requested_at": "2026-08-27T18:14:07-05:00",
+      "consumed_at": "2026-08-27T18:15:07-05:00"
      }
     },
     {
@@ -875,7 +871,7 @@
       "copay": 15.0,
       "currency": "USD",
       "override_id": "9e90544a-3497-4aee-a1f0-4437d4f4684c",
-      "submitted_at": "2026-08-27T18:12:00-05:00"
+      "submitted_at": "2026-08-27T18:15:07-05:00"
      }
     },
     {
@@ -1590,8 +1586,8 @@
    "COMMUNICATE": 1.0
   },
   "db": {
-   "target_hash": "21791e178c332ac872ec04436581339ba7c8fede118300d1887e5e5795736c33",
-   "predicted_hash": "21791e178c332ac872ec04436581339ba7c8fede118300d1887e5e5795736c33"
+   "target_hash": "c19b2941b20d3b1b0aad464a87fcc25b70fe45d71bf748ab4f8ab684d6a81544",
+   "predicted_hash": "c19b2941b20d3b1b0aad464a87fcc25b70fe45d71bf748ab4f8ab684d6a81544"
   },
   "communicate_checks": [
    {

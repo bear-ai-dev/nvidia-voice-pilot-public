@@ -41,20 +41,16 @@
   "card_accounts": 283,
   "card_products": 12,
   "card_restrictions": 50,
-  "card_section_policy": 6,
-  "card_section_read_cursor": 0,
-  "card_section_view": 6,
   "channel_confirmations": 25,
   "customers": 102,
   "delivery_channels": 2,
-  "id_allocator": 2,
   "identity_verifications": 42,
   "kb_records": 53,
   "notification_templates": 7,
   "notifications": 40,
   "referrals": 127,
   "restriction_transactions": 90,
-  "scenario": 11,
+  "scenario": 6,
   "self_service_sessions": 53,
   "service_cases": 68,
   "session_deliveries": 79,
@@ -65,23 +61,9 @@
   "welcome_offers": 15,
   "workflow_profiles": 3
  },
- "read_side_effects": {
-  "self_service_sessions": [
-   "status",
-   "opened_at"
-  ],
-  "channel_confirmations": [
-   "status",
-   "verified_at"
-  ],
-  "card_section_read_cursor": "*"
- },
+ "read_side_effects": {},
  "rows": {
   "scenario": {
-   "scenario_time": {
-    "key": "scenario_time",
-    "value": "2026-08-28T09:09:00-04:00"
-   },
    "time_status": {
     "key": "time_status",
     "value": "available"
@@ -89,26 +71,6 @@
    "timezone": {
     "key": "timezone",
     "value": "America/New_York"
-   },
-   "next_identity_verification_id": {
-    "key": "next_identity_verification_id",
-    "value": "05f09e63-bd3c-4a75-813f-5429ac6d685c"
-   },
-   "target_referral_id": {
-    "key": "target_referral_id",
-    "value": "ce7d58b0-b5fc-42cb-a6e0-7a57929e1205"
-   },
-   "target_referral_reference": {
-    "key": "target_referral_reference",
-    "value": "RF8241"
-   },
-   "next_self_service_session_id": {
-    "key": "next_self_service_session_id",
-    "value": "b549b0e6-fced-4596-8794-db42a62476a6"
-   },
-   "next_notification_id": {
-    "key": "next_notification_id",
-    "value": "4f70ccca-a2a3-4b99-ae66-cfb9d0e975c8"
    }
   },
   "customers": {
@@ -123,21 +85,18 @@
     "full_name": "Daniel Brooks",
     "login_identifier_kind": "email",
     "mobile_last4": "3318",
-    "notice_slug": "daniel",
     "notification_email": "daniel.brooks17@gmail.com",
     "primary_email": "daniel.brooks17@gmail.com",
     "required_verification_methods": [
      "billing_zip",
      "birth_month_day"
-    ],
-    "verification_key": "daniel-brooks"
+    ]
    }
   },
   "service_cases": {
    "case-daniel-brooks-referral": {
     "case_id": "case-daniel-brooks-referral",
     "case_kind": "referral",
-    "case_slug": "referral",
     "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
     "opened_at": "2026-08-28T09:08:03-04:00",
     "status": "open"
@@ -154,6 +113,7 @@
     "offer": "$100 statement credit",
     "offer_version_record_id": "dab2da6a-4343-4ea3-9b0d-df98a0c96360",
     "qualification_status": "purchase_pending",
+    "reference_code": "RF8241",
     "referral_id": "ce7d58b0-b5fc-42cb-a6e0-7a57929e1205",
     "referring_customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d"
    }
@@ -172,10 +132,8 @@
     "claim_tracked": false,
     "credit_pull_authorized": null,
     "display_label_template": null,
-    "resource_suffix_source": "resource_id",
     "resume_supported": true,
     "save_and_continue": null,
-    "session_slug": "referral",
     "visible_stages": [
      "invite",
      "approval",
@@ -320,7 +278,6 @@
    "reads": {
     "scenario": {
      "keys": [
-      "scenario_time",
       "time_status",
       "timezone"
      ],
@@ -422,7 +379,7 @@
      "billing_zip",
      "birth_month_day"
     ],
-    "verified_at": "2026-08-28T09:09:00-04:00"
+    "verified_at": "2026-08-28T09:10:13-04:00"
    },
    "matches_recording": true,
    "write_tool": true,
@@ -441,19 +398,12 @@
      "queries": [
       {
        "where": {
-        "verification_id": "05f09e63-bd3c-4a75-813f-5429ac6d685c"
+        "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+        "case_id": "case-daniel-brooks-referral"
        },
        "matched": []
       }
      ],
-     "scanned": false
-    },
-    "scenario": {
-     "keys": [
-      "next_identity_verification_id",
-      "scenario_time"
-     ],
-     "queries": [],
      "scanned": false
     },
     "service_cases": {
@@ -482,6 +432,7 @@
      "after": {
       "verification_id": "05f09e63-bd3c-4a75-813f-5429ac6d685c",
       "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+      "case_id": "case-daniel-brooks-referral",
       "required_methods": [
        "billing_zip",
        "birth_month_day"
@@ -491,9 +442,8 @@
        "billing_zip",
        "birth_month_day"
       ],
-      "verified_at": "2026-08-28T09:09:00-04:00",
-      "expires_at": "2026-08-28T09:39:00-04:00",
-      "time_asserted": true
+      "verified_at": "2026-08-28T09:10:13-04:00",
+      "expires_at": "2026-08-28T09:40:13-04:00"
      }
     }
    ]
@@ -574,14 +524,6 @@
        ]
       }
      ],
-     "scanned": false
-    },
-    "scenario": {
-     "keys": [
-      "target_referral_id",
-      "target_referral_reference"
-     ],
-     "queries": [],
      "scanned": false
     }
    },
@@ -833,26 +775,11 @@
      ],
      "scanned": false
     },
-    "scenario": {
-     "keys": [
-      "next_self_service_session_id",
-      "scenario_time"
-     ],
-     "queries": [],
-     "scanned": false
-    },
     "self_service_sessions": {
      "keys": [
       "b549b0e6-fced-4596-8794-db42a62476a6"
      ],
-     "queries": [
-      {
-       "where": {
-        "session_id": "b549b0e6-fced-4596-8794-db42a62476a6"
-       },
-       "matched": []
-      }
-     ],
+     "queries": [],
      "scanned": false
     },
     "session_deliveries": {
@@ -898,8 +825,7 @@
        "qualification",
        "reward_posting"
       ],
-      "customer_opens": true,
-      "issued_at": "2026-08-28T09:09:00-04:00",
+      "issued_at": "2026-08-28T09:12:31-04:00",
       "opened_at": null,
       "expires_at": null
      }
@@ -937,6 +863,74 @@
    "start": 281.98,
    "end": 283.48,
    "emotions": []
+  },
+  {
+   "kind": "event",
+   "at": 283,
+   "actor": "customer",
+   "description": "The customer opens the referral tracker from the secure message centre (\"Okay, I'm opening it\").",
+   "event_id": "customer-opens-referral-tracker",
+   "writes": [
+    {
+     "table": "self_service_sessions",
+     "key": "b549b0e6-fced-4596-8794-db42a62476a6",
+     "kind": "updated",
+     "columns": [
+      "opened_at",
+      "status"
+     ],
+     "before": {
+      "session_id": "b549b0e6-fced-4596-8794-db42a62476a6",
+      "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+      "workflow": "referral_status",
+      "resource_id": "ce7d58b0-b5fc-42cb-a6e0-7a57929e1205",
+      "status": "issued",
+      "submitted": false,
+      "resume_supported": true,
+      "save_and_continue": null,
+      "credit_pull_authorized": null,
+      "claim_tracked": false,
+      "claim_id": null,
+      "access_location": null,
+      "display_label": null,
+      "allowed_customer_actions": null,
+      "visible_stages": [
+       "invite",
+       "approval",
+       "qualification",
+       "reward_posting"
+      ],
+      "issued_at": "2026-08-28T09:12:31-04:00",
+      "opened_at": null,
+      "expires_at": null
+     },
+     "after": {
+      "session_id": "b549b0e6-fced-4596-8794-db42a62476a6",
+      "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+      "workflow": "referral_status",
+      "resource_id": "ce7d58b0-b5fc-42cb-a6e0-7a57929e1205",
+      "status": "open_not_submitted",
+      "submitted": false,
+      "resume_supported": true,
+      "save_and_continue": null,
+      "credit_pull_authorized": null,
+      "claim_tracked": false,
+      "claim_id": null,
+      "access_location": null,
+      "display_label": null,
+      "allowed_customer_actions": null,
+      "visible_stages": [
+       "invite",
+       "approval",
+       "qualification",
+       "reward_posting"
+      ],
+      "issued_at": "2026-08-28T09:12:31-04:00",
+      "opened_at": "2026-08-28T09:12:46-04:00",
+      "expires_at": null
+     }
+    }
+   ]
   },
   {
    "kind": "say",
@@ -1023,21 +1017,6 @@
      "keys": [
       "4f70ccca-a2a3-4b99-ae66-cfb9d0e975c8"
      ],
-     "queries": [
-      {
-       "where": {
-        "notification_id": "4f70ccca-a2a3-4b99-ae66-cfb9d0e975c8"
-       },
-       "matched": []
-      }
-     ],
-     "scanned": false
-    },
-    "scenario": {
-     "keys": [
-      "next_notification_id",
-      "scenario_time"
-     ],
      "queries": [],
      "scanned": false
     },
@@ -1073,7 +1052,7 @@
       "status": "sent",
       "masked_destination": "d***@gmail.com",
       "contains_working_secure_link": false,
-      "sent_at": "2026-08-28T09:09:00-04:00"
+      "sent_at": "2026-08-28T09:13:21-04:00"
      }
     }
    ]
@@ -1326,8 +1305,8 @@
    "COMMUNICATE": 1.0
   },
   "db": {
-   "target_hash": "595dcdc4d22c454a22532b4f086698b7202f3ec999ffc6228793deecb50da815",
-   "predicted_hash": "595dcdc4d22c454a22532b4f086698b7202f3ec999ffc6228793deecb50da815"
+   "target_hash": "cb2188d7367c195bb25a054c7bef9a8dc4e6339474462577d392c3e34797ef72",
+   "predicted_hash": "cb2188d7367c195bb25a054c7bef9a8dc4e6339474462577d392c3e34797ef72"
   },
   "communicate_checks": [
    {

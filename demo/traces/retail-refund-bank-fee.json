@@ -59,18 +59,10 @@
   "refunds": 431,
   "replacement_orders": 0,
   "returns": 176,
-  "scenario": 12,
-  "section_read_cursor": 2,
-  "section_view": 6,
+  "scenario": 7,
   "specialist_transfers": 0
  },
- "read_side_effects": {
-  "notifications": [
-   "status",
-   "status_index"
-  ],
-  "section_read_cursor": "*"
- },
+ "read_side_effects": {},
  "rows": {
   "order_items": {
    "standing-desk-converter-black": {
@@ -124,194 +116,22 @@
     "representative_item": "wool socks"
    }
   },
-  "scenario": {
-   "min_reference_suffix_digits": {
-    "key": "min_reference_suffix_digits",
-    "value": "4"
-   },
-   "order_customer_fields": {
-    "key": "order_customer_fields",
-    "value": "display_name,verified_email"
-   },
-   "order_reference_mask": {
-    "key": "order_reference_mask",
-    "value": "ending-{last4}"
-   },
-   "next_support_case_id": {
-    "key": "next_support_case_id",
-    "value": "b0fee5fa-0534-4c47-a42a-b3a252106888"
-   },
-   "next_support_case_number": {
-    "key": "next_support_case_number",
-    "value": "WST735204"
-   },
-   "scenario_time": {
-    "key": "scenario_time",
-    "value": "2026-08-27T13:05:00-04:00"
-   },
-   "next_notification_id": {
-    "key": "next_notification_id",
-    "value": "43e020c5-a9da-4175-aec7-5989435d95a6"
-   },
-   "target_case_id": {
-    "key": "target_case_id",
-    "value": "b0fee5fa-0534-4c47-a42a-b3a252106888"
-   },
-   "target_case_number": {
-    "key": "target_case_number",
-    "value": "WST735204"
-   }
-  },
-  "section_read_cursor": {
-   "5820465624|payments": {
+  "payments": {
+   "411": {
+    "amount": 40.0,
+    "currency": "USD",
     "order_reference": "5820465624",
-    "reads_served": 2,
-    "section": "payments"
+    "original_card_last4": null,
+    "payment_seq": 411,
+    "tender_type": "gift_card"
    },
-   "5820465624|refunds": {
+   "412": {
+    "amount": 146.42,
+    "currency": "USD",
     "order_reference": "5820465624",
-    "reads_served": 2,
-    "section": "refunds"
-   }
-  },
-  "section_view": {
-   "5820465624|payments|0": {
-    "note": "First look: the tenders and what each carried, with the card token withheld.",
-    "order_reference": "5820465624",
-    "payload": [
-     {
-      "amount": 40,
-      "currency": "USD",
-      "type": "gift_card"
-     },
-     {
-      "amount": 146.42,
-      "currency": "USD",
-      "type": "debit"
-     }
-    ],
-    "section": "payments",
-    "view_index": 0
-   },
-   "5820465624|payments|1": {
-    "note": "Second look: the same tenders with the original card token disclosed, which is what a payment trace has to be opened against.",
-    "order_reference": "5820465624",
-    "payload": [
-     {
-      "amount": 40,
-      "currency": "USD",
-      "type": "gift_card"
-     },
-     {
-      "amount": 146.42,
-      "currency": "USD",
-      "original_card_last4": "2047",
-      "type": "debit"
-     }
-    ],
-    "section": "payments",
-    "view_index": 1
-   },
-   "5820465624|payments|2": {
-    "note": "Third and later looks: the token has already been disclosed once and the panel is withheld.",
-    "order_reference": "5820465624",
-    "payload": null,
-    "section": "payments",
-    "view_index": 2
-   },
-   "5820465624|refunds|0": {
-    "note": "First look: what the store did with the item, which is what a customer asking where the money is has to be told before the money is discussed.",
-    "order_reference": "5820465624",
-    "payload": [
-     {
-      "accepted_at": "Eastwood store",
-      "accepted_on": "2026-08-18",
-      "inventory_disposition": "restocked",
-      "return_reference": "ending-9182",
-      "return_status": "complete"
-     }
-    ],
-    "section": "refunds",
-    "view_index": 0
-   },
-   "5820465624|refunds|1": {
-    "note": "Second look: where each refund stands with the payment processor.",
-    "order_reference": "5820465624",
-    "payload": [
-     {
-      "amount": 40,
-      "currency": "USD",
-      "status": "issued_available",
-      "tender_type": "gift_card"
-     },
-     {
-      "amount": 146.42,
-      "currency": "USD",
-      "initiation_source": "store_register",
-      "original_card_last4": "2047",
-      "status": "submitted_no_settlement_confirmation",
-      "tender_type": "debit"
-     }
-    ],
-    "section": "refunds",
-    "view_index": 1
-   },
-   "5820465624|refunds|2": {
-    "note": "Third look: the gift-card ledger. Only the tender that has a ledger is on this panel, and its status is the card status rather than the processing status.",
-    "order_reference": "5820465624",
-    "payload": [
-     {
-      "amount": 40,
-      "available_balance": 40,
-      "currency": "USD",
-      "delivery": "digital_gift_card_number_in_email",
-      "status": "active",
-      "tender_type": "gift_card",
-      "used": false
-     }
-    ],
-    "section": "refunds",
-    "view_index": 2
-   }
-  },
-  "case_type_policy": {
-   "refund_trace": {
-    "accepts_pickup_preference": false,
-    "approval_channel": null,
-    "approval_required": null,
-    "carrier_may_contact_customer": null,
-    "case_type": "refund_trace",
-    "deadline_local_time": null,
-    "deadline_offset_days": null,
-    "duplicate_refund_blocked": true,
-    "eligibility_triggers": null,
-    "initial_status": "open",
-    "next_action": "await the payment team's settlement review",
-    "order_view_fields": [
-     "case_number",
-     "type",
-     "status",
-     "deadline"
-    ],
-    "related_view_fields": [
-     "case_number",
-     "order_reference",
-     "item",
-     "status"
-    ],
-    "review_window_max_days": 5,
-    "review_window_min_days": 3
-   }
-  },
-  "customers": {
-   "customer-teddy-torrez": {
-    "address_label": "home_address_on_order",
-    "customer_id": "customer-teddy-torrez",
-    "display_name": "Teddy Torrez",
-    "email": "teddy.torrez@harbormail.com",
-    "fulfillment_region": "new-england",
-    "masked_email": "t***@harbormail.com",
-    "masked_phone": "***-***-3390"
+    "original_card_last4": "2047",
+    "payment_seq": 412,
+    "tender_type": "debit"
    }
   },
   "refunds": {
@@ -357,12 +177,70 @@
     "return_status": "complete"
    }
   },
+  "scenario": {
+   "min_reference_suffix_digits": {
+    "key": "min_reference_suffix_digits",
+    "value": "4"
+   },
+   "order_customer_fields": {
+    "key": "order_customer_fields",
+    "value": "display_name,verified_email"
+   },
+   "order_reference_mask": {
+    "key": "order_reference_mask",
+    "value": "ending-{last4}"
+   }
+  },
+  "case_type_policy": {
+   "refund_trace": {
+    "accepts_pickup_preference": false,
+    "approval_channel": null,
+    "approval_required": null,
+    "carrier_may_contact_customer": null,
+    "case_type": "refund_trace",
+    "deadline_local_time": null,
+    "deadline_offset_days": null,
+    "duplicate_refund_blocked": true,
+    "eligibility_triggers": null,
+    "initial_status": "open",
+    "next_action": "await the payment team's settlement review",
+    "order_view_fields": [
+     "case_number",
+     "type",
+     "status",
+     "deadline"
+    ],
+    "related_view_fields": [
+     "case_number",
+     "order_reference",
+     "item",
+     "status"
+    ],
+    "review_window_max_days": 5,
+    "review_window_min_days": 3
+   }
+  },
+  "customers": {
+   "customer-teddy-torrez": {
+    "address_label": "home_address_on_order",
+    "customer_id": "customer-teddy-torrez",
+    "display_name": "Teddy Torrez",
+    "email": "teddy.torrez@harbormail.com",
+    "fulfillment_region": "new-england",
+    "masked_email": "t***@harbormail.com",
+    "masked_phone": "***-***-3390"
+   }
+  },
+  "id_allocator": {
+   "support_case|": {
+    "entity_type": "support_case",
+    "next_value": 735204,
+    "scope": "",
+    "template": "WST{n}"
+   }
+  },
   "notification_templates": {
    "refund_trace_confirmation": {
-    "delivery_progression": [
-     "sent",
-     "delivered"
-    ],
     "included_fields": [
      "amount",
      "masked_original_payment_reference",
@@ -497,23 +375,42 @@
     ],
     "payments": [
      {
+      "type": "gift_card",
       "amount": 40,
-      "currency": "USD",
-      "type": "gift_card"
+      "currency": "USD"
      },
      {
+      "type": "debit",
       "amount": 146.42,
       "currency": "USD",
-      "type": "debit"
+      "original_card_last4": "2047"
      }
     ],
     "refunds": [
      {
+      "return_reference": "ending-9182",
+      "return_status": "complete",
       "accepted_at": "Eastwood store",
       "accepted_on": "2026-08-18",
-      "inventory_disposition": "restocked",
-      "return_reference": "ending-9182",
-      "return_status": "complete"
+      "inventory_disposition": "restocked"
+     },
+     {
+      "tender_type": "gift_card",
+      "amount": 40,
+      "available_balance": 40,
+      "currency": "USD",
+      "status": "issued_available",
+      "ledger_status": "active",
+      "used": false,
+      "delivery": "digital_gift_card_number_in_email"
+     },
+     {
+      "tender_type": "debit",
+      "amount": 146.42,
+      "currency": "USD",
+      "status": "submitted_no_settlement_confirmation",
+      "original_card_last4": "2047",
+      "initiation_source": "store_register"
      }
     ]
    },
@@ -558,6 +455,50 @@
      ],
      "scanned": false
     },
+    "payments": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820465624"
+       },
+       "matched": [
+        "411",
+        "412"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "refunds": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820465624"
+       },
+       "matched": [
+        "430",
+        "431"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "returns": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820465624"
+       },
+       "matched": [
+        "5820469182"
+       ]
+      }
+     ],
+     "scanned": false
+    },
     "scenario": {
      "keys": [
       "min_reference_suffix_digits",
@@ -566,82 +507,9 @@
      ],
      "queries": [],
      "scanned": false
-    },
-    "section_read_cursor": {
-     "keys": [
-      "5820465624|payments",
-      "5820465624|refunds"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "section_view": {
-     "keys": [],
-     "queries": [
-      {
-       "where": {
-        "order_reference": "5820465624",
-        "section": "payments"
-       },
-       "matched": [
-        "5820465624|payments|0",
-        "5820465624|payments|1",
-        "5820465624|payments|2"
-       ]
-      },
-      {
-       "where": {
-        "order_reference": "5820465624",
-        "section": "refunds"
-       },
-       "matched": [
-        "5820465624|refunds|0",
-        "5820465624|refunds|1",
-        "5820465624|refunds|2"
-       ]
-      }
-     ],
-     "scanned": false
     }
    },
-   "writes": [
-    {
-     "table": "section_read_cursor",
-     "key": "5820465624|payments",
-     "kind": "updated",
-     "columns": [
-      "reads_served"
-     ],
-     "before": {
-      "order_reference": "5820465624",
-      "reads_served": 0,
-      "section": "payments"
-     },
-     "after": {
-      "order_reference": "5820465624",
-      "reads_served": 1,
-      "section": "payments"
-     }
-    },
-    {
-     "table": "section_read_cursor",
-     "key": "5820465624|refunds",
-     "kind": "updated",
-     "columns": [
-      "reads_served"
-     ],
-     "before": {
-      "order_reference": "5820465624",
-      "reads_served": 0,
-      "section": "refunds"
-     },
-     "after": {
-      "order_reference": "5820465624",
-      "reads_served": 1,
-      "section": "refunds"
-     }
-    }
-   ]
+   "writes": []
   },
   {
    "kind": "say",
@@ -736,31 +604,42 @@
     "order_reference": "ending-5624",
     "payments": [
      {
+      "type": "gift_card",
       "amount": 40,
-      "currency": "USD",
-      "type": "gift_card"
+      "currency": "USD"
      },
      {
+      "type": "debit",
       "amount": 146.42,
       "currency": "USD",
-      "original_card_last4": "2047",
-      "type": "debit"
+      "original_card_last4": "2047"
      }
     ],
     "refunds": [
      {
-      "amount": 40,
-      "currency": "USD",
-      "status": "issued_available",
-      "tender_type": "gift_card"
+      "return_reference": "ending-9182",
+      "return_status": "complete",
+      "accepted_at": "Eastwood store",
+      "accepted_on": "2026-08-18",
+      "inventory_disposition": "restocked"
      },
      {
+      "tender_type": "gift_card",
+      "amount": 40,
+      "available_balance": 40,
+      "currency": "USD",
+      "status": "issued_available",
+      "ledger_status": "active",
+      "used": false,
+      "delivery": "digital_gift_card_number_in_email"
+     },
+     {
+      "tender_type": "debit",
       "amount": 146.42,
       "currency": "USD",
-      "initiation_source": "store_register",
-      "original_card_last4": "2047",
       "status": "submitted_no_settlement_confirmation",
-      "tender_type": "debit"
+      "original_card_last4": "2047",
+      "initiation_source": "store_register"
      }
     ]
    },
@@ -791,6 +670,50 @@
      ],
      "scanned": false
     },
+    "payments": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820465624"
+       },
+       "matched": [
+        "411",
+        "412"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "refunds": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820465624"
+       },
+       "matched": [
+        "430",
+        "431"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "returns": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820465624"
+       },
+       "matched": [
+        "5820469182"
+       ]
+      }
+     ],
+     "scanned": false
+    },
     "scenario": {
      "keys": [
       "min_reference_suffix_digits",
@@ -798,82 +721,9 @@
      ],
      "queries": [],
      "scanned": false
-    },
-    "section_read_cursor": {
-     "keys": [
-      "5820465624|payments",
-      "5820465624|refunds"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "section_view": {
-     "keys": [],
-     "queries": [
-      {
-       "where": {
-        "order_reference": "5820465624",
-        "section": "payments"
-       },
-       "matched": [
-        "5820465624|payments|0",
-        "5820465624|payments|1",
-        "5820465624|payments|2"
-       ]
-      },
-      {
-       "where": {
-        "order_reference": "5820465624",
-        "section": "refunds"
-       },
-       "matched": [
-        "5820465624|refunds|0",
-        "5820465624|refunds|1",
-        "5820465624|refunds|2"
-       ]
-      }
-     ],
-     "scanned": false
     }
    },
-   "writes": [
-    {
-     "table": "section_read_cursor",
-     "key": "5820465624|payments",
-     "kind": "updated",
-     "columns": [
-      "reads_served"
-     ],
-     "before": {
-      "order_reference": "5820465624",
-      "reads_served": 1,
-      "section": "payments"
-     },
-     "after": {
-      "order_reference": "5820465624",
-      "reads_served": 2,
-      "section": "payments"
-     }
-    },
-    {
-     "table": "section_read_cursor",
-     "key": "5820465624|refunds",
-     "kind": "updated",
-     "columns": [
-      "reads_served"
-     ],
-     "before": {
-      "order_reference": "5820465624",
-      "reads_served": 1,
-      "section": "refunds"
-     },
-     "after": {
-      "order_reference": "5820465624",
-      "reads_served": 2,
-      "section": "refunds"
-     }
-    }
-   ]
+   "writes": []
   },
   {
    "kind": "say",
@@ -1083,15 +933,44 @@
    "status": 200,
    "output": {
     "order_reference": "ending-5624",
+    "payments": [
+     {
+      "type": "gift_card",
+      "amount": 40,
+      "currency": "USD"
+     },
+     {
+      "type": "debit",
+      "amount": 146.42,
+      "currency": "USD",
+      "original_card_last4": "2047"
+     }
+    ],
     "refunds": [
      {
+      "return_reference": "ending-9182",
+      "return_status": "complete",
+      "accepted_at": "Eastwood store",
+      "accepted_on": "2026-08-18",
+      "inventory_disposition": "restocked"
+     },
+     {
+      "tender_type": "gift_card",
       "amount": 40,
       "available_balance": 40,
       "currency": "USD",
-      "delivery": "digital_gift_card_number_in_email",
-      "status": "active",
-      "tender_type": "gift_card",
-      "used": false
+      "status": "issued_available",
+      "ledger_status": "active",
+      "used": false,
+      "delivery": "digital_gift_card_number_in_email"
+     },
+     {
+      "tender_type": "debit",
+      "amount": 146.42,
+      "currency": "USD",
+      "status": "submitted_no_settlement_confirmation",
+      "original_card_last4": "2047",
+      "initiation_source": "store_register"
      }
     ]
    },
@@ -1122,6 +1001,50 @@
      ],
      "scanned": false
     },
+    "payments": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820465624"
+       },
+       "matched": [
+        "411",
+        "412"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "refunds": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820465624"
+       },
+       "matched": [
+        "430",
+        "431"
+       ]
+      }
+     ],
+     "scanned": false
+    },
+    "returns": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820465624"
+       },
+       "matched": [
+        "5820469182"
+       ]
+      }
+     ],
+     "scanned": false
+    },
     "scenario": {
      "keys": [
       "min_reference_suffix_digits",
@@ -1129,82 +1052,9 @@
      ],
      "queries": [],
      "scanned": false
-    },
-    "section_read_cursor": {
-     "keys": [
-      "5820465624|payments",
-      "5820465624|refunds"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "section_view": {
-     "keys": [],
-     "queries": [
-      {
-       "where": {
-        "order_reference": "5820465624",
-        "section": "payments"
-       },
-       "matched": [
-        "5820465624|payments|0",
-        "5820465624|payments|1",
-        "5820465624|payments|2"
-       ]
-      },
-      {
-       "where": {
-        "order_reference": "5820465624",
-        "section": "refunds"
-       },
-       "matched": [
-        "5820465624|refunds|0",
-        "5820465624|refunds|1",
-        "5820465624|refunds|2"
-       ]
-      }
-     ],
-     "scanned": false
     }
    },
-   "writes": [
-    {
-     "table": "section_read_cursor",
-     "key": "5820465624|payments",
-     "kind": "updated",
-     "columns": [
-      "reads_served"
-     ],
-     "before": {
-      "order_reference": "5820465624",
-      "reads_served": 2,
-      "section": "payments"
-     },
-     "after": {
-      "order_reference": "5820465624",
-      "reads_served": 3,
-      "section": "payments"
-     }
-    },
-    {
-     "table": "section_read_cursor",
-     "key": "5820465624|refunds",
-     "kind": "updated",
-     "columns": [
-      "reads_served"
-     ],
-     "before": {
-      "order_reference": "5820465624",
-      "reads_served": 2,
-      "section": "refunds"
-     },
-     "after": {
-      "order_reference": "5820465624",
-      "reads_served": 3,
-      "section": "refunds"
-     }
-    }
-   ]
+   "writes": []
   },
   {
    "kind": "say",
@@ -1271,19 +1121,19 @@
      "keys": [
       "b0fee5fa-0534-4c47-a42a-b3a252106888"
      ],
-     "queries": [
-      {
-       "where": {
-        "case_number": "b0fee5fa-0534-4c47-a42a-b3a252106888"
-       },
-       "matched": []
-      }
-     ],
+     "queries": [],
      "scanned": false
     },
     "customers": {
      "keys": [
       "customer-teddy-torrez"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "id_allocator": {
+     "keys": [
+      "support_case|"
      ],
      "queries": [],
      "scanned": false
@@ -1324,10 +1174,7 @@
     },
     "scenario": {
      "keys": [
-      "min_reference_suffix_digits",
-      "next_support_case_id",
-      "next_support_case_number",
-      "scenario_time"
+      "min_reference_suffix_digits"
      ],
      "queries": [],
      "scanned": false
@@ -1341,7 +1188,8 @@
      "columns": [],
      "before": null,
      "after": {
-      "case_number": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+      "case_id": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+      "case_number": "WST735204",
       "order_reference": "5820465624",
       "customer_id": "customer-teddy-torrez",
       "case_type": "refund_trace",
@@ -1365,7 +1213,27 @@
       "return_reference": "5820469182",
       "payment_reference": "card-ending-2047",
       "amount_under_review": 146.42,
-      "opened_at": "2026-08-27T17:05:00+00:00"
+      "opened_at": "2026-08-27T17:12:06+00:00"
+     }
+    },
+    {
+     "table": "id_allocator",
+     "key": "support_case|",
+     "kind": "updated",
+     "columns": [
+      "next_value"
+     ],
+     "before": {
+      "entity_type": "support_case",
+      "next_value": 735204,
+      "scope": "",
+      "template": "WST{n}"
+     },
+     "after": {
+      "entity_type": "support_case",
+      "next_value": 735205,
+      "scope": "",
+      "template": "WST{n}"
      }
     }
    ]
@@ -1395,7 +1263,7 @@
      "queries": [
       {
        "where": {
-        "case_number": "b0fee5fa-0534-4c47-a42a-b3a252106888"
+        "case_id": "b0fee5fa-0534-4c47-a42a-b3a252106888"
        },
        "matched": []
       }
@@ -1413,13 +1281,6 @@
      "keys": [],
      "queries": [],
      "scanned": true
-    },
-    "scenario": {
-     "keys": [
-      "scenario_time"
-     ],
-     "queries": [],
-     "scanned": false
     }
    },
    "writes": [
@@ -1430,12 +1291,12 @@
      "columns": [],
      "before": null,
      "after": {
-      "case_number": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+      "case_id": "b0fee5fa-0534-4c47-a42a-b3a252106888",
       "note_no": 1,
       "note": "Customer reports card ending 2047 was replaced by card ending 8163 and believes both map to the same checking account; external bank-account status is not verified by Westline.",
       "topic": "card_replacement",
       "visible_to_next_reviewer": true,
-      "created_at": "2026-08-27T17:05:00+00:00"
+      "created_at": "2026-08-27T17:12:06+00:00"
      }
     }
    ]
@@ -1521,23 +1382,6 @@
      "keys": [
       "43e020c5-a9da-4175-aec7-5989435d95a6"
      ],
-     "queries": [
-      {
-       "where": {
-        "notification_id": "43e020c5-a9da-4175-aec7-5989435d95a6"
-       },
-       "matched": []
-      }
-     ],
-     "scanned": false
-    },
-    "scenario": {
-     "keys": [
-      "next_notification_id",
-      "scenario_time",
-      "target_case_id",
-      "target_case_number"
-     ],
      "queries": [],
      "scanned": false
     }
@@ -1550,30 +1394,61 @@
      "columns": [],
      "before": null,
      "after": {
+      "notification_id": "43e020c5-a9da-4175-aec7-5989435d95a6",
+      "case_id": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+      "order_reference": "5820465624",
+      "customer_id": "customer-teddy-torrez",
       "channel": "email",
       "template": "refund_trace_confirmation",
-      "message_type": "refund_trace_confirmation",
-      "masked_destination": "t***@harbormail.com",
       "status": "sent",
-      "status_index": 0,
-      "status_progression": [
-       "sent",
-       "delivered"
-      ],
-      "included_fields": [
-       "amount",
-       "masked_original_payment_reference",
-       "review_window",
-       "case_number"
-      ],
-      "sent_at": "2026-08-27T17:05:00+00:00",
-      "notification_id": "43e020c5-a9da-4175-aec7-5989435d95a6",
-      "case_number": "b0fee5fa-0534-4c47-a42a-b3a252106888",
-      "order_reference": "5820465624",
-      "subject_prefix": "Your Westline refund trace",
       "optional_photo_link": null,
-      "photo_link_section": null,
-      "created_at": "2026-08-27T17:05:00+00:00"
+      "created_at": "2026-08-27T17:12:49+00:00",
+      "sent_at": "2026-08-27T17:12:49+00:00",
+      "delivered_at": null
+     }
+    }
+   ]
+  },
+  {
+   "kind": "event",
+   "at": 470,
+   "actor": "mail_provider",
+   "description": "The mail provider reports the refund-trace confirmation email as delivered; the customer says at 470s that they can see it.",
+   "event_id": "refund-trace-email-delivered",
+   "writes": [
+    {
+     "table": "notifications",
+     "key": "43e020c5-a9da-4175-aec7-5989435d95a6",
+     "kind": "updated",
+     "columns": [
+      "delivered_at",
+      "status"
+     ],
+     "before": {
+      "notification_id": "43e020c5-a9da-4175-aec7-5989435d95a6",
+      "case_id": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+      "order_reference": "5820465624",
+      "customer_id": "customer-teddy-torrez",
+      "channel": "email",
+      "template": "refund_trace_confirmation",
+      "status": "sent",
+      "optional_photo_link": null,
+      "created_at": "2026-08-27T17:12:49+00:00",
+      "sent_at": "2026-08-27T17:12:49+00:00",
+      "delivered_at": null
+     },
+     "after": {
+      "notification_id": "43e020c5-a9da-4175-aec7-5989435d95a6",
+      "case_id": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+      "order_reference": "5820465624",
+      "customer_id": "customer-teddy-torrez",
+      "channel": "email",
+      "template": "refund_trace_confirmation",
+      "status": "delivered",
+      "optional_photo_link": null,
+      "created_at": "2026-08-27T17:12:49+00:00",
+      "sent_at": "2026-08-27T17:12:49+00:00",
+      "delivered_at": "2026-08-27T13:12:50-04:00"
      }
     }
    ]
@@ -1639,7 +1514,7 @@
      "queries": [
       {
        "where": {
-        "case_number": "b0fee5fa-0534-4c47-a42a-b3a252106888"
+        "case_id": "b0fee5fa-0534-4c47-a42a-b3a252106888"
        },
        "matched": [
         "b0fee5fa-0534-4c47-a42a-b3a252106888|1"
@@ -1659,13 +1534,6 @@
      "keys": [],
      "queries": [],
      "scanned": true
-    },
-    "scenario": {
-     "keys": [
-      "scenario_time"
-     ],
-     "queries": [],
-     "scanned": false
     }
    },
    "writes": [
@@ -1676,12 +1544,12 @@
      "columns": [],
      "before": null,
      "after": {
-      "case_number": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+      "case_id": "b0fee5fa-0534-4c47-a42a-b3a252106888",
       "note_no": 2,
       "note": "Customer reports an overdraft fee while expecting the refund; supporting statement may be reviewed after trace outcome.",
       "topic": "bank_fee",
       "visible_to_next_reviewer": true,
-      "created_at": "2026-08-27T17:05:00+00:00"
+      "created_at": "2026-08-27T17:13:46+00:00"
      }
     }
    ]
@@ -1788,8 +1656,8 @@
    "COMMUNICATE": 1.0
   },
   "db": {
-   "target_hash": "8a5299ac60b0e25bae85fffae4e67c50ae35922b6bdf2c68dcf6458a73187ad2",
-   "predicted_hash": "8a5299ac60b0e25bae85fffae4e67c50ae35922b6bdf2c68dcf6458a73187ad2"
+   "target_hash": "4172958928a845e546df5550a376d889f248db670a6081a657da9c92d87f6f17",
+   "predicted_hash": "4172958928a845e546df5550a376d889f248db670a6081a657da9c92d87f6f17"
   },
   "communicate_checks": [
    {

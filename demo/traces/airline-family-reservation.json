@@ -43,17 +43,16 @@
   "airports": 40,
   "baggage_fees": 2,
   "certificate_redemptions": 23,
-  "confirmation_code_pool": 430,
   "connecting_itineraries": 7,
   "connecting_itinerary_segments": 28,
   "customers": 106,
   "destination_areas": 15,
   "fare_options": 400,
-  "fare_quotes": 51,
+  "fare_quotes": 50,
   "flight_availability": 2000,
   "flight_searches": 32,
   "flights": 200,
-  "id_allocator": 4,
+  "id_allocator": 2,
   "identity_verifications": 50,
   "insurance_plans": 15,
   "mobility_device_rules": 13,
@@ -61,15 +60,12 @@
   "payment_methods": 197,
   "reservation_mobility_devices": 44,
   "reservations": 380,
-  "scenario": 12,
+  "scenario": 9,
   "specialist_transfers": 0,
   "travel_certificates": 66,
   "travelers": 702
  },
- "read_side_effects": {
-  "flight_searches": "*",
-  "fare_quotes": "*"
- },
+ "read_side_effects": {},
  "rows": {
   "airport_area_links": {
    "national-mall|BWI": {
@@ -475,29 +471,17 @@
     "key": "currency",
     "value": "USD"
    },
-   "scenario_time": {
-    "key": "scenario_time",
-    "value": "2026-08-26T12:30:00-07:00"
-   },
-   "next_identity_verification_id": {
-    "key": "next_identity_verification_id",
-    "value": "661f8b5c-f3d8-4612-8645-00f9a5ecded8"
+   "quote_validity_hours": {
+    "key": "quote_validity_hours",
+    "value": "24"
    },
    "verification_expiry": {
     "key": "verification_expiry",
     "value": "end_of_call"
    },
-   "next_reservation_id": {
-    "key": "next_reservation_id",
-    "value": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7"
-   },
-   "next_traveler_1_id": {
-    "key": "next_traveler_1_id",
-    "value": "1a7ef9d5-196f-456c-a780-1acafefd1fd1"
-   },
-   "next_traveler_2_id": {
-    "key": "next_traveler_2_id",
-    "value": "b0b29fec-eb5c-469e-bee0-046f8c861822"
+   "call_started_at": {
+    "key": "call_started_at",
+    "value": "2026-08-26T12:30:00-07:00"
    }
   },
   "connecting_itineraries": {
@@ -546,28 +530,6 @@
     "currency": "USD",
     "fare_class": "standard_economy",
     "per_bag_amount": 35.0
-   }
-  },
-  "fare_quotes": {
-   "b28a0bbf-614c-4616-862c-fbeef88f6495": {
-    "checked_bag_count": 2,
-    "currency": "USD",
-    "departure_date": "2026-10-14",
-    "expires_at": "2026-08-27T12:33:00-07:00",
-    "fare_class": "standard_economy",
-    "fare_taxes_and_checked_bags": null,
-    "include_insurance": true,
-    "insurance_plan_id": null,
-    "last_priced_at": null,
-    "mobility_device_charge": null,
-    "mobility_device_count": 1,
-    "outbound_flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
-    "quote_id": "b28a0bbf-614c-4616-862c-fbeef88f6495",
-    "return_date": "2026-10-19",
-    "return_flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
-    "total_with_insurance": null,
-    "traveler_count": 2,
-    "trip_insurance": null
    }
   },
   "insurance_plans": {
@@ -715,258 +677,6 @@
     "masked_code": "CT-***031",
     "original_amount": 120.0,
     "status": "expired"
-   }
-  },
-  "confirmation_code_pool": {
-   "381": {
-    "code": "B9RT6M",
-    "issued_at": null,
-    "pool_seq": 381
-   },
-   "382": {
-    "code": "ELGJYP",
-    "issued_at": null,
-    "pool_seq": 382
-   },
-   "383": {
-    "code": "PHU3GM",
-    "issued_at": null,
-    "pool_seq": 383
-   },
-   "384": {
-    "code": "Y2P2LA",
-    "issued_at": null,
-    "pool_seq": 384
-   },
-   "385": {
-    "code": "YJ3G5T",
-    "issued_at": null,
-    "pool_seq": 385
-   },
-   "386": {
-    "code": "6Z9WF5",
-    "issued_at": null,
-    "pool_seq": 386
-   },
-   "387": {
-    "code": "92EC6V",
-    "issued_at": null,
-    "pool_seq": 387
-   },
-   "388": {
-    "code": "KFU85P",
-    "issued_at": null,
-    "pool_seq": 388
-   },
-   "389": {
-    "code": "5KFAZB",
-    "issued_at": null,
-    "pool_seq": 389
-   },
-   "390": {
-    "code": "47GJQU",
-    "issued_at": null,
-    "pool_seq": 390
-   },
-   "391": {
-    "code": "TMFAV3",
-    "issued_at": null,
-    "pool_seq": 391
-   },
-   "392": {
-    "code": "QCXJMM",
-    "issued_at": null,
-    "pool_seq": 392
-   },
-   "393": {
-    "code": "KWH77N",
-    "issued_at": null,
-    "pool_seq": 393
-   },
-   "394": {
-    "code": "BZLTSJ",
-    "issued_at": null,
-    "pool_seq": 394
-   },
-   "395": {
-    "code": "WLXKFZ",
-    "issued_at": null,
-    "pool_seq": 395
-   },
-   "396": {
-    "code": "4852ZW",
-    "issued_at": null,
-    "pool_seq": 396
-   },
-   "397": {
-    "code": "2TGD8X",
-    "issued_at": null,
-    "pool_seq": 397
-   },
-   "398": {
-    "code": "VLLMML",
-    "issued_at": null,
-    "pool_seq": 398
-   },
-   "399": {
-    "code": "6EPZV8",
-    "issued_at": null,
-    "pool_seq": 399
-   },
-   "400": {
-    "code": "C77TGQ",
-    "issued_at": null,
-    "pool_seq": 400
-   },
-   "401": {
-    "code": "275YTM",
-    "issued_at": null,
-    "pool_seq": 401
-   },
-   "402": {
-    "code": "ZY34KL",
-    "issued_at": null,
-    "pool_seq": 402
-   },
-   "403": {
-    "code": "UU4GFQ",
-    "issued_at": null,
-    "pool_seq": 403
-   },
-   "404": {
-    "code": "GXZS7A",
-    "issued_at": null,
-    "pool_seq": 404
-   },
-   "405": {
-    "code": "FC2V7D",
-    "issued_at": null,
-    "pool_seq": 405
-   },
-   "406": {
-    "code": "TZF3C5",
-    "issued_at": null,
-    "pool_seq": 406
-   },
-   "407": {
-    "code": "K3JCDH",
-    "issued_at": null,
-    "pool_seq": 407
-   },
-   "408": {
-    "code": "5AVJDU",
-    "issued_at": null,
-    "pool_seq": 408
-   },
-   "409": {
-    "code": "F7TMXX",
-    "issued_at": null,
-    "pool_seq": 409
-   },
-   "410": {
-    "code": "2F8QD6",
-    "issued_at": null,
-    "pool_seq": 410
-   },
-   "411": {
-    "code": "5HUHCJ",
-    "issued_at": null,
-    "pool_seq": 411
-   },
-   "412": {
-    "code": "JVX2XZ",
-    "issued_at": null,
-    "pool_seq": 412
-   },
-   "413": {
-    "code": "MJT3N8",
-    "issued_at": null,
-    "pool_seq": 413
-   },
-   "414": {
-    "code": "NQKPUG",
-    "issued_at": null,
-    "pool_seq": 414
-   },
-   "415": {
-    "code": "SZK7KC",
-    "issued_at": null,
-    "pool_seq": 415
-   },
-   "416": {
-    "code": "Z8U3MD",
-    "issued_at": null,
-    "pool_seq": 416
-   },
-   "417": {
-    "code": "88TWWH",
-    "issued_at": null,
-    "pool_seq": 417
-   },
-   "418": {
-    "code": "W3VW36",
-    "issued_at": null,
-    "pool_seq": 418
-   },
-   "419": {
-    "code": "2M656U",
-    "issued_at": null,
-    "pool_seq": 419
-   },
-   "420": {
-    "code": "6ZD7EM",
-    "issued_at": null,
-    "pool_seq": 420
-   },
-   "421": {
-    "code": "3S2EJV",
-    "issued_at": null,
-    "pool_seq": 421
-   },
-   "422": {
-    "code": "VLEHLS",
-    "issued_at": null,
-    "pool_seq": 422
-   },
-   "423": {
-    "code": "MNN367",
-    "issued_at": null,
-    "pool_seq": 423
-   },
-   "424": {
-    "code": "6BXXFQ",
-    "issued_at": null,
-    "pool_seq": 424
-   },
-   "425": {
-    "code": "QQB24L",
-    "issued_at": null,
-    "pool_seq": 425
-   },
-   "426": {
-    "code": "5UAAYS",
-    "issued_at": null,
-    "pool_seq": 426
-   },
-   "427": {
-    "code": "T2MHAX",
-    "issued_at": null,
-    "pool_seq": 427
-   },
-   "428": {
-    "code": "6MZW6U",
-    "issued_at": null,
-    "pool_seq": 428
-   },
-   "429": {
-    "code": "8APMRZ",
-    "issued_at": null,
-    "pool_seq": 429
-   },
-   "430": {
-    "code": "S94SKV",
-    "issued_at": null,
-    "pool_seq": 430
    }
   },
   "customers": {
@@ -2358,13 +2068,6 @@
      "keys": [],
      "queries": [],
      "scanned": true
-    },
-    "scenario": {
-     "keys": [
-      "scenario_time"
-     ],
-     "queries": [],
-     "scanned": false
     }
    },
    "writes": []
@@ -2420,10 +2123,10 @@
     "insurance_plan_document": "insurance-plan-document-current",
     "total_with_insurance": 1281.0,
     "currency": "USD",
-    "expires_at": "2026-08-27T12:33:00-07:00"
+    "expires_at": "2026-08-27T12:33:01-07:00"
    },
    "matches_recording": true,
-   "write_tool": false,
+   "write_tool": true,
    "reads": {
     "baggage_fees": {
      "keys": [],
@@ -2464,20 +2167,23 @@
      "scanned": false
     },
     "fare_quotes": {
+     "keys": [
+      "b28a0bbf-614c-4616-862c-fbeef88f6495"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "flight_searches": {
      "keys": [],
      "queries": [
       {
        "where": {
-        "outbound_flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
-        "return_flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
-        "fare_class": "standard_economy",
-        "traveler_count": 2,
-        "checked_bag_count": 2,
-        "mobility_device_count": 1,
-        "include_insurance": true
+        "origin_code": "PHX",
+        "destination_code": "DCA"
        },
        "matched": [
-        "b28a0bbf-614c-4616-862c-fbeef88f6495"
+        "96a87cf6-ba8d-4705-995b-8805e877ab0b",
+        "b1e28687-a8fe-44c9-a18c-66b5dcc0dedb"
        ]
       }
      ],
@@ -2541,7 +2247,7 @@
     "scenario": {
      "keys": [
       "currency",
-      "scenario_time"
+      "quote_validity_hours"
      ],
      "queries": [],
      "scanned": false
@@ -2551,54 +2257,28 @@
     {
      "table": "fare_quotes",
      "key": "b28a0bbf-614c-4616-862c-fbeef88f6495",
-     "kind": "updated",
-     "columns": [
-      "fare_taxes_and_checked_bags",
-      "insurance_plan_id",
-      "last_priced_at",
-      "mobility_device_charge",
-      "total_with_insurance",
-      "trip_insurance"
-     ],
-     "before": {
-      "checked_bag_count": 2,
-      "currency": "USD",
-      "departure_date": "2026-10-14",
-      "expires_at": "2026-08-27T12:33:00-07:00",
-      "fare_class": "standard_economy",
-      "fare_taxes_and_checked_bags": null,
-      "include_insurance": true,
-      "insurance_plan_id": null,
-      "last_priced_at": null,
-      "mobility_device_charge": null,
-      "mobility_device_count": 1,
-      "outbound_flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
-      "quote_id": "b28a0bbf-614c-4616-862c-fbeef88f6495",
-      "return_date": "2026-10-19",
-      "return_flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
-      "total_with_insurance": null,
-      "traveler_count": 2,
-      "trip_insurance": null
-     },
+     "kind": "inserted",
+     "columns": [],
+     "before": null,
      "after": {
-      "checked_bag_count": 2,
-      "currency": "USD",
+      "quote_id": "b28a0bbf-614c-4616-862c-fbeef88f6495",
+      "outbound_flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+      "return_flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
       "departure_date": "2026-10-14",
-      "expires_at": "2026-08-27T12:33:00-07:00",
+      "return_date": "2026-10-19",
       "fare_class": "standard_economy",
-      "fare_taxes_and_checked_bags": 1186.4,
+      "traveler_count": 2,
+      "checked_bag_count": 2,
+      "mobility_device_count": 1,
       "include_insurance": true,
       "insurance_plan_id": "insurance-standard-band-3",
-      "last_priced_at": "2026-08-26T12:30:00-07:00",
+      "fare_taxes_and_checked_bags": 1186.4,
       "mobility_device_charge": 0.0,
-      "mobility_device_count": 1,
-      "outbound_flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
-      "quote_id": "b28a0bbf-614c-4616-862c-fbeef88f6495",
-      "return_date": "2026-10-19",
-      "return_flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+      "trip_insurance": 94.6,
       "total_with_insurance": 1281.0,
-      "traveler_count": 2,
-      "trip_insurance": 94.6
+      "currency": "USD",
+      "priced_at": "2026-08-26T12:33:01-07:00",
+      "expires_at": "2026-08-27T12:33:01-07:00"
      }
     }
    ]
@@ -2785,13 +2465,9 @@
      "queries": [
       {
        "where": {
-        "verification_id": "661f8b5c-f3d8-4612-8645-00f9a5ecded8"
-       },
-       "matched": []
-      },
-      {
-       "where": {
-        "verification_id": "661f8b5c-f3d8-4612-8645-00f9a5ecded8"
+        "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+        "status": "verified",
+        "purpose": "booking"
        },
        "matched": []
       }
@@ -2800,8 +2476,6 @@
     },
     "scenario": {
      "keys": [
-      "next_identity_verification_id",
-      "scenario_time",
       "verification_expiry"
      ],
      "queries": [],
@@ -2826,7 +2500,7 @@
        "date_of_birth",
        "email"
       ],
-      "created_at": "2026-08-26T12:30:00-07:00"
+      "created_at": "2026-08-26T12:35:05-07:00"
      }
     }
    ]
@@ -2934,6 +2608,14 @@
      ],
      "scanned": false
     },
+    "scenario": {
+     "keys": [
+      "call_started_at",
+      "verification_expiry"
+     ],
+     "queries": [],
+     "scanned": false
+    },
     "travel_certificates": {
      "keys": [],
      "queries": [
@@ -3031,11 +2713,6 @@
    "matches_recording": true,
    "write_tool": false,
    "reads": {
-    "fare_quotes": {
-     "keys": [],
-     "queries": [],
-     "scanned": true
-    },
     "identity_verifications": {
      "keys": [],
      "queries": [
@@ -3052,7 +2729,8 @@
     },
     "scenario": {
      "keys": [
-      "scenario_time"
+      "call_started_at",
+      "verification_expiry"
      ],
      "queries": [],
      "scanned": false
@@ -3220,69 +2898,6 @@
       "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7-redemption-1"
      ],
      "queries": [],
-     "scanned": false
-    },
-    "confirmation_code_pool": {
-     "keys": [],
-     "queries": [
-      {
-       "where": {
-        "issued_at": null
-       },
-       "matched": [
-        "381",
-        "382",
-        "383",
-        "384",
-        "385",
-        "386",
-        "387",
-        "388",
-        "389",
-        "390",
-        "391",
-        "392",
-        "393",
-        "394",
-        "395",
-        "396",
-        "397",
-        "398",
-        "399",
-        "400",
-        "401",
-        "402",
-        "403",
-        "404",
-        "405",
-        "406",
-        "407",
-        "408",
-        "409",
-        "410",
-        "411",
-        "412",
-        "413",
-        "414",
-        "415",
-        "416",
-        "417",
-        "418",
-        "419",
-        "420",
-        "421",
-        "422",
-        "423",
-        "424",
-        "425",
-        "426",
-        "427",
-        "428",
-        "429",
-        "430"
-       ]
-      }
-     ],
      "scanned": false
     },
     "customers": {
@@ -3497,23 +3112,15 @@
         "return_date": "2026-10-19"
        },
        "matched": []
-      },
-      {
-       "where": {
-        "reservation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7"
-       },
-       "matched": []
       }
      ],
      "scanned": false
     },
     "scenario": {
      "keys": [
+      "call_started_at",
       "currency",
-      "next_reservation_id",
-      "next_traveler_1_id",
-      "next_traveler_2_id",
-      "scenario_time"
+      "verification_expiry"
      ],
      "queries": [],
      "scanned": false
@@ -3552,25 +3159,7 @@
       "reservation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7",
       "amount": 200.0,
       "currency": "USD",
-      "redeemed_at": "2026-08-26T12:30:00-07:00"
-     }
-    },
-    {
-     "table": "confirmation_code_pool",
-     "key": "381",
-     "kind": "updated",
-     "columns": [
-      "issued_at"
-     ],
-     "before": {
-      "code": "B9RT6M",
-      "issued_at": null,
-      "pool_seq": 381
-     },
-     "after": {
-      "code": "B9RT6M",
-      "issued_at": "2026-08-26T12:30:00-07:00",
-      "pool_seq": 381
+      "redeemed_at": "2026-08-26T12:35:45-07:00"
      }
     },
     {
@@ -3623,8 +3212,9 @@
       "allocation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7-tender-1",
       "reservation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7",
       "allocation_index": 1,
-      "tender": "travel_certificate_CT-449108",
       "tender_kind": "travel_certificate",
+      "certificate_id": "18e422e6-a2c3-4cb8-93fa-daf7a28c328b",
+      "payment_method_token": null,
       "amount": 200.0,
       "currency": "USD"
      }
@@ -3639,8 +3229,9 @@
       "allocation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7-tender-2",
       "reservation_id": "e27bce0a-c8ac-4102-9a62-e6d3f9bfdaa7",
       "allocation_index": 2,
-      "tender": "visa_ending_1182",
       "tender_kind": "card",
+      "certificate_id": null,
+      "payment_method_token": "c1200f87-9c48-41f4-a6f9-04d89f28b2b2",
       "amount": 1081.0,
       "currency": "USD"
      }
@@ -3689,7 +3280,7 @@
       "insurance_price": 94.6,
       "charged_total": 1281.0,
       "currency": "USD",
-      "created_at": "2026-08-26T12:30:00-07:00"
+      "created_at": "2026-08-26T12:35:45-07:00"
      }
     },
     {
@@ -4100,8 +3691,8 @@
    "COMMUNICATE": 1.0
   },
   "db": {
-   "target_hash": "63aa9337fefb26989a44802d5036479843e8b71390806a63518966bf61ac55b6",
-   "predicted_hash": "63aa9337fefb26989a44802d5036479843e8b71390806a63518966bf61ac55b6"
+   "target_hash": "12425da527fb17d2abaf6131257a312eeb8dea39693b040547907e6675154bea",
+   "predicted_hash": "12425da527fb17d2abaf6131257a312eeb8dea39693b040547907e6675154bea"
   },
   "communicate_checks": [
    {

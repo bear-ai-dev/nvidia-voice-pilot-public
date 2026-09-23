@@ -59,18 +59,10 @@
   "refunds": 458,
   "replacement_orders": 0,
   "returns": 166,
-  "scenario": 12,
-  "section_read_cursor": 1,
-  "section_view": 2,
+  "scenario": 7,
   "specialist_transfers": 0
  },
- "read_side_effects": {
-  "notifications": [
-   "status",
-   "status_index"
-  ],
-  "section_read_cursor": "*"
- },
+ "read_side_effects": {},
  "rows": {
   "carrier_scans": {
    "594": {
@@ -124,7 +116,7 @@
     "order_reference": "5820447319",
     "placed_on": "2026-08-21",
     "replaces_order_reference": null,
-    "representative_item": null
+    "representative_item": "blue noise-canceling headphones"
    },
    "5820449319": {
     "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
@@ -152,60 +144,6 @@
    "timezone": {
     "key": "timezone",
     "value": "America/New_York"
-   },
-   "next_support_case_id": {
-    "key": "next_support_case_id",
-    "value": "8cf648a4-ca60-4387-bc11-ec38f426123a"
-   },
-   "next_support_case_number": {
-    "key": "next_support_case_number",
-    "value": "WST481662"
-   },
-   "scenario_time": {
-    "key": "scenario_time",
-    "value": "2026-08-25T15:40:00-04:00"
-   },
-   "next_notification_id": {
-    "key": "next_notification_id",
-    "value": "521527dc-8856-4b33-8e08-69658b1ca80b"
-   },
-   "target_case_id": {
-    "key": "target_case_id",
-    "value": "8cf648a4-ca60-4387-bc11-ec38f426123a"
-   },
-   "target_case_number": {
-    "key": "target_case_number",
-    "value": "WST481662"
-   }
-  },
-  "section_read_cursor": {
-   "5820447319|carrier_scans": {
-    "order_reference": "5820447319",
-    "reads_served": 1,
-    "section": "carrier_scans"
-   }
-  },
-  "section_view": {
-   "5820447319|carrier_scans|0": {
-    "note": "First look: the evidence panel is not populated yet, so the section is omitted entirely rather than returned empty.",
-    "order_reference": "5820447319",
-    "payload": null,
-    "section": "carrier_scans",
-    "view_index": 0
-   },
-   "5820447319|carrier_scans|1": {
-    "note": "Second and later looks disclose the evidence panel: the latest scan's time, the location the carrier recorded, the location the scan's evidence places it, and whether a unit, locker or photo was captured.",
-    "order_reference": "5820447319",
-    "payload": {
-     "evidence_location": "near building",
-     "location": "front entrance",
-     "locker": null,
-     "photo": null,
-     "scanned_at": "2026-08-24T15:18:00-04:00",
-     "unit_number": null
-    },
-    "section": "carrier_scans",
-    "view_index": 1
    }
   },
   "product_variants": {
@@ -265,15 +203,24 @@
     "masked_phone": "***-***-4471"
    }
   },
+  "id_allocator": {
+   "support_case|": {
+    "entity_type": "support_case",
+    "next_value": 481662,
+    "scope": "",
+    "template": "WST{n}"
+   }
+  },
   "cases": {
    "8cf648a4-ca60-4387-bc11-ec38f426123a": {
-    "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+    "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+    "case_number": "WST481662",
     "order_reference": "5820447319",
     "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
     "case_type": "delivery_trace",
     "status": "open",
     "reason": "delivered_not_received",
-    "item_description": null,
+    "item_description": "blue noise-canceling headphones",
     "carrier_response": "none",
     "deadline_at": "2026-08-26T22:00:00+00:00",
     "carrier_may_contact_customer": true,
@@ -294,15 +241,11 @@
     "return_reference": null,
     "payment_reference": null,
     "amount_under_review": null,
-    "opened_at": "2026-08-25T19:40:00+00:00"
+    "opened_at": "2026-08-25T19:43:58+00:00"
    }
   },
   "notification_templates": {
    "delivery_trace_confirmation": {
-    "delivery_progression": [
-     "sent",
-     "delivered"
-    ],
     "included_fields": [
      "case_number",
      "status",
@@ -320,34 +263,6 @@
     "photo_link_section": null,
     "subject_prefix": "Your Westline delivery trace",
     "template": "delivery_trace_confirmation"
-   }
-  },
-  "notifications": {
-   "521527dc-8856-4b33-8e08-69658b1ca80b": {
-    "channel": "email",
-    "template": "delivery_trace_confirmation",
-    "message_type": "delivery_trace_confirmation",
-    "masked_destination": "e***@northmail.com",
-    "status": "sent",
-    "status_index": 0,
-    "status_progression": [
-     "sent",
-     "delivered"
-    ],
-    "included_fields": [
-     "case_number",
-     "status",
-     "carrier_response_deadline",
-     "approval_link"
-    ],
-    "sent_at": "2026-08-25T19:40:00+00:00",
-    "notification_id": "521527dc-8856-4b33-8e08-69658b1ca80b",
-    "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
-    "order_reference": "5820447319",
-    "subject_prefix": "Your Westline delivery trace",
-    "optional_photo_link": null,
-    "photo_link_section": null,
-    "created_at": "2026-08-25T19:40:00+00:00"
    }
   }
  },
@@ -460,6 +375,14 @@
       "scanned_at": "2026-08-24T15:18:00-04:00",
       "location": "front entrance",
       "photo": null
+     },
+     "carrier_evidence": {
+      "scanned_at": "2026-08-24T15:18:00-04:00",
+      "location": "front entrance",
+      "evidence_location": "near building",
+      "unit_number": null,
+      "locker": null,
+      "photo": null
      }
     }
    },
@@ -469,6 +392,14 @@
     "carrier_scans": {
      "keys": [],
      "queries": [
+      {
+       "where": {
+        "order_reference": "5820447319"
+       },
+       "matched": [
+        "594"
+       ]
+      },
       {
        "where": {
         "order_reference": "5820447319"
@@ -527,51 +458,9 @@
      ],
      "queries": [],
      "scanned": false
-    },
-    "section_read_cursor": {
-     "keys": [
-      "5820447319|carrier_scans"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "section_view": {
-     "keys": [],
-     "queries": [
-      {
-       "where": {
-        "order_reference": "5820447319",
-        "section": "carrier_scans"
-       },
-       "matched": [
-        "5820447319|carrier_scans|0",
-        "5820447319|carrier_scans|1"
-       ]
-      }
-     ],
-     "scanned": false
     }
    },
-   "writes": [
-    {
-     "table": "section_read_cursor",
-     "key": "5820447319|carrier_scans",
-     "kind": "updated",
-     "columns": [
-      "reads_served"
-     ],
-     "before": {
-      "order_reference": "5820447319",
-      "reads_served": 0,
-      "section": "carrier_scans"
-     },
-     "after": {
-      "order_reference": "5820447319",
-      "reads_served": 1,
-      "section": "carrier_scans"
-     }
-    }
-   ]
+   "writes": []
   },
   {
    "kind": "say",
@@ -645,18 +534,32 @@
     "order_reference": "7319",
     "fulfillment": {
      "carrier_evidence": {
-      "evidence_location": "near building",
-      "location": "front entrance",
-      "locker": null,
-      "photo": null,
       "scanned_at": "2026-08-24T15:18:00-04:00",
-      "unit_number": null
+      "location": "front entrance",
+      "evidence_location": "near building",
+      "unit_number": null,
+      "locker": null,
+      "photo": null
      }
     }
    },
    "matches_recording": true,
    "write_tool": false,
    "reads": {
+    "carrier_scans": {
+     "keys": [],
+     "queries": [
+      {
+       "where": {
+        "order_reference": "5820447319"
+       },
+       "matched": [
+        "594"
+       ]
+      }
+     ],
+     "scanned": false
+    },
     "customers": {
      "keys": [],
      "queries": [],
@@ -684,55 +587,14 @@
     "scenario": {
      "keys": [
       "min_reference_suffix_digits",
-      "order_reference_mask"
+      "order_reference_mask",
+      "timezone"
      ],
      "queries": [],
-     "scanned": false
-    },
-    "section_read_cursor": {
-     "keys": [
-      "5820447319|carrier_scans"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "section_view": {
-     "keys": [],
-     "queries": [
-      {
-       "where": {
-        "order_reference": "5820447319",
-        "section": "carrier_scans"
-       },
-       "matched": [
-        "5820447319|carrier_scans|0",
-        "5820447319|carrier_scans|1"
-       ]
-      }
-     ],
      "scanned": false
     }
    },
-   "writes": [
-    {
-     "table": "section_read_cursor",
-     "key": "5820447319|carrier_scans",
-     "kind": "updated",
-     "columns": [
-      "reads_served"
-     ],
-     "before": {
-      "order_reference": "5820447319",
-      "reads_served": 1,
-      "section": "carrier_scans"
-     },
-     "after": {
-      "order_reference": "5820447319",
-      "reads_served": 2,
-      "section": "carrier_scans"
-     }
-    }
-   ]
+   "writes": []
   },
   {
    "kind": "say",
@@ -911,19 +773,19 @@
      "keys": [
       "8cf648a4-ca60-4387-bc11-ec38f426123a"
      ],
-     "queries": [
-      {
-       "where": {
-        "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a"
-       },
-       "matched": []
-      }
-     ],
+     "queries": [],
      "scanned": false
     },
     "customers": {
      "keys": [
       "c51d2171-c10b-489b-9186-a93ebd98613d"
+     ],
+     "queries": [],
+     "scanned": false
+    },
+    "id_allocator": {
+     "keys": [
+      "support_case|"
      ],
      "queries": [],
      "scanned": false
@@ -950,9 +812,6 @@
     "scenario": {
      "keys": [
       "min_reference_suffix_digits",
-      "next_support_case_id",
-      "next_support_case_number",
-      "scenario_time",
       "timezone"
      ],
      "queries": [],
@@ -967,7 +826,7 @@
      "columns": [],
      "before": null,
      "after": {
-      "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
       "item_reference": "blue-noise-canceling-headphones"
      }
     },
@@ -978,13 +837,14 @@
      "columns": [],
      "before": null,
      "after": {
-      "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "case_number": "WST481662",
       "order_reference": "5820447319",
       "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
       "case_type": "delivery_trace",
       "status": "open",
       "reason": "delivered_not_received",
-      "item_description": null,
+      "item_description": "blue noise-canceling headphones",
       "carrier_response": "none",
       "deadline_at": "2026-08-26T22:00:00+00:00",
       "carrier_may_contact_customer": true,
@@ -1005,7 +865,27 @@
       "return_reference": null,
       "payment_reference": null,
       "amount_under_review": null,
-      "opened_at": "2026-08-25T19:40:00+00:00"
+      "opened_at": "2026-08-25T19:43:58+00:00"
+     }
+    },
+    {
+     "table": "id_allocator",
+     "key": "support_case|",
+     "kind": "updated",
+     "columns": [
+      "next_value"
+     ],
+     "before": {
+      "entity_type": "support_case",
+      "next_value": 481662,
+      "scope": "",
+      "template": "WST{n}"
+     },
+     "after": {
+      "entity_type": "support_case",
+      "next_value": 481663,
+      "scope": "",
+      "template": "WST{n}"
      }
     }
    ]
@@ -1131,7 +1011,7 @@
      "queries": [
       {
        "where": {
-        "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a"
+        "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a"
        },
        "matched": []
       }
@@ -1163,13 +1043,6 @@
      "keys": [],
      "queries": [],
      "scanned": true
-    },
-    "scenario": {
-     "keys": [
-      "scenario_time"
-     ],
-     "queries": [],
-     "scanned": false
     }
    },
    "writes": [
@@ -1180,12 +1053,12 @@
      "columns": [],
      "before": null,
      "after": {
-      "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
       "note_no": 1,
       "note": "Preserve exact blue variant and original price if replacement becomes eligible.",
       "topic": null,
       "visible_to_next_reviewer": true,
-      "created_at": "2026-08-25T19:40:00+00:00"
+      "created_at": "2026-08-25T19:45:46+00:00"
      }
     },
     {
@@ -1195,10 +1068,10 @@
      "columns": [],
      "before": null,
      "after": {
-      "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
       "pickup_location": "West 23rd Street pickup counter",
       "visible_to_next_reviewer": true,
-      "recorded_at": "2026-08-25T19:40:00+00:00"
+      "recorded_at": "2026-08-25T19:45:46+00:00"
      }
     },
     {
@@ -1209,13 +1082,14 @@
       "requested_resolution"
      ],
      "before": {
-      "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "case_number": "WST481662",
       "order_reference": "5820447319",
       "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
       "case_type": "delivery_trace",
       "status": "open",
       "reason": "delivered_not_received",
-      "item_description": null,
+      "item_description": "blue noise-canceling headphones",
       "carrier_response": "none",
       "deadline_at": "2026-08-26T22:00:00+00:00",
       "carrier_may_contact_customer": true,
@@ -1236,16 +1110,17 @@
       "return_reference": null,
       "payment_reference": null,
       "amount_under_review": null,
-      "opened_at": "2026-08-25T19:40:00+00:00"
+      "opened_at": "2026-08-25T19:43:58+00:00"
      },
      "after": {
-      "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "case_number": "WST481662",
       "order_reference": "5820447319",
       "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
       "case_type": "delivery_trace",
       "status": "open",
       "reason": "delivered_not_received",
-      "item_description": null,
+      "item_description": "blue noise-canceling headphones",
       "carrier_response": "none",
       "deadline_at": "2026-08-26T22:00:00+00:00",
       "carrier_may_contact_customer": true,
@@ -1266,7 +1141,7 @@
       "return_reference": null,
       "payment_reference": null,
       "amount_under_review": null,
-      "opened_at": "2026-08-25T19:40:00+00:00"
+      "opened_at": "2026-08-25T19:43:58+00:00"
      }
     }
    ]
@@ -1397,23 +1272,6 @@
      "keys": [
       "521527dc-8856-4b33-8e08-69658b1ca80b"
      ],
-     "queries": [
-      {
-       "where": {
-        "notification_id": "521527dc-8856-4b33-8e08-69658b1ca80b"
-       },
-       "matched": []
-      }
-     ],
-     "scanned": false
-    },
-    "scenario": {
-     "keys": [
-      "next_notification_id",
-      "scenario_time",
-      "target_case_id",
-      "target_case_number"
-     ],
      "queries": [],
      "scanned": false
     }
@@ -1426,30 +1284,17 @@
      "columns": [],
      "before": null,
      "after": {
+      "notification_id": "521527dc-8856-4b33-8e08-69658b1ca80b",
+      "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "order_reference": "5820447319",
+      "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
       "channel": "email",
       "template": "delivery_trace_confirmation",
-      "message_type": "delivery_trace_confirmation",
-      "masked_destination": "e***@northmail.com",
       "status": "sent",
-      "status_index": 0,
-      "status_progression": [
-       "sent",
-       "delivered"
-      ],
-      "included_fields": [
-       "case_number",
-       "status",
-       "carrier_response_deadline",
-       "approval_link"
-      ],
-      "sent_at": "2026-08-25T19:40:00+00:00",
-      "notification_id": "521527dc-8856-4b33-8e08-69658b1ca80b",
-      "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
-      "order_reference": "5820447319",
-      "subject_prefix": "Your Westline delivery trace",
       "optional_photo_link": null,
-      "photo_link_section": null,
-      "created_at": "2026-08-25T19:40:00+00:00"
+      "created_at": "2026-08-25T19:47:15+00:00",
+      "sent_at": "2026-08-25T19:47:15+00:00",
+      "delivered_at": null
      }
     }
    ]
@@ -1480,6 +1325,50 @@
    "start": 440.6,
    "end": 444.08,
    "emotions": []
+  },
+  {
+   "kind": "event",
+   "at": 448,
+   "actor": "mail_provider",
+   "description": "The mail provider reports the delivery-trace confirmation email as delivered to the customer's inbox; the customer says at 450s that it has just arrived.",
+   "event_id": "trace-email-delivered",
+   "writes": [
+    {
+     "table": "notifications",
+     "key": "521527dc-8856-4b33-8e08-69658b1ca80b",
+     "kind": "updated",
+     "columns": [
+      "delivered_at",
+      "status"
+     ],
+     "before": {
+      "notification_id": "521527dc-8856-4b33-8e08-69658b1ca80b",
+      "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "order_reference": "5820447319",
+      "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+      "channel": "email",
+      "template": "delivery_trace_confirmation",
+      "status": "sent",
+      "optional_photo_link": null,
+      "created_at": "2026-08-25T19:47:15+00:00",
+      "sent_at": "2026-08-25T19:47:15+00:00",
+      "delivered_at": null
+     },
+     "after": {
+      "notification_id": "521527dc-8856-4b33-8e08-69658b1ca80b",
+      "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+      "order_reference": "5820447319",
+      "customer_id": "c51d2171-c10b-489b-9186-a93ebd98613d",
+      "channel": "email",
+      "template": "delivery_trace_confirmation",
+      "status": "delivered",
+      "optional_photo_link": null,
+      "created_at": "2026-08-25T19:47:15+00:00",
+      "sent_at": "2026-08-25T19:47:15+00:00",
+      "delivered_at": "2026-08-25T15:47:28-04:00"
+     }
+    }
+   ]
   },
   {
    "kind": "say",
@@ -1605,77 +1494,13 @@
      "keys": [
       "min_reference_suffix_digits",
       "order_reference_mask",
-      "target_case_id",
-      "target_case_number",
       "timezone"
      ],
      "queries": [],
      "scanned": false
     }
    },
-   "writes": [
-    {
-     "table": "notifications",
-     "key": "521527dc-8856-4b33-8e08-69658b1ca80b",
-     "kind": "updated",
-     "columns": [
-      "status",
-      "status_index"
-     ],
-     "before": {
-      "channel": "email",
-      "template": "delivery_trace_confirmation",
-      "message_type": "delivery_trace_confirmation",
-      "masked_destination": "e***@northmail.com",
-      "status": "sent",
-      "status_index": 0,
-      "status_progression": [
-       "sent",
-       "delivered"
-      ],
-      "included_fields": [
-       "case_number",
-       "status",
-       "carrier_response_deadline",
-       "approval_link"
-      ],
-      "sent_at": "2026-08-25T19:40:00+00:00",
-      "notification_id": "521527dc-8856-4b33-8e08-69658b1ca80b",
-      "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
-      "order_reference": "5820447319",
-      "subject_prefix": "Your Westline delivery trace",
-      "optional_photo_link": null,
-      "photo_link_section": null,
-      "created_at": "2026-08-25T19:40:00+00:00"
-     },
-     "after": {
-      "channel": "email",
-      "template": "delivery_trace_confirmation",
-      "message_type": "delivery_trace_confirmation",
-      "masked_destination": "e***@northmail.com",
-      "status": "delivered",
-      "status_index": 1,
-      "status_progression": [
-       "sent",
-       "delivered"
-      ],
-      "included_fields": [
-       "case_number",
-       "status",
-       "carrier_response_deadline",
-       "approval_link"
-      ],
-      "sent_at": "2026-08-25T19:40:00+00:00",
-      "notification_id": "521527dc-8856-4b33-8e08-69658b1ca80b",
-      "case_number": "8cf648a4-ca60-4387-bc11-ec38f426123a",
-      "order_reference": "5820447319",
-      "subject_prefix": "Your Westline delivery trace",
-      "optional_photo_link": null,
-      "photo_link_section": null,
-      "created_at": "2026-08-25T19:40:00+00:00"
-     }
-    }
-   ]
+   "writes": []
   },
   {
    "kind": "say",
@@ -1763,8 +1588,8 @@
    "COMMUNICATE": 1.0
   },
   "db": {
-   "target_hash": "e01f5f938443af0a668e1217adad2588ee02f09c9315a301a07f5b3db7109694",
-   "predicted_hash": "e01f5f938443af0a668e1217adad2588ee02f09c9315a301a07f5b3db7109694"
+   "target_hash": "1a49f34bafe084883ad354b346ee47e4b676448036d3e8f8be995a828da6c214",
+   "predicted_hash": "1a49f34bafe084883ad354b346ee47e4b676448036d3e8f8be995a828da6c214"
   },
   "communicate_checks": [
    {

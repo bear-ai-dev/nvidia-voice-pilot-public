@@ -47,22 +47,18 @@
   "customer_reported_device_state": 30,
   "customers": 106,
   "devices": 251,
-  "id_allocator": 285,
+  "id_allocator": 1,
   "identity_verifications": 51,
   "lines": 284,
   "measurement_sources": 2,
   "plans": 7,
-  "scenario": 7,
+  "scenario": 6,
   "specialist_transfers": 0,
   "tool_access_requirements": 5,
-  "tool_clock": 6,
-  "tool_clock_cursor": 8,
   "usage_samples": 560,
   "verification_policies": 3
  },
- "read_side_effects": {
-  "tool_clock_cursor": "*"
- },
+ "read_side_effects": {},
  "rows": {
   "customers": {
    "6dcb2039-012b-4723-a256-13bb7b6467c2": {
@@ -96,21 +92,9 @@
     "key": "intake_channel",
     "value": "support"
    },
-   "next_identity_verification_id": {
-    "key": "next_identity_verification_id",
-    "value": "ae1d7bf3-792a-4a70-8673-16c535063f29"
-   },
-   "scenario_time": {
-    "key": "scenario_time",
-    "value": "2026-08-27T19:30:00-05:00"
-   },
    "timezone": {
     "key": "timezone",
     "value": "America/Chicago"
-   },
-   "next_addon_transaction_id": {
-    "key": "next_addon_transaction_id",
-    "value": "dfdab773-2580-4908-91cf-99a2b4826547"
    }
   },
   "verification_policies": {
@@ -126,65 +110,6 @@
      "full_name",
      "date_of_birth"
     ]
-   }
-  },
-  "tool_clock": {
-   "verify_customer_identity|1": {
-    "call_index": 1,
-    "offset_seconds": 68,
-    "tool_name": "verify_customer_identity"
-   },
-   "get_line_data_usage|1": {
-    "call_index": 1,
-    "offset_seconds": 105,
-    "tool_name": "get_line_data_usage"
-   },
-   "get_customer_bills|1": {
-    "call_index": 1,
-    "offset_seconds": 250,
-    "tool_name": "get_customer_bills"
-   },
-   "get_customer_bills|2": {
-    "call_index": 2,
-    "offset_seconds": 262,
-    "tool_name": "get_customer_bills"
-   },
-   "get_data_addon_offers|1": {
-    "call_index": 1,
-    "offset_seconds": 286,
-    "tool_name": "get_data_addon_offers"
-   },
-   "add_data_addon|1": {
-    "call_index": 1,
-    "offset_seconds": 455,
-    "tool_name": "add_data_addon"
-   }
-  },
-  "tool_clock_cursor": {
-   "verify_customer_identity": {
-    "calls_served": 0,
-    "default_step_seconds": 30,
-    "tool_name": "verify_customer_identity"
-   },
-   "get_line_data_usage": {
-    "calls_served": 0,
-    "default_step_seconds": 30,
-    "tool_name": "get_line_data_usage"
-   },
-   "get_customer_bills": {
-    "calls_served": 1,
-    "default_step_seconds": 30,
-    "tool_name": "get_customer_bills"
-   },
-   "get_data_addon_offers": {
-    "calls_served": 0,
-    "default_step_seconds": 30,
-    "tool_name": "get_data_addon_offers"
-   },
-   "add_data_addon": {
-    "calls_served": 0,
-    "default_step_seconds": 30,
-    "tool_name": "add_data_addon"
    }
   },
   "devices": {
@@ -740,7 +665,7 @@
      "usage",
      "billing"
     ],
-    "verified_at": "2026-08-27T19:31:08-05:00"
+    "verified_at": "2026-08-27T19:31:07-05:00"
    },
    "matches_recording": true,
    "write_tool": true,
@@ -761,12 +686,6 @@
        "where": {
         "customer_id": "6dcb2039-012b-4723-a256-13bb7b6467c2",
         "channel": "support"
-       },
-       "matched": []
-      },
-      {
-       "where": {
-        "verification_id": "ae1d7bf3-792a-4a70-8673-16c535063f29"
        },
        "matched": []
       }
@@ -791,23 +710,7 @@
     "scenario": {
      "keys": [
       "intake_channel",
-      "next_identity_verification_id",
-      "scenario_time",
       "timezone"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "tool_clock": {
-     "keys": [
-      "verify_customer_identity|1"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "tool_clock_cursor": {
-     "keys": [
-      "verify_customer_identity"
      ],
      "queries": [],
      "scanned": false
@@ -842,26 +745,7 @@
        "usage",
        "billing"
       ],
-      "verified_at": "2026-08-28T00:31:08+00:00",
-      "verified_at_display": "2026-08-27T19:31:08-05:00"
-     }
-    },
-    {
-     "table": "tool_clock_cursor",
-     "key": "verify_customer_identity",
-     "kind": "updated",
-     "columns": [
-      "calls_served"
-     ],
-     "before": {
-      "calls_served": 0,
-      "default_step_seconds": 30,
-      "tool_name": "verify_customer_identity"
-     },
-     "after": {
-      "calls_served": 1,
-      "default_step_seconds": 30,
-      "tool_name": "verify_customer_identity"
+      "verified_at": "2026-08-28T00:31:07+00:00"
      }
     }
    ]
@@ -1022,8 +906,8 @@
     "line_id": "ec8443dc-5fa9-4579-8dbe-5eafc61d53ac",
     "billing_cycle_id": "305af2ad-04af-420c-9562-a935b04b855b",
     "measurement_source": "carrier_metering",
-    "window_start": "2026-08-26T19:30:00-05:00",
-    "window_end": "2026-08-27T19:30:00-05:00",
+    "window_start": "2026-08-26T19:31:42-05:00",
+    "window_end": "2026-08-27T19:31:42-05:00",
     "samples": [
      {
       "start": "2026-08-27T00:00:00-05:00",
@@ -1049,7 +933,7 @@
     "used_gigabytes": 11.8,
     "remaining_high_speed_gigabytes": 2.2,
     "app_attribution_available": false,
-    "as_of": "2026-08-27T19:31:45-05:00"
+    "as_of": "2026-08-27T19:31:42-05:00"
    },
    "matches_recording": true,
    "write_tool": false,
@@ -1098,27 +982,12 @@
     },
     "scenario": {
      "keys": [
-      "scenario_time",
       "timezone"
      ],
      "queries": [],
      "scanned": false
     },
     "tool_access_requirements": {
-     "keys": [
-      "get_line_data_usage"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "tool_clock": {
-     "keys": [
-      "get_line_data_usage|1"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "tool_clock_cursor": {
      "keys": [
       "get_line_data_usage"
      ],
@@ -1200,26 +1069,7 @@
      "scanned": false
     }
    },
-   "writes": [
-    {
-     "table": "tool_clock_cursor",
-     "key": "get_line_data_usage",
-     "kind": "updated",
-     "columns": [
-      "calls_served"
-     ],
-     "before": {
-      "calls_served": 0,
-      "default_step_seconds": 30,
-      "tool_name": "get_line_data_usage"
-     },
-     "after": {
-      "calls_served": 1,
-      "default_step_seconds": 30,
-      "tool_name": "get_line_data_usage"
-     }
-    }
-   ]
+   "writes": []
   },
   {
    "kind": "say",
@@ -1389,7 +1239,7 @@
     "billing_cycle_id": "305af2ad-04af-420c-9562-a935b04b855b",
     "cycle_start": "2026-08-06T00:00:00-05:00",
     "cycle_end": "2026-09-05T00:00:00-05:00",
-    "as_of": "2026-08-27T19:34:10-05:00"
+    "as_of": "2026-08-27T19:34:08-05:00"
    },
    "matches_recording": true,
    "write_tool": false,
@@ -1435,7 +1285,6 @@
     },
     "scenario": {
      "keys": [
-      "scenario_time",
       "timezone"
      ],
      "queries": [],
@@ -1447,42 +1296,9 @@
      ],
      "queries": [],
      "scanned": false
-    },
-    "tool_clock": {
-     "keys": [
-      "get_customer_bills|1"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "tool_clock_cursor": {
-     "keys": [
-      "get_customer_bills"
-     ],
-     "queries": [],
-     "scanned": false
     }
    },
-   "writes": [
-    {
-     "table": "tool_clock_cursor",
-     "key": "get_customer_bills",
-     "kind": "updated",
-     "columns": [
-      "calls_served"
-     ],
-     "before": {
-      "calls_served": 0,
-      "default_step_seconds": 30,
-      "tool_name": "get_customer_bills"
-     },
-     "after": {
-      "calls_served": 1,
-      "default_step_seconds": 30,
-      "tool_name": "get_customer_bills"
-     }
-    }
-   ]
+   "writes": []
   },
   {
    "kind": "say",
@@ -1534,7 +1350,7 @@
     "overage_charge": 0.0,
     "currency": "USD",
     "after_high_speed_allowance": "speed_reduced",
-    "as_of": "2026-08-27T19:34:22-05:00"
+    "as_of": "2026-08-27T19:34:20-05:00"
    },
    "matches_recording": true,
    "write_tool": false,
@@ -1614,7 +1430,6 @@
     },
     "scenario": {
      "keys": [
-      "scenario_time",
       "timezone"
      ],
      "queries": [],
@@ -1626,42 +1441,9 @@
      ],
      "queries": [],
      "scanned": false
-    },
-    "tool_clock": {
-     "keys": [
-      "get_customer_bills|2"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "tool_clock_cursor": {
-     "keys": [
-      "get_customer_bills"
-     ],
-     "queries": [],
-     "scanned": false
     }
    },
-   "writes": [
-    {
-     "table": "tool_clock_cursor",
-     "key": "get_customer_bills",
-     "kind": "updated",
-     "columns": [
-      "calls_served"
-     ],
-     "before": {
-      "calls_served": 1,
-      "default_step_seconds": 30,
-      "tool_name": "get_customer_bills"
-     },
-     "after": {
-      "calls_served": 2,
-      "default_step_seconds": 30,
-      "tool_name": "get_customer_bills"
-     }
-    }
-   ]
+   "writes": []
   },
   {
    "kind": "say",
@@ -1706,7 +1488,7 @@
       "expires_at": "2026-08-28T19:35:00-05:00"
      }
     ],
-    "as_of": "2026-08-27T19:34:46-05:00"
+    "as_of": "2026-08-27T19:34:45-05:00"
    },
    "matches_recording": true,
    "write_tool": false,
@@ -1764,7 +1546,6 @@
     },
     "scenario": {
      "keys": [
-      "scenario_time",
       "timezone"
      ],
      "queries": [],
@@ -1776,42 +1557,9 @@
      ],
      "queries": [],
      "scanned": false
-    },
-    "tool_clock": {
-     "keys": [
-      "get_data_addon_offers|1"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "tool_clock_cursor": {
-     "keys": [
-      "get_data_addon_offers"
-     ],
-     "queries": [],
-     "scanned": false
     }
    },
-   "writes": [
-    {
-     "table": "tool_clock_cursor",
-     "key": "get_data_addon_offers",
-     "kind": "updated",
-     "columns": [
-      "calls_served"
-     ],
-     "before": {
-      "calls_served": 0,
-      "default_step_seconds": 30,
-      "tool_name": "get_data_addon_offers"
-     },
-     "after": {
-      "calls_served": 1,
-      "default_step_seconds": 30,
-      "tool_name": "get_data_addon_offers"
-     }
-    }
-   ]
+   "writes": []
   },
   {
    "kind": "say",
@@ -2056,7 +1804,7 @@
     "transaction_id": "dfdab773-2580-4908-91cf-99a2b4826547",
     "status": "active",
     "offer_id": "21298486-3eca-4c2e-8d07-2b13c0a33fcc",
-    "effective_at": "2026-08-27T19:37:35-05:00",
+    "effective_at": "2026-08-27T19:37:32-05:00",
     "bill_reference": "7af62370-8858-4af6-b2cd-2b702fd15586",
     "charged_price": 40.0,
     "currency": "USD",
@@ -2078,12 +1826,6 @@
       "dfdab773-2580-4908-91cf-99a2b4826547"
      ],
      "queries": [
-      {
-       "where": {
-        "transaction_id": "dfdab773-2580-4908-91cf-99a2b4826547"
-       },
-       "matched": []
-      },
       {
        "where": {
         "line_id": "ec8443dc-5fa9-4579-8dbe-5eafc61d53ac",
@@ -2164,28 +1906,12 @@
     },
     "scenario": {
      "keys": [
-      "next_addon_transaction_id",
-      "scenario_time",
       "timezone"
      ],
      "queries": [],
      "scanned": false
     },
     "tool_access_requirements": {
-     "keys": [
-      "add_data_addon"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "tool_clock": {
-     "keys": [
-      "add_data_addon|1"
-     ],
-     "queries": [],
-     "scanned": false
-    },
-    "tool_clock_cursor": {
      "keys": [
       "add_data_addon"
      ],
@@ -2249,8 +1975,7 @@
       "data_gigabytes": 5.0,
       "charged_price": 40.0,
       "currency": "USD",
-      "effective_at": "2026-08-28T00:37:35+00:00",
-      "effective_at_display": "2026-08-27T19:37:35-05:00",
+      "effective_at": "2026-08-28T00:37:32+00:00",
       "authorized_by_customer": true
      }
     },
@@ -2268,24 +1993,6 @@
       "amount": 40.0,
       "currency": "USD",
       "billing_timing": "next_bill"
-     }
-    },
-    {
-     "table": "tool_clock_cursor",
-     "key": "add_data_addon",
-     "kind": "updated",
-     "columns": [
-      "calls_served"
-     ],
-     "before": {
-      "calls_served": 0,
-      "default_step_seconds": 30,
-      "tool_name": "add_data_addon"
-     },
-     "after": {
-      "calls_served": 1,
-      "default_step_seconds": 30,
-      "tool_name": "add_data_addon"
      }
     }
    ]
@@ -2482,8 +2189,8 @@
    "COMMUNICATE": 1.0
   },
   "db": {
-   "target_hash": "4ecc06de2e2f54381208720e3c67e93902fe200ecba51f4fdb467de0569c7e2b",
-   "predicted_hash": "4ecc06de2e2f54381208720e3c67e93902fe200ecba51f4fdb467de0569c7e2b"
+   "target_hash": "f68acde4d0f1e40df97c034a91fd1bf560a024311230a0c87a01b27fc7f1bb16",
+   "predicted_hash": "f68acde4d0f1e40df97c034a91fd1bf560a024311230a0c87a01b27fc7f1bb16"
   },
   "communicate_checks": [
    {

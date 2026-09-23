@@ -41,20 +41,16 @@
   "card_accounts": 280,
   "card_products": 12,
   "card_restrictions": 55,
-  "card_section_policy": 6,
-  "card_section_read_cursor": 0,
-  "card_section_view": 6,
   "channel_confirmations": 25,
   "customers": 102,
   "delivery_channels": 2,
-  "id_allocator": 2,
   "identity_verifications": 47,
   "kb_records": 53,
   "notification_templates": 7,
   "notifications": 46,
   "referrals": 125,
   "restriction_transactions": 98,
-  "scenario": 9,
+  "scenario": 6,
   "self_service_sessions": 57,
   "service_cases": 70,
   "session_deliveries": 86,
@@ -65,17 +61,7 @@
   "welcome_offers": 15,
   "workflow_profiles": 3
  },
- "read_side_effects": {
-  "self_service_sessions": [
-   "status",
-   "opened_at"
-  ],
-  "channel_confirmations": [
-   "status",
-   "verified_at"
-  ],
-  "card_section_read_cursor": "*"
- },
+ "read_side_effects": {},
  "rows": {
   "customers": {
    "4d6679ca-bcef-4893-81bf-488f66c8c666": {
@@ -89,21 +75,17 @@
     "full_name": "Johnny Monroe",
     "login_identifier_kind": "username",
     "mobile_last4": "1251",
-    "notice_slug": "johnny",
     "notification_email": "johnny.monroe@relaymail.example",
     "primary_email": "johnny.monroe@relaymail.example",
     "required_verification_methods": [
      "billing_zip",
      "mobile_last4"
-    ],
-    "verification_key": "SF204771"
+    ]
    }
   },
   "trusted_channels": {
    "279561c9-f2ce-4402-a23a-2e19316678b3": {
     "channel_id": "279561c9-f2ce-4402-a23a-2e19316678b3",
-    "confirmation_completes": true,
-    "confirmation_verified_at": "2026-08-27T10:48:39-04:00",
     "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
     "enrolled": true,
     "masked_destination": "***-***-1251",
@@ -111,10 +93,6 @@
    }
   },
   "scenario": {
-   "scenario_time": {
-    "key": "scenario_time",
-    "value": "2026-08-27T10:46:31-04:00"
-   },
    "time_status": {
     "key": "time_status",
     "value": "available"
@@ -122,42 +100,15 @@
    "timezone": {
     "key": "timezone",
     "value": "America/New_York"
-   },
-   "next_identity_verification_id": {
-    "key": "next_identity_verification_id",
-    "value": "613f42b7-69cd-4767-bf41-9a9db63ff731"
-   },
-   "next_channel_confirmation_id": {
-    "key": "next_channel_confirmation_id",
-    "value": "a241c1d7-d6c0-4489-9406-65a28d3bca66"
-   },
-   "next_self_service_session_id": {
-    "key": "next_self_service_session_id",
-    "value": "f4136da6-25dc-464b-b50c-8f02a5cc1ca3"
    }
   },
   "service_cases": {
    "case-4d6679ca-bcef-4893-81bf-488f66c8c666-email": {
     "case_id": "case-4d6679ca-bcef-4893-81bf-488f66c8c666-email",
     "case_kind": "email_change",
-    "case_slug": "email-change",
     "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
     "opened_at": "2026-08-27T10:45:00-04:00",
     "status": "open"
-   }
-  },
-  "channel_confirmations": {
-   "a241c1d7-d6c0-4489-9406-65a28d3bca66": {
-    "confirmation_id": "a241c1d7-d6c0-4489-9406-65a28d3bca66",
-    "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
-    "purpose": "email_change",
-    "status": "sent",
-    "verified_at": null,
-    "sent_at": "2026-08-27T10:46:31-04:00",
-    "channel_id": "279561c9-f2ce-4402-a23a-2e19316678b3",
-    "masked_destination": "***-***-1251",
-    "expires_at": "2026-08-27T11:01:31-04:00",
-    "verification_id": "613f42b7-69cd-4767-bf41-9a9db63ff731"
    }
   },
   "card_products": {
@@ -469,35 +420,10 @@
     "claim_tracked": false,
     "credit_pull_authorized": false,
     "display_label_template": null,
-    "resource_suffix_source": "none",
     "resume_supported": true,
     "save_and_continue": true,
-    "session_slug": "card-application",
     "visible_stages": null,
     "workflow": "card_application"
-   }
-  },
-  "self_service_sessions": {
-   "f4136da6-25dc-464b-b50c-8f02a5cc1ca3": {
-    "session_id": "f4136da6-25dc-464b-b50c-8f02a5cc1ca3",
-    "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
-    "workflow": "card_application",
-    "resource_id": "c6c675e6-0faf-4004-a5de-881eaaa805b7",
-    "status": "issued",
-    "submitted": false,
-    "resume_supported": true,
-    "save_and_continue": true,
-    "credit_pull_authorized": false,
-    "claim_tracked": false,
-    "claim_id": null,
-    "access_location": null,
-    "display_label": null,
-    "allowed_customer_actions": null,
-    "visible_stages": null,
-    "customer_opens": true,
-    "issued_at": "2026-08-27T10:46:31-04:00",
-    "opened_at": null,
-    "expires_at": null
    }
   }
  },
@@ -680,7 +606,6 @@
    "reads": {
     "scenario": {
      "keys": [
-      "scenario_time",
       "time_status",
       "timezone"
      ],
@@ -727,19 +652,12 @@
      "queries": [
       {
        "where": {
-        "verification_id": "613f42b7-69cd-4767-bf41-9a9db63ff731"
+        "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+        "case_id": "case-4d6679ca-bcef-4893-81bf-488f66c8c666-email"
        },
        "matched": []
       }
      ],
-     "scanned": false
-    },
-    "scenario": {
-     "keys": [
-      "next_identity_verification_id",
-      "scenario_time"
-     ],
-     "queries": [],
      "scanned": false
     },
     "service_cases": {
@@ -768,6 +686,7 @@
      "after": {
       "verification_id": "613f42b7-69cd-4767-bf41-9a9db63ff731",
       "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+      "case_id": "case-4d6679ca-bcef-4893-81bf-488f66c8c666-email",
       "required_methods": [
        "billing_zip",
        "mobile_last4"
@@ -778,8 +697,7 @@
        "mobile_last4"
       ],
       "verified_at": "2026-08-27T10:46:31-04:00",
-      "expires_at": "2026-08-27T11:16:31-04:00",
-      "time_asserted": false
+      "expires_at": "2026-08-27T11:16:31-04:00"
      }
     }
    ]
@@ -866,7 +784,9 @@
      "queries": [
       {
        "where": {
-        "confirmation_id": "a241c1d7-d6c0-4489-9406-65a28d3bca66"
+        "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+        "purpose": "email_change",
+        "status": "sent"
        },
        "matched": []
       }
@@ -893,14 +813,6 @@
        ]
       }
      ],
-     "scanned": false
-    },
-    "scenario": {
-     "keys": [
-      "next_channel_confirmation_id",
-      "scenario_time"
-     ],
-     "queries": [],
      "scanned": false
     },
     "trusted_channels": {
@@ -933,10 +845,10 @@
       "purpose": "email_change",
       "status": "sent",
       "verified_at": null,
-      "sent_at": "2026-08-27T10:46:31-04:00",
+      "sent_at": "2026-08-27T10:48:24-04:00",
       "channel_id": "279561c9-f2ce-4402-a23a-2e19316678b3",
       "masked_destination": "***-***-1251",
-      "expires_at": "2026-08-27T11:01:31-04:00",
+      "expires_at": "2026-08-27T11:03:24-04:00",
       "verification_id": "613f42b7-69cd-4767-bf41-9a9db63ff731"
      }
     }
@@ -968,6 +880,48 @@
    "start": 216.27,
    "end": 219.48,
    "emotions": []
+  },
+  {
+   "kind": "event",
+   "at": 219,
+   "actor": "customer",
+   "description": "The customer enters the code texted to the mobile ending 1251, and the OTP service marks the email-change challenge verified.",
+   "event_id": "customer-answers-email-change-sms",
+   "writes": [
+    {
+     "table": "channel_confirmations",
+     "key": "a241c1d7-d6c0-4489-9406-65a28d3bca66",
+     "kind": "updated",
+     "columns": [
+      "status",
+      "verified_at"
+     ],
+     "before": {
+      "confirmation_id": "a241c1d7-d6c0-4489-9406-65a28d3bca66",
+      "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+      "purpose": "email_change",
+      "status": "sent",
+      "verified_at": null,
+      "sent_at": "2026-08-27T10:48:24-04:00",
+      "channel_id": "279561c9-f2ce-4402-a23a-2e19316678b3",
+      "masked_destination": "***-***-1251",
+      "expires_at": "2026-08-27T11:03:24-04:00",
+      "verification_id": "613f42b7-69cd-4767-bf41-9a9db63ff731"
+     },
+     "after": {
+      "confirmation_id": "a241c1d7-d6c0-4489-9406-65a28d3bca66",
+      "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+      "purpose": "email_change",
+      "status": "verified",
+      "verified_at": "2026-08-27T10:48:39-04:00",
+      "sent_at": "2026-08-27T10:48:24-04:00",
+      "channel_id": "279561c9-f2ce-4402-a23a-2e19316678b3",
+      "masked_destination": "***-***-1251",
+      "expires_at": "2026-08-27T11:03:24-04:00",
+      "verification_id": "613f42b7-69cd-4767-bf41-9a9db63ff731"
+     }
+    }
+   ]
   },
   {
    "kind": "tool",
@@ -1003,13 +957,6 @@
      ],
      "scanned": false
     },
-    "scenario": {
-     "keys": [
-      "scenario_time"
-     ],
-     "queries": [],
-     "scanned": false
-    },
     "trusted_channels": {
      "keys": [
       "279561c9-f2ce-4402-a23a-2e19316678b3"
@@ -1018,41 +965,7 @@
      "scanned": false
     }
    },
-   "writes": [
-    {
-     "table": "channel_confirmations",
-     "key": "a241c1d7-d6c0-4489-9406-65a28d3bca66",
-     "kind": "updated",
-     "columns": [
-      "status",
-      "verified_at"
-     ],
-     "before": {
-      "confirmation_id": "a241c1d7-d6c0-4489-9406-65a28d3bca66",
-      "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
-      "purpose": "email_change",
-      "status": "sent",
-      "verified_at": null,
-      "sent_at": "2026-08-27T10:46:31-04:00",
-      "channel_id": "279561c9-f2ce-4402-a23a-2e19316678b3",
-      "masked_destination": "***-***-1251",
-      "expires_at": "2026-08-27T11:01:31-04:00",
-      "verification_id": "613f42b7-69cd-4767-bf41-9a9db63ff731"
-     },
-     "after": {
-      "confirmation_id": "a241c1d7-d6c0-4489-9406-65a28d3bca66",
-      "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
-      "purpose": "email_change",
-      "status": "verified",
-      "verified_at": "2026-08-27T10:48:39-04:00",
-      "sent_at": "2026-08-27T10:46:31-04:00",
-      "channel_id": "279561c9-f2ce-4402-a23a-2e19316678b3",
-      "masked_destination": "***-***-1251",
-      "expires_at": "2026-08-27T11:01:31-04:00",
-      "verification_id": "613f42b7-69cd-4767-bf41-9a9db63ff731"
-     }
-    }
-   ]
+   "writes": []
   },
   {
    "kind": "tool",
@@ -1116,13 +1029,6 @@
       }
      ],
      "scanned": false
-    },
-    "scenario": {
-     "keys": [
-      "scenario_time"
-     ],
-     "queries": [],
-     "scanned": false
     }
    },
    "writes": [
@@ -1145,14 +1051,12 @@
       "full_name": "Johnny Monroe",
       "login_identifier_kind": "username",
       "mobile_last4": "1251",
-      "notice_slug": "johnny",
       "notification_email": "johnny.monroe@relaymail.example",
       "primary_email": "johnny.monroe@relaymail.example",
       "required_verification_methods": [
        "billing_zip",
        "mobile_last4"
-      ],
-      "verification_key": "SF204771"
+      ]
      },
      "after": {
       "account_id": "SF204771",
@@ -1165,14 +1069,12 @@
       "full_name": "Johnny Monroe",
       "login_identifier_kind": "username",
       "mobile_last4": "1251",
-      "notice_slug": "johnny",
       "notification_email": "johnny.monroe.travel@outlook.com",
       "primary_email": "johnny.monroe.travel@outlook.com",
       "required_verification_methods": [
        "billing_zip",
        "mobile_last4"
-      ],
-      "verification_key": "SF204771"
+      ]
      }
     }
    ]
@@ -1563,26 +1465,11 @@
      "queries": [],
      "scanned": false
     },
-    "scenario": {
-     "keys": [
-      "next_self_service_session_id",
-      "scenario_time"
-     ],
-     "queries": [],
-     "scanned": false
-    },
     "self_service_sessions": {
      "keys": [
       "f4136da6-25dc-464b-b50c-8f02a5cc1ca3"
      ],
-     "queries": [
-      {
-       "where": {
-        "session_id": "f4136da6-25dc-464b-b50c-8f02a5cc1ca3"
-       },
-       "matched": []
-      }
-     ],
+     "queries": [],
      "scanned": false
     },
     "session_deliveries": {
@@ -1624,8 +1511,7 @@
       "display_label": null,
       "allowed_customer_actions": null,
       "visible_stages": null,
-      "customer_opens": true,
-      "issued_at": "2026-08-27T10:46:31-04:00",
+      "issued_at": "2026-08-27T10:51:40-04:00",
       "opened_at": null,
       "expires_at": null
      }
@@ -1769,6 +1655,64 @@
    "emotions": []
   },
   {
+   "kind": "event",
+   "at": 476,
+   "actor": "customer",
+   "description": "The customer opens the Summit Journey application from the secure message centre (\"I see the application page on my end\").",
+   "event_id": "customer-opens-card-application",
+   "writes": [
+    {
+     "table": "self_service_sessions",
+     "key": "f4136da6-25dc-464b-b50c-8f02a5cc1ca3",
+     "kind": "updated",
+     "columns": [
+      "opened_at",
+      "status"
+     ],
+     "before": {
+      "session_id": "f4136da6-25dc-464b-b50c-8f02a5cc1ca3",
+      "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+      "workflow": "card_application",
+      "resource_id": "c6c675e6-0faf-4004-a5de-881eaaa805b7",
+      "status": "issued",
+      "submitted": false,
+      "resume_supported": true,
+      "save_and_continue": true,
+      "credit_pull_authorized": false,
+      "claim_tracked": false,
+      "claim_id": null,
+      "access_location": null,
+      "display_label": null,
+      "allowed_customer_actions": null,
+      "visible_stages": null,
+      "issued_at": "2026-08-27T10:51:40-04:00",
+      "opened_at": null,
+      "expires_at": null
+     },
+     "after": {
+      "session_id": "f4136da6-25dc-464b-b50c-8f02a5cc1ca3",
+      "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+      "workflow": "card_application",
+      "resource_id": "c6c675e6-0faf-4004-a5de-881eaaa805b7",
+      "status": "open_not_submitted",
+      "submitted": false,
+      "resume_supported": true,
+      "save_and_continue": true,
+      "credit_pull_authorized": false,
+      "claim_tracked": false,
+      "claim_id": null,
+      "access_location": null,
+      "display_label": null,
+      "allowed_customer_actions": null,
+      "visible_stages": null,
+      "issued_at": "2026-08-27T10:51:40-04:00",
+      "opened_at": "2026-08-27T10:52:56-04:00",
+      "expires_at": null
+     }
+    }
+   ]
+  },
+  {
    "kind": "say",
    "role": "user",
    "speaker": "Johnny",
@@ -1889,13 +1833,6 @@
    "matches_recording": true,
    "write_tool": false,
    "reads": {
-    "scenario": {
-     "keys": [
-      "scenario_time"
-     ],
-     "queries": [],
-     "scanned": false
-    },
     "self_service_sessions": {
      "keys": [],
      "queries": [
@@ -1912,59 +1849,7 @@
      "scanned": false
     }
    },
-   "writes": [
-    {
-     "table": "self_service_sessions",
-     "key": "f4136da6-25dc-464b-b50c-8f02a5cc1ca3",
-     "kind": "updated",
-     "columns": [
-      "opened_at",
-      "status"
-     ],
-     "before": {
-      "session_id": "f4136da6-25dc-464b-b50c-8f02a5cc1ca3",
-      "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
-      "workflow": "card_application",
-      "resource_id": "c6c675e6-0faf-4004-a5de-881eaaa805b7",
-      "status": "issued",
-      "submitted": false,
-      "resume_supported": true,
-      "save_and_continue": true,
-      "credit_pull_authorized": false,
-      "claim_tracked": false,
-      "claim_id": null,
-      "access_location": null,
-      "display_label": null,
-      "allowed_customer_actions": null,
-      "visible_stages": null,
-      "customer_opens": true,
-      "issued_at": "2026-08-27T10:46:31-04:00",
-      "opened_at": null,
-      "expires_at": null
-     },
-     "after": {
-      "session_id": "f4136da6-25dc-464b-b50c-8f02a5cc1ca3",
-      "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
-      "workflow": "card_application",
-      "resource_id": "c6c675e6-0faf-4004-a5de-881eaaa805b7",
-      "status": "open_not_submitted",
-      "submitted": false,
-      "resume_supported": true,
-      "save_and_continue": true,
-      "credit_pull_authorized": false,
-      "claim_tracked": false,
-      "claim_id": null,
-      "access_location": null,
-      "display_label": null,
-      "allowed_customer_actions": null,
-      "visible_stages": null,
-      "customer_opens": true,
-      "issued_at": "2026-08-27T10:46:31-04:00",
-      "opened_at": "2026-08-27T10:46:31-04:00",
-      "expires_at": null
-     }
-    }
-   ]
+   "writes": []
   },
   {
    "kind": "say",
@@ -2111,8 +1996,8 @@
    "COMMUNICATE": 1.0
   },
   "db": {
-   "target_hash": "b01ca0c243342d2ccbb160d2a6c752ec047fbae7d3c298026622a9c043364c6f",
-   "predicted_hash": "b01ca0c243342d2ccbb160d2a6c752ec047fbae7d3c298026622a9c043364c6f"
+   "target_hash": "ce721a0a5cc1a0c0f0ed51fc2f0ece19d73369946e5817d014cafd2c1cc7360a",
+   "predicted_hash": "ce721a0a5cc1a0c0f0ed51fc2f0ece19d73369946e5817d014cafd2c1cc7360a"
   },
   "communicate_checks": [
    {
