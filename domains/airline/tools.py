@@ -437,6 +437,21 @@ def _sellable_fares(db, flight_id: str, departure_date: str, traveler_count: int
     return sellable
 
 
+def _fare_option_views(db, priced: list[tuple]) -> list[dict]:
+    """Fare families as (price per traveler, fare class, advance seat selection)
+    tuples, rendered cheapest first with the scenario's currency."""
+    currency = scenario_value(db, "currency")
+    return [
+        {
+            "fare_class": fare_class,
+            "price_per_traveler": as_float(price),
+            "currency": currency,
+            "advance_seat_selection_allowed": seats,
+        }
+        for price, fare_class, seats in sorted(priced)
+    ]
+
+
 def _direct_flights(db, origin: str, destination: str, departure_date: str,
                     travel_day: str, traveler_count: int, max_stops: int) -> list[dict]:
     """Every flight on a route and date within the stop limit with room for the
@@ -445,7 +460,6 @@ def _direct_flights(db, origin: str, destination: str, departure_date: str,
     Prices are one way, per traveler, for that flight. No flight is picked over
     another; the caller has the times and prices to choose.
     """
-    currency = scenario_value(db, "currency")
     found = []
     flights = _order(rows(db, "flights", origin_code=origin, destination_code=destination),
                      (lambda row: row["departure_time"], False),
@@ -456,20 +470,12 @@ def _direct_flights(db, origin: str, destination: str, departure_date: str,
         sellable = _sellable_fares(db, flight["flight_id"], travel_day, traveler_count)
         if not sellable:
             continue
-        priced = sorted((_cents(fare["leg_price"]), fare["fare_class"],
-                         fare["advance_seat_selection_allowed"])
-                        for fare in sellable.values())
+        priced = [(_cents(fare["leg_price"]), fare["fare_class"],
+                   fare["advance_seat_selection_allowed"])
+                  for fare in sellable.values()]
         found.append({
             **_flight_view(db, flight, departure_date),
-            "fare_options": [
-                {
-                    "fare_class": fare_class,
-                    "price_per_traveler": as_float(price),
-                    "currency": currency,
-                    "advance_seat_selection_allowed": seats,
-                }
-                for price, fare_class, seats in priced
-            ],
+            "fare_options": _fare_option_views(db, priced),
         })
     return found
 
@@ -503,7 +509,6 @@ def _connections(db, origin: str, destination: str, departure_date: str,
              departure_date=departure_date, return_date=return_date, offered=True),
         (lambda row: row["itinerary_id"], False),
     )
-    currency = scenario_value(db, "currency")
     dates = {"outbound": departure_date, "return": return_date}
 
     found = []
@@ -539,7 +544,6 @@ def _connections(db, origin: str, destination: str, departure_date: str,
                               fare_class=fare_class)["advance_seat_selection_allowed"]
                         for flight_id in flight_ids)
             priced.append((price, fare_class, seats))
-        priced.sort()
 
         itinerary: dict = {"itinerary_id": candidate["itinerary_id"]}
         for direction, travel_date in dates.items():
@@ -558,15 +562,7 @@ def _connections(db, origin: str, destination: str, departure_date: str,
                     for leg in legs[direction]
                 ],
             }
-        itinerary["fare_options"] = [
-            {
-                "fare_class": fare_class,
-                "price_per_traveler": as_float(price),
-                "currency": currency,
-                "advance_seat_selection_allowed": seats,
-            }
-            for price, fare_class, seats in priced
-        ]
+        itinerary["fare_options"] = _fare_option_views(db, priced)
         found.append(itinerary)
     return found
 

@@ -25,8 +25,8 @@ from datetime import date, datetime, timedelta, timezone
 from decimal import ROUND_HALF_EVEN, ROUND_HALF_UP, Decimal
 from zoneinfo import ZoneInfo
 
-from toolkit import (NotFound, Refusal, allocate_id, as_float, as_int, as_list_always,
-                     compact, first, insert, rows, scenario_id, scenario_value)
+from toolkit import (NotFound, Refusal, allocate_id, as_float, as_list_always, compact,
+                     first, insert, rows, scenario_id, scenario_value)
 
 KEY_COLUMNS = {
     "addon_offers": [
