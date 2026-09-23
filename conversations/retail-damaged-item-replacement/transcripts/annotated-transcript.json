@@ -112,7 +112,7 @@
       {
         "type": "function_call_output",
         "call_id": "rd-001",
-        "output": "\n\n{\"order_reference\":\"ending-4086\",\"customer\":{\"customer_id\":\"c51d2171-c10b-489b-9186-a93ebd98613d\",\"display_name\":\"Ethan Patel\",\"verified_email\":\"e***@northmail.com\"},\"items\":[{\"item_reference\":\"coffee-maker-matte-black-12-cup\",\"name\":\"12-cup coffee maker\",\"variant\":\"matte black\"}],\"cases\":[{\"case_id\":\"8cf648a4-ca60-4387-bc11-ec38f426123a\",\"order_reference\":\"ending-7319\",\"item\":\"blue noise-canceling headphones\",\"status\":\"open\",\"preferences\":{\"pickup\":\"West 23rd Street pickup counter\"},\"case_number\":\"WST481662\"}]}"
+        "output": "\n\n{\"order_reference\":\"ending-4086\",\"customer\":{\"customer_id\":\"c51d2171-c10b-489b-9186-a93ebd98613d\",\"display_name\":\"Ethan Patel\",\"verified_email\":\"e***@northmail.com\"},\"items\":[{\"item_reference\":\"coffee-maker-matte-black-12-cup\",\"name\":\"12-cup coffee maker\",\"variant\":\"matte black\"}],\"cases\":[{\"order_reference\":\"ending-7319\",\"item\":\"blue noise-canceling headphones\",\"status\":\"open\",\"preferences\":{\"pickup\":\"West 23rd Street pickup counter\"},\"case_id\":\"8cf648a4-ca60-4387-bc11-ec38f426123a\",\"case_number\":\"WST481662\"}],\"eligible_resolutions\":[{\"type\":\"replacement\",\"preserves_original_price\":true,\"return_required\":false,\"photo_required\":false,\"optional_photo_upload_available\":true,\"photo_upload_blocks_fulfillment\":false,\"estimated_delivery\":\"2026-08-27\",\"default_fulfillment\":\"home_address_on_order\"},{\"type\":\"refund\"}]}"
       },
       {
         "id": "msg_0006_0009",

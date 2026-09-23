@@ -45,6 +45,7 @@
       "tender_type": "gift_card",
       "amount": 40,
       "status": "issued_available",
+      "ledger_status": "active",
       "available_balance": 40,
       "used": false,
       "delivery": "digital_gift_card_number_in_email"

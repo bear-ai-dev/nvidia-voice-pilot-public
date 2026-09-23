@@ -4,10 +4,20 @@ Ported from the Westline retail PostgreSQL tool server in PR #17. Each tool is
 (db, args) -> result and may mutate db in place; see env/toolkit.py for the row
 layout and helpers.
 
-Handlers hold domain logic only. Every identifier, amount, deadline, carrier
-detail and notification state that appears in a result is read from the
-database, never computed from wall time or generated at random, so a result is
-reproducible and an operator can explain any value by pointing at a row.
+Handlers hold domain logic only. Every amount, deadline, carrier detail and
+notification state that appears in a result is read from the database, so an
+operator can explain any value by pointing at a row. A read returns the same
+projection of the same rows every time it is made and writes nothing. What
+changes between two reads is the records themselves: a write the agent made, or
+something that happened outside the call in the meantime (the mail system
+sending a queued email, the mail provider reporting it delivered), which the
+conversation's events.json schedules at its own time.
+
+New records take their identifiers from the environment's seeded generator
+(toolkit.new_id), and their readable business numbers (case numbers, order
+numbers, transfer ids) from the database's own sequences in id_allocator. Every
+write is stamped with the call clock (toolkit.now), which moves through the
+call, so two writes minutes apart carry different times.
 
 Five conventions are worth stating because they decide what a result looks
 like:
@@ -26,7 +36,7 @@ to cents the way the database rounds it.
 
 Time. Results carry timestamps and dates, never phrases relative to the call:
 a deadline is 2026-08-26T18:00:00-04:00, not "18:00 tomorrow", and working out
-"tomorrow" from the scenario time is the agent's job. Stored instants are ISO
+"tomorrow" from the current time is the agent's job. Stored instants are ISO
 8601 strings in UTC, which is how the database returned them; a result renders
 them in the scenario's timezone, which is how the desk displays them. Delivery
 estimates are calendar dates.
@@ -61,8 +71,9 @@ from decimal import ROUND_HALF_UP, Decimal
 from zoneinfo import ZoneInfo
 
 from toolkit import (NotFound, Refusal, ToolError, allocate_id, as_float, as_int,
-                     as_list_always, compact, first, insert, rows, scenario_id,
+                     as_list_always, compact, first, insert, new_id, rows,
                      scenario_value)
+from toolkit import now as call_clock
 
 # Key columns per table: a row's key in db[table] is these columns joined by "|".
 KEY_COLUMNS = {
@@ -70,21 +81,21 @@ KEY_COLUMNS = {
         "scan_seq"
     ],
     "case_items": [
-        "case_number",
+        "case_id",
         "item_reference"
     ],
     "case_notes": [
-        "case_number",
+        "case_id",
         "note_no"
     ],
     "case_preferences": [
-        "case_number"
+        "case_id"
     ],
     "case_type_policy": [
         "case_type"
     ],
     "cases": [
-        "case_number"
+        "case_id"
     ],
     "customers": [
         "customer_id"
@@ -137,15 +148,6 @@ KEY_COLUMNS = {
     "scenario": [
         "key"
     ],
-    "section_read_cursor": [
-        "order_reference",
-        "section"
-    ],
-    "section_view": [
-        "order_reference",
-        "section",
-        "view_index"
-    ],
     "specialist_transfers": [
         "transfer_id"
     ]
@@ -183,12 +185,17 @@ def _add(db, table: str, row: dict) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# scenario clock and rendering
+# call clock and rendering
 # ---------------------------------------------------------------------------
 
 
 def _now(db) -> dt.datetime:
-    return dt.datetime.fromisoformat(scenario_value(db, "scenario_time"))
+    """The current moment in the call, in the scenario's UTC offset.
+
+    The runtime moves this clock through the call, so a write made seven minutes
+    after another is stamped seven minutes later.
+    """
+    return call_clock(db)
 
 
 def _instant(value: str) -> dt.datetime:
@@ -210,16 +217,14 @@ def _decimal(value) -> Decimal | None:
     return None if value is None else Decimal(str(value))
 
 
-def _new_case_number(db) -> str:
-    return (scenario_id(db, "next_support_case_id", "cases", "case_number")
-            or allocate_id(db, "support_case"))
+def _new_case(db) -> tuple[str, str]:
+    """Issue a new case's internal id and its customer-facing number together.
 
-
-def _case_display_number(db, case_number: str) -> str:
-    """The customer-facing number: the recorded one only for the recorded case."""
-    if case_number == scenario_value(db, "next_support_case_id"):
-        return scenario_value(db, "next_support_case_number") or case_number
-    return case_number
+    The id is an opaque UUID from the environment's generator; the number comes
+    from the desk's support_case sequence, the one every other case on file was
+    numbered from. Both are stored on the case row.
+    """
+    return new_id(db, "support_case"), allocate_id(db, "support_case")
 
 
 def _money(value):
@@ -363,37 +368,6 @@ def _resolve_variant(db, product_reference: str) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# progressive section reads
-# ---------------------------------------------------------------------------
-
-
-def _serve_section(db, order_reference: str, section: str):
-    """Serve a section from its read model, advancing the read count.
-
-    Returns (True, payload) when the order has a read model for this section,
-    where a payload of None means the service discloses nothing at this depth.
-    Returns (False, None) when it has none, in which case the caller projects
-    the section from the normalized tables instead.
-    """
-    views = sorted(rows(db, "section_view", order_reference=order_reference,
-                        section=section),
-                   key=lambda row: row["view_index"])
-    if not views:
-        return False, None
-
-    cursor = db["section_read_cursor"].get(f"{order_reference}|{section}")
-    if cursor is None:
-        cursor = _add(db, "section_read_cursor", {
-            "order_reference": order_reference, "section": section, "reads_served": 1})
-    else:
-        cursor["reads_served"] += 1
-    # The deepest disclosure repeats once it has been reached; the service does
-    # not fall back to a shallower one on a fourth look.
-    index = min(cursor["reads_served"] - 1, len(views) - 1)
-    return True, views[index]["payload"]
-
-
-# ---------------------------------------------------------------------------
 # projections
 # ---------------------------------------------------------------------------
 
@@ -474,12 +448,6 @@ def _carrier_evidence(db, scan: dict) -> dict:
     return evidence
 
 
-def _public_case_number(db, case_id: str) -> str:
-    if case_id == scenario_value(db, "target_case_id"):
-        return scenario_value(db, "target_case_number") or case_id
-    return case_id
-
-
 def _open_cases(db, customer_id: str) -> list[dict]:
     """The customer's open cases, each with its type policy and pickup preference."""
     cases = [case for case in rows(db, "cases", customer_id=customer_id)
@@ -488,7 +456,7 @@ def _open_cases(db, customer_id: str) -> list[dict]:
     joined = []
     for case in cases:
         policy = db["case_type_policy"][case["case_type"]]
-        preference = db["case_preferences"].get(case["case_number"])
+        preference = db["case_preferences"].get(case["case_id"])
         joined.append(dict(
             case,
             pickup_location=preference["pickup_location"] if preference else None,
@@ -512,7 +480,6 @@ def _case_view(db, case: dict, reference: str) -> dict:
     if case["pickup_location"]:
         preferences = {"pickup": case["pickup_location"]}
     available = {
-        "case_number": case["case_number"],
         "order_reference": _mask_reference(db, case["order_reference"]),
         "type": case["case_type"],
         "item": case["item_description"],
@@ -525,42 +492,35 @@ def _case_view(db, case: dict, reference: str) -> dict:
     }
     fields = (case["order_view_fields"] if case["order_reference"] == reference
               else case["related_view_fields"])
-    view = compact([(field, available[field]) for field in fields])
-    if "case_number" in view:
-        case_id = view.pop("case_number")
-        view["case_id"] = case_id
-        view["case_number"] = _public_case_number(db, case_id)
+    # The panel's "case_number" field is the case's identity, shown as both the
+    # internal id later case tools take and the number the customer was given.
+    view = compact([(field, available[field]) for field in fields
+                    if field != "case_number"])
+    if "case_number" in fields:
+        view["case_id"] = case["case_id"]
+        view["case_number"] = case["case_number"]
     return view
 
 
-def _advance_notification(db, notification_id: str) -> dict:
-    """Refresh a notification's delivery state and return the refreshed row.
-
-    Delivery receipts arrive from the mail provider after the message is handed
-    over. The scenario clock is frozen, so the refresh is driven by the read
-    rather than by elapsed time: each look at the notification collects the next
-    receipt the provider has for that message, and the last one repeats.
-    """
-    notification = db["notifications"][notification_id]
-    progression = notification["status_progression"]
-    notification["status_index"] = min(notification["status_index"] + 1,
-                                       len(progression) - 1)
-    notification["status"] = progression[notification["status_index"]]
-    return notification
-
-
 def _notification_view(db, notification: dict) -> dict:
-    """Project a notification for an order read against its template's field list."""
-    fields = db["notification_templates"][notification["template"]]["order_view_fields"]
+    """Project a notification for an order read against its template's field list.
+
+    The row holds what is particular to this message: its template, whether it
+    carries the optional photo link, and its delivery status as the mail system
+    last reported it. The message type, subject and layout belong to the
+    template and are read from it, so a read shows the message as it was built.
+    """
+    template = db["notification_templates"][notification["template"]]
+    has_photo_link = notification["optional_photo_link"]
     available = {
         "notification_id": notification["notification_id"],
-        "type": notification["message_type"],
+        "type": template["message_type"],
         "status": notification["status"],
-        "subject_prefix": notification["subject_prefix"],
-        "optional_photo_link": notification["optional_photo_link"],
-        "photo_link_section": notification["photo_link_section"],
+        "subject_prefix": template["subject_prefix"],
+        "optional_photo_link": has_photo_link,
+        "photo_link_section": template["photo_link_section"] if has_photo_link else None,
     }
-    return compact([(field, available[field]) for field in fields])
+    return compact([(field, available[field]) for field in template["order_view_fields"]])
 
 
 # ---------------------------------------------------------------------------
@@ -599,7 +559,7 @@ def lookup_customer(db, args) -> dict:
     # done as two stable passes to keep the reference order ascending within it.
     # Two open cases on one order tie on both keys. The original left those in
     # Postgres's physical row order, which moves a case each time it is updated,
-    # so no rule reproduces it; here they stay in case-number order.
+    # so no rule reproduces it; here they stay in case-id order.
     orders.sort(key=lambda pair: pair[0]["order_reference"])
     orders.sort(key=lambda pair: pair[0]["placed_on"], reverse=True)
     return {
@@ -610,8 +570,8 @@ def lookup_customer(db, args) -> dict:
             compact([
                 ("order_reference", _mask_reference(db, order["order_reference"])),
                 ("item", order["representative_item"]),
-                ("open_case_id", case["case_number"]),
-                ("open_case_number", _public_case_number(db, case["case_number"])),
+                ("open_case_id", case["case_id"]),
+                ("open_case_number", case["case_number"]),
             ])
             for order, case in orders
         ],
@@ -655,85 +615,82 @@ def get_order(db, args) -> dict:
                 "photo": scan["photo_reference"],
             }))
     if "carrier_scans" in include:
-        served, payload = _serve_section(db, reference, "carrier_scans")
-        if served:
-            if payload is not None:
-                fulfillment.append(("carrier_evidence", payload))
-        else:
-            scan = _latest_scan(db, reference)
-            if scan:
-                fulfillment.append(("carrier_evidence", _carrier_evidence(db, scan)))
+        scan = _latest_scan(db, reference)
+        if scan:
+            fulfillment.append(("carrier_evidence", _carrier_evidence(db, scan)))
     if fulfillment:
         result.append(("fulfillment", dict(fulfillment)))
 
     if "payments" in include:
-        served, payload = _serve_section(db, reference, "payments")
-        if served:
-            if payload is not None:
-                result.append(("payments", payload))
-        else:
-            payments = sorted(rows(db, "payments", order_reference=reference),
-                              key=lambda row: row["payment_seq"])
-            result.append(("payments", [
-                compact([
-                    ("type", row["tender_type"]),
-                    ("amount", _money(row["amount"])),
-                    ("currency", row["currency"]),
-                    ("original_card_last4", row["original_card_last4"]),
-                ])
-                for row in payments
-            ]))
+        payments = sorted(rows(db, "payments", order_reference=reference),
+                          key=lambda row: row["payment_seq"])
+        result.append(("payments", [
+            compact([
+                ("type", row["tender_type"]),
+                ("amount", _money(row["amount"])),
+                ("currency", row["currency"]),
+                ("original_card_last4", row["original_card_last4"]),
+            ])
+            for row in payments
+        ]))
 
     if "refunds" in include:
-        served, payload = _serve_section(db, reference, "refunds")
-        if served:
-            if payload is not None:
-                result.append(("refunds", payload))
-        else:
-            refunds = sorted(rows(db, "refunds", order_reference=reference),
-                             key=lambda row: row["refund_seq"])
-            result.append(("refunds", [
-                compact([
-                    ("tender_type", row["tender_type"]),
-                    ("amount", _money(row["amount"])),
-                    ("available_balance", _money(row["available_balance"])),
-                    ("currency", row["currency"]),
-                    ("status", row["status"]),
-                    ("used", row["used"]),
-                    ("delivery", row["delivery"]),
-                    ("original_card_last4", row["original_card_last4"]),
-                    ("initiation_source", row["initiation_source"]),
-                ])
-                for row in refunds
-            ]))
+        # The section is the money's paper trail: each return accepted against
+        # the order, then each per-tender refund issued for it. A refund carries
+        # two states. Its status is where the refund stands with Westline and
+        # the processor; a gift-card or store-credit refund also has a ledger
+        # entry of its own, whose status says whether the issued balance works.
+        returns = sorted(rows(db, "returns", order_reference=reference),
+                         key=lambda row: row["return_reference"])
+        refunds = sorted(rows(db, "refunds", order_reference=reference),
+                         key=lambda row: row["refund_seq"])
+        result.append(("refunds", [
+            compact([
+                ("return_reference", _mask_reference(db, row["return_reference"])),
+                ("return_status", row["return_status"]),
+                ("accepted_at", row["accepted_at"]),
+                ("accepted_on", row["accepted_on"]),
+                ("inventory_disposition", row["inventory_disposition"]),
+            ])
+            for row in returns
+        ] + [
+            compact([
+                ("tender_type", row["tender_type"]),
+                ("amount", _money(row["amount"])),
+                ("available_balance", _money(row["available_balance"])),
+                ("currency", row["currency"]),
+                ("status", row["status"]),
+                ("ledger_status", row["ledger_status"]),
+                ("used", row["used"]),
+                ("delivery", row["delivery"]),
+                ("original_card_last4", row["original_card_last4"]),
+                ("initiation_source", row["initiation_source"]),
+            ])
+            for row in refunds
+        ]))
 
     if "cases" in include:
         result.append(("cases", [_case_view(db, case, reference)
                                  for case in _open_cases(db, order["customer_id"])]))
 
     if "eligible_resolutions" in include:
-        served, payload = _serve_section(db, reference, "eligible_resolutions")
-        if served:
-            if payload is not None:
-                result.append(("eligible_resolutions", payload))
-        else:
-            resolutions = sorted(rows(db, "eligible_resolutions", order_reference=reference),
-                                 key=lambda row: row["position"])
-            result.append(("eligible_resolutions", [
-                compact([
-                    ("type", row["resolution_type"]),
-                    ("preserves_original_price", row["preserves_original_price"]),
-                    ("return_required", row["return_required"]),
-                    ("photo_required", row["photo_required"]),
-                    ("optional_photo_upload_available",
-                     row["optional_photo_upload_available"]),
-                    ("photo_upload_blocks_fulfillment",
-                     row["photo_upload_blocks_fulfillment"]),
-                    ("estimated_delivery", row["estimated_delivery_on"]),
-                    ("default_fulfillment", row["default_fulfillment"]),
-                ])
-                for row in resolutions
-            ]))
+        resolutions = sorted(rows(db, "eligible_resolutions", order_reference=reference),
+                             key=lambda row: row["position"])
+        result.append(("eligible_resolutions", [
+            compact([
+                ("type", row["resolution_type"]),
+                ("preserves_original_price", row["preserves_original_price"]),
+                ("return_required", row["return_required"]),
+                ("photo_required", row["photo_required"]),
+                ("optional_photo_upload_available",
+                 row["optional_photo_upload_available"]),
+                ("photo_upload_blocks_fulfillment",
+                 row["photo_upload_blocks_fulfillment"]),
+                ("estimated_delivery", row["estimated_delivery_on"]),
+                ("default_fulfillment", row["default_fulfillment"]),
+            ])
+            for row in resolutions
+        ]))
 
     if "notifications" in include:
         # A notification belongs to the order it was sent about, or to the
@@ -741,16 +698,16 @@ def get_order(db, args) -> dict:
         def about_this_order(notification):
             if notification["order_reference"] == reference:
                 return True
-            case = db["cases"].get(notification["case_number"])
+            case = db["cases"].get(notification["case_id"])
             return case is not None and case["order_reference"] == reference
 
+        # The status is whatever the mail system last reported; reading it does
+        # not move it.
         notifications = sorted(
             (row for row in db["notifications"].values() if about_this_order(row)),
             key=lambda row: (_instant(row["created_at"]), row["notification_id"]))
-        result.append(("notifications", [
-            _notification_view(db, _advance_notification(db, row["notification_id"]))
-            for row in notifications
-        ]))
+        result.append(("notifications", [_notification_view(db, row)
+                                          for row in notifications]))
 
     return compact(result)
 
@@ -804,7 +761,7 @@ def _case_policy(db, case_type: str) -> dict:
 def _case_row(**columns) -> dict:
     """A cases row with every column, defaulted the way the table defaults them."""
     row = dict.fromkeys([
-        "case_number", "order_reference", "customer_id", "case_type", "status",
+        "case_id", "case_number", "order_reference", "customer_id", "case_type", "status",
         "reason", "item_description", "carrier_response", "deadline_at",
         "carrier_may_contact_customer", "replacement_created",
         "requested_resolution", "needed_by", "approval_required", "approval_channel",
@@ -814,6 +771,20 @@ def _case_row(**columns) -> dict:
         "amount_under_review", "opened_at",
     ])
     row.update(replacement_created=False)
+    row.update(columns)
+    return row
+
+
+def _notification_row(**columns) -> dict:
+    """A notifications row with every column, defaulted the way the table defaults them.
+
+    delivered_at stays null until the mail provider reports delivery.
+    """
+    row = dict.fromkeys([
+        "notification_id", "case_id", "order_reference", "customer_id", "channel",
+        "template", "status", "optional_photo_link", "created_at", "sent_at",
+        "delivered_at",
+    ])
     row.update(columns)
     return row
 
@@ -829,9 +800,10 @@ def open_delivery_trace(db, args) -> dict:
     deadline = dt.datetime(deadline_day.year, deadline_day.month, deadline_day.day,
                            int(hour), int(minute), tzinfo=now.tzinfo)
 
-    case_number = _new_case_number(db)
+    case_id, case_number = _new_case(db)
     needed_by = args.get("needed_by")
     _add(db, "cases", _case_row(
+        case_id=case_id,
         case_number=case_number,
         order_reference=order["order_reference"],
         customer_id=order["customer_id"],
@@ -842,7 +814,6 @@ def open_delivery_trace(db, args) -> dict:
         carrier_response="none",
         deadline_at=_stored_instant(deadline),
         carrier_may_contact_customer=policy["carrier_may_contact_customer"],
-        replacement_created=False,
         requested_resolution=args.get("requested_resolution"),
         # A DATE column: whatever ISO form the caller used reads back canonical.
         needed_by=dt.date.fromisoformat(needed_by).isoformat() if needed_by else None,
@@ -853,15 +824,15 @@ def open_delivery_trace(db, args) -> dict:
         opened_at=_stored_instant(now),
     ))
     for item_reference in args["item_references"]:
-        _add(db, "case_items", {"case_number": case_number,
+        _add(db, "case_items", {"case_id": case_id,
                                 "item_reference": item_reference})
 
     # No confirmation has been sent yet: policy requires the customer to approve
     # a resolution through the trace notification, and the notification is a
     # separate authorized call.
     return compact([
-        ("case_id", case_number),
-        ("case_number", _case_display_number(db, case_number)),
+        ("case_id", case_id),
+        ("case_number", case_number),
         ("status", policy["initial_status"]),
         ("carrier_response_deadline", _local_instant(db, deadline)),
         ("replacement_created", False),
@@ -907,11 +878,12 @@ def open_refund_trace(db, args) -> dict:
 
     policy = _case_policy(db, "refund_trace")
     now = _now(db)
-    case_number = _new_case_number(db)
+    case_id, case_number = _new_case(db)
     # Evidence is attached when the return the customer named is a completed
     # return on the same order, which is the only thing Westline can attest to.
     evidence_attached = accepted_return["return_status"] == "complete"
     _add(db, "cases", _case_row(
+        case_id=case_id,
         case_number=case_number,
         order_reference=reference,
         customer_id=order["customer_id"],
@@ -919,7 +891,6 @@ def open_refund_trace(db, args) -> dict:
         status=policy["initial_status"],
         reason="missing_refund",
         item_description=order["representative_item"],
-        replacement_created=False,
         review_window_min_days=policy["review_window_min_days"],
         review_window_max_days=policy["review_window_max_days"],
         duplicate_refund_blocked=policy["duplicate_refund_blocked"],
@@ -930,8 +901,8 @@ def open_refund_trace(db, args) -> dict:
         opened_at=_stored_instant(now),
     ))
     return {
-        "case_id": case_number,
-        "case_number": _case_display_number(db, case_number),
+        "case_id": case_id,
+        "case_number": case_number,
         "status": policy["initial_status"],
         "review_window_business_days": [policy["review_window_min_days"],
                                         policy["review_window_max_days"]],
@@ -984,13 +955,17 @@ def create_replacement_order(db, args) -> dict:
         )
 
     now = _now(db)
-    replacement_reference = allocate_id(db, "order", "replacement")
+    location = args.get("fulfillment_location")
+    # A replacement is an ordinary new order, numbered from the same order
+    # sequence as any other; what makes it a replacement is the link back to the
+    # original, kept in replaces_order_reference and replacement_orders.
+    replacement_reference = allocate_id(db, "order")
     _add(db, "orders", {
         "order_reference": replacement_reference,
         "customer_id": original["customer_id"],
         "placed_on": now.date().isoformat(),
         "fulfillment_status": "processing",
-        "destination_label": args.get("fulfillment_location") or original["destination_label"],
+        "destination_label": location or original["destination_label"],
         "replaces_order_reference": reference,
         "representative_item": original["representative_item"],
     })
@@ -1023,6 +998,8 @@ def create_replacement_order(db, args) -> dict:
 
     centers = rows(db, "distribution_centers", region=original["fulfillment_region"])
     center = min(centers, key=lambda row: row["dc_id"], default=None)
+    center_name = center["display_name"] if center else None
+    fulfillment_location = location or original["address_label"]
 
     estimated_on = eligibility["estimated_delivery_on"]
 
@@ -1042,9 +1019,9 @@ def create_replacement_order(db, args) -> dict:
         "balance_due": _stored_numeric(balance),
         "currency": "USD",
         "fulfillment_method": args["fulfillment_method"],
-        "fulfillment_location": args.get("fulfillment_location") or original["address_label"],
+        "fulfillment_location": fulfillment_location,
         "estimated_delivery_on": estimated_on,
-        "distribution_center": center["display_name"] if center else None,
+        "distribution_center": center_name,
         "distribution_center_status": "provisional_until_shipped",
         "tracking_notifications": True,
         "return_required": eligibility["return_required"],
@@ -1053,27 +1030,24 @@ def create_replacement_order(db, args) -> dict:
         "created_at": _stored_instant(now),
     })
 
+    # The confirmation joins the outbound mail queue. It has not been sent yet,
+    # so it has no sent_at; the mail system sends it later and the provider
+    # reports delivery after that, each at its own time.
     template = db["notification_templates"]["replacement_confirmation"]
-    _add(db, "notifications", {
-        "notification_id": f"notification-{replacement_reference}",
-        "case_number": None,
-        "order_reference": replacement_reference,
-        "channel": "email",
-        "template": template["template"],
-        "message_type": template["message_type"],
-        "masked_destination": original["masked_email"],
-        "status": template["initial_status"],
-        "status_index": 0,
-        "status_progression": template["delivery_progression"],
-        "subject_prefix": template["subject_prefix"],
+    status = template["initial_status"]
+    _add(db, "notifications", _notification_row(
+        notification_id=new_id(db, "notification"),
+        order_reference=replacement_reference,
+        channel="email",
+        template=template["template"],
+        customer_id=original["customer_id"],
+        status=status,
         # The optional photo link is offered because the eligibility offers it,
         # not because a replacement always carries one.
-        "optional_photo_link": bool(eligibility["optional_photo_upload_available"]),
-        "photo_link_section": template["photo_link_section"],
-        "included_fields": template["included_fields"],
-        "sent_at": _stored_instant(now),
-        "created_at": _stored_instant(now),
-    })
+        optional_photo_link=bool(eligibility["optional_photo_upload_available"]),
+        sent_at=_stored_instant(now) if status != "queued" else None,
+        created_at=_stored_instant(now),
+    ))
 
     # Any trace still open on the original order now has a replacement against
     # it, and a later read of that case must say so.
@@ -1088,9 +1062,9 @@ def create_replacement_order(db, args) -> dict:
         ("currency", "USD"),
         ("fulfillment", compact([
             ("method", args["fulfillment_method"]),
-            ("location", args.get("fulfillment_location") or original["address_label"]),
+            ("location", fulfillment_location),
             ("estimated_delivery", estimated_on),
-            ("distribution_center", center["display_name"] if center else None),
+            ("distribution_center", center_name),
             ("distribution_center_status", "provisional_until_shipped"),
             ("tracking_notifications", True),
         ])),
@@ -1100,7 +1074,7 @@ def create_replacement_order(db, args) -> dict:
             ("safety", safety),
         ])),
         ("notification", compact([
-            ("status", template["initial_status"]),
+            ("status", status),
             ("optional_photo_link",
              True if eligibility["optional_photo_upload_available"] else None),
             ("photo_link_section",
@@ -1129,9 +1103,9 @@ def update_case(db, args) -> dict:
             key=lambda row: row["topic"])
         topic = topics[0] if topics else None
         numbers = [row["note_no"] for row in rows(db, "case_notes",
-                                                   case_number=case["case_number"])]
+                                                   case_id=case["case_id"])]
         _add(db, "case_notes", {
-            "case_number": case["case_number"],
+            "case_id": case["case_id"],
             "note_no": max(numbers, default=0) + 1,
             "note": note,
             "topic": topic["topic"] if topic else None,
@@ -1146,10 +1120,10 @@ def update_case(db, args) -> dict:
         if not _case_policy(db, case["case_type"])["accepts_pickup_preference"]:
             raise Refusal(
                 f"a {case['case_type']} does not carry a pickup preference")
-        preference = db["case_preferences"].get(case["case_number"])
+        preference = db["case_preferences"].get(case["case_id"])
         if preference is None:
             _add(db, "case_preferences", {
-                "case_number": case["case_number"],
+                "case_id": case["case_id"],
                 "pickup_location": pickup,
                 "visible_to_next_reviewer": True,
                 "recorded_at": _stored_instant(now),
@@ -1186,46 +1160,32 @@ def send_case_notification(db, args) -> dict:
         raise Refusal(
             f"no verified {args['channel']} destination is on file for this case")
 
+    # Each send is a new message with its own id, including a resend of a
+    # summary that went out before. The row records whose verified contact it
+    # went to, so the actual address is one join away; the result shows it
+    # masked, as the desk displays it.
     now = _now(db)
-    notification_id = scenario_id(
-        db, "next_notification_id", "notifications", "notification_id",
-        {"case_number": case["case_number"]}) or f"notification-{case['case_number']}"
-    # A resend is the same message going out again, so it keeps its identifier
-    # and restarts from the delivery state a fresh send has. Only the delivery
-    # columns are rewritten; what the message is about and when it was first
-    # created stay as they were.
-    delivery = {
-        "channel": args["channel"],
-        "template": template["template"],
-        "message_type": template["message_type"],
-        "masked_destination": destination,
-        "status": template["initial_status"],
-        "status_index": 0,
-        "status_progression": template["delivery_progression"],
-        "included_fields": template["included_fields"],
-        "sent_at": _stored_instant(now),
-    }
-    existing = db["notifications"].get(notification_id)
-    if existing is None:
-        _add(db, "notifications", dict(
-            delivery,
-            notification_id=notification_id,
-            case_number=case["case_number"],
-            order_reference=case["order_reference"],
-            subject_prefix=template["subject_prefix"],
-            optional_photo_link=template["optional_photo_link"],
-            photo_link_section=template["photo_link_section"],
-            created_at=_stored_instant(now),
-        ))
-    else:
-        existing.update(delivery)
+    status = template["initial_status"]
+    notification_id = new_id(db, "notification")
+    _add(db, "notifications", _notification_row(
+        notification_id=notification_id,
+        case_id=case["case_id"],
+        order_reference=case["order_reference"],
+        channel=args["channel"],
+        template=template["template"],
+        customer_id=customer["customer_id"],
+        status=status,
+        optional_photo_link=template["optional_photo_link"],
+        sent_at=_stored_instant(now) if status != "queued" else None,
+        created_at=_stored_instant(now),
+    ))
 
     return {
         "notification_id": notification_id,
-        "status": template["initial_status"],
+        "status": status,
         "masked_destination": destination,
-        "case_id": case["case_number"],
-        "case_number": _public_case_number(db, case["case_number"]),
+        "case_id": case["case_id"],
+        "case_number": case["case_number"],
         "included_fields": as_list_always(template["included_fields"]),
     }
 
@@ -1254,11 +1214,7 @@ TOOLS = {
     "transfer_to_specialist": transfer_to_specialist,
 }
 
-# Tools that change Westline's records. The test is whether the tool changes a
-# business fact, not whether it writes a row. get_order writes on every call: it
-# advances section_read_cursor and collects the next delivery receipt on any
-# notification it discloses. Neither is a fact about the customer's order, so it
-# stays a read.
+# Tools that change Westline's records. Every other tool is a pure read.
 WRITE_TOOLS = {
     "open_delivery_trace",
     "open_refund_trace",
@@ -1268,11 +1224,18 @@ WRITE_TOOLS = {
     "transfer_to_specialist",
 }
 
-# What reads write as a side effect, excluded from a state hash so looking is
-# free: get_order's section read counts, and the delivery receipt it collects on
-# each notification it discloses. An inserted or otherwise changed notification
-# is still a consequential write.
-READ_SIDE_EFFECTS = {
-    "notifications": ["status", "status_index"],
-    "section_read_cursor": "*",
+# Reads write nothing.
+READ_SIDE_EFFECTS = {}
+
+# Columns that only record when something happened. The DB score leaves them
+# out, so a run is judged on what the agent did, not on the second it did it.
+# orders.placed_on is the calendar day a replacement order was placed.
+CLOCK_COLUMNS = {
+    "cases": ["opened_at"],
+    "case_notes": ["created_at"],
+    "case_preferences": ["recorded_at"],
+    "notifications": ["created_at", "sent_at", "delivered_at"],
+    "orders": ["placed_on"],
+    "replacement_orders": ["created_at"],
+    "specialist_transfers": ["created_at"],
 }

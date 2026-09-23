@@ -93,7 +93,7 @@
       {
         "type": "function_call_output",
         "call_id": "rm-001",
-        "output": "\n\n{\"order_reference\":\"7319\",\"customer\":{\"customer_id\":\"c51d2171-c10b-489b-9186-a93ebd98613d\",\"display_name\":\"Ethan Patel\",\"verified_email\":\"e***@northmail.com\"},\"items\":[{\"item_reference\":\"blue-noise-canceling-headphones\",\"product_reference\":\"blue-noise-canceling-headphones\",\"color\":\"blue\"}],\"fulfillment\":{\"status\":\"delivered\",\"latest_scan\":{\"scanned_at\":\"2026-08-24T15:18:00-04:00\",\"location\":\"front entrance\",\"photo\":null}}}"
+        "output": "\n\n{\"order_reference\":\"7319\",\"customer\":{\"customer_id\":\"c51d2171-c10b-489b-9186-a93ebd98613d\",\"display_name\":\"Ethan Patel\",\"verified_email\":\"e***@northmail.com\"},\"items\":[{\"item_reference\":\"blue-noise-canceling-headphones\",\"product_reference\":\"blue-noise-canceling-headphones\",\"color\":\"blue\"}],\"fulfillment\":{\"status\":\"delivered\",\"latest_scan\":{\"scanned_at\":\"2026-08-24T15:18:00-04:00\",\"location\":\"front entrance\",\"photo\":null},\"carrier_evidence\":{\"scanned_at\":\"2026-08-24T15:18:00-04:00\",\"location\":\"front entrance\",\"evidence_location\":\"near building\",\"unit_number\":null,\"locker\":null,\"photo\":null}}}"
       },
       {
         "id": "msg_0007_0008",

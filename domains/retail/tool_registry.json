@@ -331,7 +331,7 @@
           },
           "refunds": {
             "type": "array",
-            "description": "Return and refund records; a record carries either return acceptance fields or per-tender refund fields.",
+            "description": "Return and refund records for the order: each accepted return, then each per-tender refund; a record carries either return acceptance fields or per-tender refund fields.",
             "items": {
               "type": "object",
               "properties": {
@@ -385,7 +385,11 @@
                 },
                 "status": {
                   "type": "string",
-                  "description": "Westline-side refund tender state, e.g. issued_available, submitted_no_settlement_confirmation, active."
+                  "description": "Where the refund stands with Westline and the payment processor, e.g. issued_available, submitted_no_settlement_confirmation."
+                },
+                "ledger_status": {
+                  "type": "string",
+                  "description": "State of the gift-card or store-credit balance the refund issued, e.g. active; absent for a refund to a card."
                 },
                 "used": {
                   "type": "boolean",

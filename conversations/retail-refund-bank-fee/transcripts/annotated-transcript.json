@@ -106,7 +106,7 @@
       {
         "type": "function_call_output",
         "call_id": "rr-001",
-        "output": "\n\n{\"order_reference\":\"ending-5624\",\"customer\":{\"display_name\":\"Teddy Torrez\",\"verified_email\":\"t***@harbormail.com\"},\"items\":[{\"item_reference\":\"standing-desk-converter-black\",\"name\":\"black standing desk converter\",\"total_after_tax\":186.42,\"currency\":\"USD\"}],\"payments\":[{\"amount\":40,\"currency\":\"USD\",\"type\":\"gift_card\"},{\"amount\":146.42,\"currency\":\"USD\",\"type\":\"debit\"}],\"refunds\":[{\"accepted_at\":\"Eastwood store\",\"accepted_on\":\"2026-08-18\",\"inventory_disposition\":\"restocked\",\"return_reference\":\"ending-9182\",\"return_status\":\"complete\"}]}"
+        "output": "\n\n{\"order_reference\":\"ending-5624\",\"customer\":{\"display_name\":\"Teddy Torrez\",\"verified_email\":\"t***@harbormail.com\"},\"items\":[{\"item_reference\":\"standing-desk-converter-black\",\"name\":\"black standing desk converter\",\"total_after_tax\":186.42,\"currency\":\"USD\"}],\"payments\":[{\"type\":\"gift_card\",\"amount\":40,\"currency\":\"USD\"},{\"type\":\"debit\",\"amount\":146.42,\"currency\":\"USD\",\"original_card_last4\":\"2047\"}],\"refunds\":[{\"return_reference\":\"ending-9182\",\"return_status\":\"complete\",\"accepted_at\":\"Eastwood store\",\"accepted_on\":\"2026-08-18\",\"inventory_disposition\":\"restocked\"},{\"tender_type\":\"gift_card\",\"amount\":40,\"available_balance\":40,\"currency\":\"USD\",\"status\":\"issued_available\",\"ledger_status\":\"active\",\"used\":false,\"delivery\":\"digital_gift_card_number_in_email\"},{\"tender_type\":\"debit\",\"amount\":146.42,\"currency\":\"USD\",\"status\":\"submitted_no_settlement_confirmation\",\"original_card_last4\":\"2047\",\"initiation_source\":\"store_register\"}]}"
       },
       {
         "role": "user",
@@ -197,7 +197,7 @@
       {
         "type": "function_call_output",
         "call_id": "rr-002",
-        "output": "\n\n{\"order_reference\":\"ending-5624\",\"payments\":[{\"type\":\"gift_card\",\"amount\":40,\"currency\":\"USD\"},{\"type\":\"debit\",\"amount\":146.42,\"currency\":\"USD\",\"original_card_last4\":\"2047\"}],\"refunds\":[{\"tender_type\":\"gift_card\",\"amount\":40,\"currency\":\"USD\",\"status\":\"issued_available\"},{\"tender_type\":\"debit\",\"amount\":146.42,\"currency\":\"USD\",\"status\":\"submitted_no_settlement_confirmation\",\"original_card_last4\":\"2047\",\"initiation_source\":\"store_register\"}]}"
+        "output": "\n\n{\"order_reference\":\"ending-5624\",\"payments\":[{\"type\":\"gift_card\",\"amount\":40,\"currency\":\"USD\"},{\"type\":\"debit\",\"amount\":146.42,\"currency\":\"USD\",\"original_card_last4\":\"2047\"}],\"refunds\":[{\"return_reference\":\"ending-9182\",\"return_status\":\"complete\",\"accepted_at\":\"Eastwood store\",\"accepted_on\":\"2026-08-18\",\"inventory_disposition\":\"restocked\"},{\"tender_type\":\"gift_card\",\"amount\":40,\"available_balance\":40,\"currency\":\"USD\",\"status\":\"issued_available\",\"ledger_status\":\"active\",\"used\":false,\"delivery\":\"digital_gift_card_number_in_email\"},{\"tender_type\":\"debit\",\"amount\":146.42,\"currency\":\"USD\",\"status\":\"submitted_no_settlement_confirmation\",\"original_card_last4\":\"2047\",\"initiation_source\":\"store_register\"}]}"
       },
       {
         "role": "user",
@@ -409,7 +409,7 @@
       {
         "type": "function_call_output",
         "call_id": "rr-003",
-        "output": "\n\n{\"order_reference\":\"ending-5624\",\"refunds\":[{\"tender_type\":\"gift_card\",\"amount\":40,\"available_balance\":40,\"currency\":\"USD\",\"status\":\"active\",\"used\":false,\"delivery\":\"digital_gift_card_number_in_email\"}]}"
+        "output": "\n\n{\"order_reference\":\"ending-5624\",\"payments\":[{\"type\":\"gift_card\",\"amount\":40,\"currency\":\"USD\"},{\"type\":\"debit\",\"amount\":146.42,\"currency\":\"USD\",\"original_card_last4\":\"2047\"}],\"refunds\":[{\"return_reference\":\"ending-9182\",\"return_status\":\"complete\",\"accepted_at\":\"Eastwood store\",\"accepted_on\":\"2026-08-18\",\"inventory_disposition\":\"restocked\"},{\"tender_type\":\"gift_card\",\"amount\":40,\"available_balance\":40,\"currency\":\"USD\",\"status\":\"issued_available\",\"ledger_status\":\"active\",\"used\":false,\"delivery\":\"digital_gift_card_number_in_email\"},{\"tender_type\":\"debit\",\"amount\":146.42,\"currency\":\"USD\",\"status\":\"submitted_no_settlement_confirmation\",\"original_card_last4\":\"2047\",\"initiation_source\":\"store_register\"}]}"
       },
       {
         "id": "msg_0005_0038",
