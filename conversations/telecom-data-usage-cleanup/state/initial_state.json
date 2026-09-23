@@ -25,8 +25,8 @@
       "remaining_high_speed_gigabytes": 2.2,
       "usage_last_24_hours": {
         "measurement_source": "carrier_metering",
-        "window_start": "2026-08-26T19:30:00-05:00",
-        "window_end": "2026-08-27T19:30:00-05:00",
+        "window_start": "2026-08-26T19:31:42-05:00",
+        "window_end": "2026-08-27T19:31:42-05:00",
         "samples": [
           {
             "start": "2026-08-27T00:00:00-05:00",

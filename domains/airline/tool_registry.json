@@ -734,7 +734,7 @@
     },
     {
       "name": "calculate_itinerary_price",
-      "description": "Calculate fare, taxes, baggage, mobility-device treatment, and an optional insurance quote for an itinerary.",
+      "description": "Price an itinerary's fare, taxes, baggage, mobility-device treatment, and optional insurance, and issue a fare quote for it. Every call issues a new quote with its own identifier and an expiry measured from the moment it was priced.",
       "parameters": {
         "type": "object",
         "properties": {
@@ -826,7 +826,7 @@
           },
           "expires_at": {
             "type": "string",
-            "description": "Quote expiration timestamp.",
+            "description": "Quote expiration timestamp: the quote validity window after the moment it was priced.",
             "format": "date-time"
           }
         },
@@ -1626,6 +1626,11 @@
           "certificate_code": {
             "type": "string",
             "description": "Customer-provided certificate code."
+          },
+          "quote_id": {
+            "type": "string",
+            "description": "Optional quote the certificate is to be applied to. When given, the applicable amount is capped at that quote's payable total; without it the whole available balance is applicable, and the booking caps the draw at its charged total.",
+            "format": "uuid"
           }
         },
         "required": [
@@ -1663,7 +1668,7 @@
           },
           "applicable_amount": {
             "type": "number",
-            "description": "Amount applicable to the current quote.",
+            "description": "Amount the certificate can cover: its available balance, capped at the payable total of the quote named in quote_id when one is given.",
             "minimum": 0
           },
           "currency": {

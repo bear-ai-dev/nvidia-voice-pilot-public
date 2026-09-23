@@ -107,7 +107,7 @@
       {
         "type": "function_call_output",
         "call_id": "td-001b",
-        "output": "\n\n{\"verification_id\":\"ae1d7bf3-792a-4a70-8673-16c535063f29\",\"status\":\"verified\",\"matched_factors\":[\"mobile_number\",\"full_name\",\"date_of_birth\"],\"access_scope\":[\"lines\",\"usage\",\"billing\"],\"verified_at\":\"2026-08-27T19:31:08-05:00\"}"
+        "output": "\n\n{\"verification_id\":\"ae1d7bf3-792a-4a70-8673-16c535063f29\",\"status\":\"verified\",\"matched_factors\":[\"mobile_number\",\"full_name\",\"date_of_birth\"],\"access_scope\":[\"lines\",\"usage\",\"billing\"],\"verified_at\":\"2026-08-27T19:31:07-05:00\"}"
       },
       {
         "arguments": "{\"customer_id\":\"6dcb2039-012b-4723-a256-13bb7b6467c2\",\"verification_id\":\"ae1d7bf3-792a-4a70-8673-16c535063f29\",\"include\":[\"lines\",\"devices\",\"plans\"]}",
@@ -169,7 +169,7 @@
       {
         "type": "function_call_output",
         "call_id": "td-003",
-        "output": "\n\n{\"line_id\":\"ec8443dc-5fa9-4579-8dbe-5eafc61d53ac\",\"billing_cycle_id\":\"305af2ad-04af-420c-9562-a935b04b855b\",\"measurement_source\":\"carrier_metering\",\"window_start\":\"2026-08-26T19:30:00-05:00\",\"window_end\":\"2026-08-27T19:30:00-05:00\",\"samples\":[{\"start\":\"2026-08-27T00:00:00-05:00\",\"end\":\"2026-08-27T01:00:00-05:00\",\"gigabytes\":2.9},{\"start\":\"2026-08-27T01:00:00-05:00\",\"end\":\"2026-08-27T02:00:00-05:00\",\"gigabytes\":3.4},{\"start\":\"2026-08-27T02:00:00-05:00\",\"end\":\"2026-08-27T03:00:00-05:00\",\"gigabytes\":3.1},{\"start\":\"2026-08-27T03:00:00-05:00\",\"end\":\"2026-08-27T04:00:00-05:00\",\"gigabytes\":2.4}],\"used_gigabytes\":11.8,\"remaining_high_speed_gigabytes\":2.2,\"app_attribution_available\":false,\"as_of\":\"2026-08-27T19:31:45-05:00\"}"
+        "output": "\n\n{\"line_id\":\"ec8443dc-5fa9-4579-8dbe-5eafc61d53ac\",\"billing_cycle_id\":\"305af2ad-04af-420c-9562-a935b04b855b\",\"measurement_source\":\"carrier_metering\",\"window_start\":\"2026-08-26T19:31:42-05:00\",\"window_end\":\"2026-08-27T19:31:42-05:00\",\"samples\":[{\"start\":\"2026-08-27T00:00:00-05:00\",\"end\":\"2026-08-27T01:00:00-05:00\",\"gigabytes\":2.9},{\"start\":\"2026-08-27T01:00:00-05:00\",\"end\":\"2026-08-27T02:00:00-05:00\",\"gigabytes\":3.4},{\"start\":\"2026-08-27T02:00:00-05:00\",\"end\":\"2026-08-27T03:00:00-05:00\",\"gigabytes\":3.1},{\"start\":\"2026-08-27T03:00:00-05:00\",\"end\":\"2026-08-27T04:00:00-05:00\",\"gigabytes\":2.4}],\"used_gigabytes\":11.8,\"remaining_high_speed_gigabytes\":2.2,\"app_attribution_available\":false,\"as_of\":\"2026-08-27T19:31:42-05:00\"}"
       },
       {
         "id": "msg_0009_0011",
@@ -338,7 +338,7 @@
       {
         "type": "function_call_output",
         "call_id": "td-004",
-        "output": "\n\n{\"bill_id\":\"7af62370-8858-4af6-b2cd-2b702fd15586\",\"billing_cycle_id\":\"305af2ad-04af-420c-9562-a935b04b855b\",\"cycle_start\":\"2026-08-06T00:00:00-05:00\",\"cycle_end\":\"2026-09-05T00:00:00-05:00\",\"as_of\":\"2026-08-27T19:34:10-05:00\"}"
+        "output": "\n\n{\"bill_id\":\"7af62370-8858-4af6-b2cd-2b702fd15586\",\"billing_cycle_id\":\"305af2ad-04af-420c-9562-a935b04b855b\",\"cycle_start\":\"2026-08-06T00:00:00-05:00\",\"cycle_end\":\"2026-09-05T00:00:00-05:00\",\"as_of\":\"2026-08-27T19:34:08-05:00\"}"
       },
       {
         "id": "msg_0009_0027",
@@ -382,7 +382,7 @@
       {
         "type": "function_call_output",
         "call_id": "td-004b",
-        "output": "\n\n{\"bill_id\":\"7af62370-8858-4af6-b2cd-2b702fd15586\",\"billing_cycle_id\":\"305af2ad-04af-420c-9562-a935b04b855b\",\"overage_charge\":0.0,\"currency\":\"USD\",\"after_high_speed_allowance\":\"speed_reduced\",\"as_of\":\"2026-08-27T19:34:22-05:00\"}"
+        "output": "\n\n{\"bill_id\":\"7af62370-8858-4af6-b2cd-2b702fd15586\",\"billing_cycle_id\":\"305af2ad-04af-420c-9562-a935b04b855b\",\"overage_charge\":0.0,\"currency\":\"USD\",\"after_high_speed_allowance\":\"speed_reduced\",\"as_of\":\"2026-08-27T19:34:20-05:00\"}"
       },
       {
         "id": "msg_0009_0030",
@@ -413,7 +413,7 @@
       {
         "type": "function_call_output",
         "call_id": "td-004c",
-        "output": "\n\n{\"line_id\":\"ec8443dc-5fa9-4579-8dbe-5eafc61d53ac\",\"offers\":[{\"offer_id\":\"21298486-3eca-4c2e-8d07-2b13c0a33fcc\",\"eligibility_status\":\"eligible\",\"data_gigabytes\":5.0,\"price\":40.0,\"currency\":\"USD\",\"billing_timing\":\"next_bill\",\"effective_timing\":\"immediate\",\"expires_at\":\"2026-08-28T19:35:00-05:00\"}],\"as_of\":\"2026-08-27T19:34:46-05:00\"}"
+        "output": "\n\n{\"line_id\":\"ec8443dc-5fa9-4579-8dbe-5eafc61d53ac\",\"offers\":[{\"offer_id\":\"21298486-3eca-4c2e-8d07-2b13c0a33fcc\",\"eligibility_status\":\"eligible\",\"data_gigabytes\":5.0,\"price\":40.0,\"currency\":\"USD\",\"billing_timing\":\"next_bill\",\"effective_timing\":\"immediate\",\"expires_at\":\"2026-08-28T19:35:00-05:00\"}],\"as_of\":\"2026-08-27T19:34:45-05:00\"}"
       },
       {
         "id": "msg_0009_0032",
@@ -653,7 +653,7 @@
       {
         "type": "function_call_output",
         "call_id": "td-005",
-        "output": "\n\n{\"transaction_id\":\"dfdab773-2580-4908-91cf-99a2b4826547\",\"status\":\"active\",\"offer_id\":\"21298486-3eca-4c2e-8d07-2b13c0a33fcc\",\"effective_at\":\"2026-08-27T19:37:35-05:00\",\"bill_reference\":\"7af62370-8858-4af6-b2cd-2b702fd15586\",\"charged_price\":40.0,\"currency\":\"USD\",\"added_high_speed_gigabytes\":5.0,\"remaining_high_speed_gigabytes\":7.2}"
+        "output": "\n\n{\"transaction_id\":\"dfdab773-2580-4908-91cf-99a2b4826547\",\"status\":\"active\",\"offer_id\":\"21298486-3eca-4c2e-8d07-2b13c0a33fcc\",\"effective_at\":\"2026-08-27T19:37:32-05:00\",\"bill_reference\":\"7af62370-8858-4af6-b2cd-2b702fd15586\",\"charged_price\":40.0,\"currency\":\"USD\",\"added_high_speed_gigabytes\":5.0,\"remaining_high_speed_gigabytes\":7.2}"
       },
       {
         "id": "msg_0009_0057",

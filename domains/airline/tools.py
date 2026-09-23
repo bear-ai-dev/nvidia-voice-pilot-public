@@ -3,11 +3,14 @@
 Ported from the PostgreSQL tool server in PR #17. Each tool is (db, args) -> result
 and may mutate db in place; see env/toolkit.py for the row layout and helpers.
 
-Handlers hold domain logic only. Every identifier, schedule, price, premium,
-certificate balance, and record locator that appears in a result is read or
-computed from the database, never generated at random or from wall time, so a
-result is reproducible and an operator can explain any figure by pointing at the
-rows it was summed from.
+Handlers hold domain logic only. Every schedule, price, premium, and certificate
+balance that appears in a result is read or computed from the database, so an
+operator can explain any figure by pointing at the rows it was summed from. What
+a real reservation system makes up at the moment it creates something (a quote,
+verification, reservation, or traveler identifier, and the record locator) comes
+from the environment's seeded generator, toolkit.new_id, and every timestamp a
+write records comes from the call clock, toolkit.now, so a replay is reproducible
+without the database holding copies of the values a recording happened to show.
 
 Money is the load-bearing part of this domain. No total is stored: a fare family
 price is the sum over both directions of base fare plus tax, paid bags are the
@@ -22,11 +25,12 @@ NUMERIC arithmetic did, and amounts are written back as numbers.
 """
 from __future__ import annotations
 
+import random
 from datetime import date, datetime, timedelta
 from decimal import Decimal
 
-from toolkit import (NotFound, Refusal, ToolError, allocate_id, as_float, as_int,
-                     compact, first, insert, rows, scenario_id, scenario_value)
+from toolkit import (NotFound, Refusal, allocate_id, as_float, as_int, call_started, compact,
+                     first, insert, new_id, now, now_iso, rows, scenario_value)
 
 # Key columns per table: a row's key in db[table] is these columns joined by "|".
 KEY_COLUMNS = {
@@ -42,9 +46,6 @@ KEY_COLUMNS = {
     ],
     "certificate_redemptions": [
         "redemption_id"
-    ],
-    "confirmation_code_pool": [
-        "pool_seq"
     ],
     "connecting_itineraries": [
         "itinerary_id"
@@ -128,16 +129,9 @@ IDENTITY_FACTORS = ["full_name", "date_of_birth", "email"]
 
 ZERO = Decimal("0.00")
 
-
-class DatabaseError(ToolError):
-    """A constraint the PostgreSQL schema enforces was violated.
-
-    The original backend let the database refuse the statement and reported the
-    driver's message as a database_error, so the port does the same with the
-    same text.
-    """
-    status = 500
-    kind = "database_error"
+# Record locators are six characters from an alphabet without the look-alikes
+# (0/O, 1/I) that callers mishear when a code is read out over the phone.
+LOCATOR_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 
 
 def _num(value) -> Decimal:
@@ -164,22 +158,9 @@ def _order(candidates, *keys):
     return ordered
 
 
-def _slug(full_name: str) -> str:
-    """First and last name, lowercased and hyphenated.
-
-    Traveler identifiers in the recorded result are the caller's names in this
-    form. Deriving them keeps a booking reproducible without a random suffix, and
-    the traveler table is keyed per reservation so two reservations naming the
-    same person do not collide.
-    """
-    cleaned = "".join(character if character.isalnum() or character.isspace() else " "
-                      for character in full_name.lower())
-    parts = cleaned.split()
-    if not parts:
-        return "traveler"
-    if len(parts) == 1:
-        return parts[0]
-    return f"{parts[0]}-{parts[-1]}"
+def _today(db) -> str:
+    """The call clock's local date, as a DATE column holds it."""
+    return now(db).date().isoformat()
 
 
 # ---------------------------------------------------------------------------
@@ -202,7 +183,7 @@ def _flight(db, flight_id: str) -> dict:
 
 
 def _device_rule(db, device_type: str) -> dict:
-    """Accessibility tariff in force for a device type at the scenario clock.
+    """Accessibility tariff in force for a device type at the call clock.
 
     Matching is exact on the canonical name, then on the rule's aliases, then on
     a two-way substring so "walker" reaches the folding-walker rule and "folding
@@ -210,7 +191,7 @@ def _device_rule(db, device_type: str) -> dict:
     unspecified-device line rather than being refused, because the airline has a
     tariff position on any device a caller might bring.
     """
-    scenario_date = (scenario_value(db, "scenario_time") or "")[:10]
+    scenario_date = _today(db)
     needle = device_type.strip().lower()
 
     # An exact name beats an alias, which beats a substring, so a caller who says
@@ -238,7 +219,7 @@ def _device_rule(db, device_type: str) -> dict:
     )
     if not named:
         return _quote_device_rule(db)
-    # The newest version of the named rule in effect at the scenario clock.
+    # The newest version of the named rule in effect at the call clock.
     versions = [rule for rule in rows(db, "mobility_device_rules",
                                       device_type=named[0]["device_type"])
                 if rule["effective_at"] <= scenario_date]
@@ -247,7 +228,7 @@ def _device_rule(db, device_type: str) -> dict:
 
 def _quote_device_rule(db) -> dict:
     """The tariff line a quote uses when no device type has been stated yet."""
-    scenario_date = (scenario_value(db, "scenario_time") or "")[:10]
+    scenario_date = _today(db)
     defaults = _order(
         (rule for rule in rows(db, "mobility_device_rules", is_quote_default=True)
          if rule["effective_at"] <= scenario_date),
@@ -323,21 +304,6 @@ def _price_itinerary(db, outbound_id: str, return_id: str, fare_class: str,
     return priced
 
 
-def _current_quote(db) -> dict | None:
-    """The most recently priced quote: the desk's current pricing context.
-
-    A certificate validation has to know what amount it is being applied to and
-    carries no itinerary in its arguments, so it reads the quote that pricing
-    last touched. `last_priced_at` is a text column, so "most recent" is the
-    greatest string, with the greatest quote_id breaking a tie.
-    """
-    priced = [quote for quote in db["fare_quotes"].values()
-              if quote["last_priced_at"] is not None]
-    if not priced:
-        return None
-    return max(priced, key=lambda quote: (quote["last_priced_at"], quote["quote_id"]))
-
-
 def _quote_payable(quote: dict) -> Decimal:
     if quote.get("total_with_insurance") is not None:
         return _cents(quote["total_with_insurance"])
@@ -351,7 +317,9 @@ def _cleared_verification(db, verification_id: str, customer_id: str) -> dict:
 
     The policy makes a self-stated name, date of birth, or email insufficient on
     its own, so account reads and the booking take a verification identifier and
-    it is checked here rather than trusted.
+    it is checked here rather than trusted. A booking-desk verification lasts
+    until the end of the call it was made on, so a record filed before this call
+    started no longer clears anything.
     """
     row = first(db, "identity_verifications", verification_id=verification_id)
     if row is None:
@@ -360,7 +328,17 @@ def _cleared_verification(db, verification_id: str, customer_id: str) -> dict:
         raise Refusal(
             "verification record does not clear account access for this customer",
             {"verification_status": row["status"]})
+    if _from_earlier_call(db, row):
+        raise Refusal("verification record has expired; verify the caller again",
+                      {"verification_status": "expired"})
     return row
+
+
+def _from_earlier_call(db, verification: dict) -> bool:
+    """Whether a verification that lasts to the end of its call was made on an
+    earlier call than this one."""
+    return (verification["expires_at"] == scenario_value(db, "verification_expiry")
+            and datetime.fromisoformat(verification["created_at"]) < call_started(db))
 
 
 def _customer_by_email(db, email: str) -> dict | None:
@@ -537,7 +515,7 @@ def _connections(db, origin: str, destination: str, departure_date: str,
         flight_ids = [leg["flight"]["flight_id"] for direction in legs.values()
                       for leg in direction]
         priced = []
-        for fare_class in sellable:
+        for fare_class in sorted(sellable):
             price = _cents(sum((_leg_price(db, flight_id, fare_class)
                                 for flight_id in flight_ids), ZERO))
             seats = all(first(db, "fare_options", flight_id=flight_id,
@@ -603,7 +581,7 @@ def search_flights(db, args) -> dict:
             "departure_date": departure_day,
             "return_date": return_day,
             "stop_profile": profile,
-            "availability_checked_at": scenario_value(db, "scenario_time"),
+            "availability_checked_at": now_iso(db),
             "expires_at": scenario_value(db, "search_expiry"),
         }, KEY_COLUMNS)
 
@@ -644,7 +622,7 @@ def _resolve_itinerary_dates(db, outbound: dict, inbound: dict) -> tuple:
 
     A pricing call names flights, not dates, so the dates come from the most
     recent availability check on the same route, and failing that from the next
-    seeded departure. A quote that already exists carries its own dates.
+    seeded departure. A booking that cites a quote takes the quote's dates.
     """
     searches = rows(db, "flight_searches", origin_code=outbound["origin_code"],
                     destination_code=outbound["destination_code"])
@@ -653,7 +631,7 @@ def _resolve_itinerary_dates(db, outbound: dict, inbound: dict) -> tuple:
                                                 row["search_id"]))
         return search["departure_date"], search["return_date"]
 
-    scenario_date = (scenario_value(db, "scenario_time") or "")[:10]
+    scenario_date = _today(db)
     departures = [row["departure_date"]
                   for row in rows(db, "flight_availability", flight_id=outbound["flight_id"])
                   if row["departure_date"] >= scenario_date]
@@ -682,49 +660,36 @@ def calculate_itinerary_price(db, args) -> dict:
                               fare_class, traveler_count, bags,
                               [device_fee] * devices, include_insurance)
 
-    quote = first(db, "fare_quotes", outbound_flight_id=outbound["flight_id"],
-                  return_flight_id=inbound["flight_id"], fare_class=fare_class,
-                  traveler_count=traveler_count, checked_bag_count=bags,
-                  mobility_device_count=devices, include_insurance=include_insurance)
-    priced_at = scenario_value(db, "scenario_time")
-    if quote is None:
-        quote_id = allocate_id(db, "fare_quote")
-        departure_date, return_date = _resolve_itinerary_dates(db, outbound, inbound)
-        # A fresh quote holds for the validity window the airline publishes,
-        # measured from the scenario clock rather than from wall time.
-        hours = int(scenario_value(db, "quote_validity_hours") or 24)
-        quote = insert(db, "fare_quotes", {
-            "quote_id": quote_id,
-            "outbound_flight_id": outbound["flight_id"],
-            "return_flight_id": inbound["flight_id"],
-            "departure_date": departure_date,
-            "return_date": return_date,
-            "fare_class": fare_class,
-            "traveler_count": traveler_count,
-            "checked_bag_count": bags,
-            "mobility_device_count": devices,
-            "include_insurance": include_insurance,
-            "insurance_plan_id": None,
-            "fare_taxes_and_checked_bags": None,
-            "mobility_device_charge": None,
-            "trip_insurance": None,
-            "total_with_insurance": None,
-            "currency": scenario_value(db, "currency"),
-            "expires_at": _shift_hours(priced_at, hours),
-            "last_priced_at": None,
-        }, KEY_COLUMNS)
-
-    # The computed amounts are written back so a later booking can be held to the
-    # figure the customer authorized, and so the desk's current pricing context
-    # is a row rather than a memory.
-    quote.update({
+    # Every pricing call is its own quote, as a fare quote from a pricing engine
+    # is: it gets a fresh identifier, it is stamped when it was priced, and it
+    # holds for the validity window the airline publishes from that moment. A
+    # quote is not shared with anyone else who prices the same flights, and a
+    # second pricing call does not rewrite the first one's figures.
+    priced_at = now(db)
+    hours = int(scenario_value(db, "quote_validity_hours") or 24)
+    departure_date, return_date = _resolve_itinerary_dates(db, outbound, inbound)
+    quote = insert(db, "fare_quotes", {
+        "quote_id": new_id(db, "fare_quote"),
+        "outbound_flight_id": outbound["flight_id"],
+        "return_flight_id": inbound["flight_id"],
+        "departure_date": departure_date,
+        "return_date": return_date,
+        "fare_class": fare_class,
+        "traveler_count": traveler_count,
+        "checked_bag_count": bags,
+        "mobility_device_count": devices,
+        "include_insurance": include_insurance,
+        # The computed amounts are kept so a later booking can be held to the
+        # figure the customer authorized.
+        "insurance_plan_id": priced["plan"]["plan_id"] if priced["plan"] else None,
         "fare_taxes_and_checked_bags": as_float(priced["fare_taxes_and_checked_bags"]),
         "mobility_device_charge": as_float(priced["mobility_device_charge"]),
         "trip_insurance": as_float(priced["trip_insurance"]),
         "total_with_insurance": as_float(priced["total"]) if include_insurance else None,
-        "insurance_plan_id": priced["plan"]["plan_id"] if priced["plan"] else None,
-        "last_priced_at": priced_at,
-    })
+        "currency": scenario_value(db, "currency"),
+        "priced_at": priced_at.isoformat(timespec="seconds"),
+        "expires_at": (priced_at + timedelta(hours=hours)).isoformat(timespec="seconds"),
+    }, KEY_COLUMNS)
 
     return compact([
         ("quote_id", quote["quote_id"]),
@@ -740,17 +705,12 @@ def calculate_itinerary_price(db, args) -> dict:
     ])
 
 
-def _shift_hours(timestamp: str, hours: int) -> str:
-    """Advance an ISO timestamp that carries an offset, keeping the offset."""
-    return (datetime.fromisoformat(timestamp) + timedelta(hours=hours)).isoformat()
-
-
 def check_mobility_device_requirements(db, args) -> dict:
     # The published accessibility tariff: the version of every device category
-    # in force at the scenario clock. Which category the caller's device falls
+    # in force at the call clock. Which category the caller's device falls
     # under is read from the names each rule covers, by the agent, not matched
     # here; a device none of them names takes the unspecified-device rule.
-    scenario_date = (scenario_value(db, "scenario_time") or "")[:10]
+    scenario_date = _today(db)
     current: dict = {}
     for rule in db["mobility_device_rules"].values():
         if rule["effective_at"] > scenario_date:
@@ -863,39 +823,35 @@ def verify_customer_identity(db, args) -> dict:
     else:
         status = "verified"
 
-    if status == "verified":
-        # A cleared verification is filed under the customer it cleared, so
-        # verifying the same person twice in one call resolves to the one record
-        # rather than to a second one.
-        verification_id = (scenario_id(db, "next_identity_verification_id",
-                                       "identity_verifications", "verification_id",
-                                       {"customer_id": customer["customer_id"]})
-                           or f"verification-{customer['slug']}-booking")
-    else:
-        # An attempt that cleared nobody is its own record. Filing it under the
-        # profile it was tried against would let a wrong date of birth overwrite
-        # a verification that already cleared, revoking account access the
-        # caller legitimately holds for the rest of the call.
-        verification_id = allocate_id(db, "identity_verification")
-
-    created_at = scenario_value(db, "scenario_time")
     expires_at = scenario_value(db, "verification_expiry")
     factors = [factor for factor in IDENTITY_FACTORS if factor in matched]
     filed = {
         "customer_id": customer["customer_id"] if status == "verified" else None,
         "status": status,
         "matched_factors": factors,
-        "created_at": created_at,
+        "created_at": now_iso(db),
     }
-    # An upsert: a record already filed under this identifier is rewritten in
-    # place, keeping its purpose and expiry, as ON CONFLICT DO UPDATE did.
-    existing = first(db, "identity_verifications", verification_id=verification_id)
+
+    # A cleared verification lasts to the end of the call, so verifying the same
+    # person again on this call resolves to the record already filed rather than
+    # to a second one. An attempt that cleared nobody is always its own record:
+    # filing it under the profile it was tried against would let a wrong date of
+    # birth overwrite a verification that already cleared, revoking account
+    # access the caller legitimately holds for the rest of the call.
+    existing = None
+    if status == "verified":
+        existing = next((row for row in rows(db, "identity_verifications",
+                                             customer_id=customer["customer_id"],
+                                             status="verified", purpose="booking")
+                         if not _from_earlier_call(db, row)), None)
     if existing is None:
+        verification_id = new_id(db, "identity_verification")
         insert(db, "identity_verifications", {
             "verification_id": verification_id, "purpose": "booking",
             "expires_at": expires_at, **filed,
         }, KEY_COLUMNS)
     else:
+        verification_id = existing["verification_id"]
         existing.update(filed)
 
     return {
@@ -920,7 +876,7 @@ def validate_travel_certificate(db, args) -> dict:
     if certificate is None:
         raise NotFound("no travel certificate with that code is held on this account")
 
-    scenario_date = (scenario_value(db, "scenario_time") or "")[:10]
+    scenario_date = _today(db)
     expired = (certificate["status"] == "expired"
                or (certificate["expires_at"] is not None
                    and certificate["expires_at"] < scenario_date))
@@ -934,10 +890,17 @@ def validate_travel_certificate(db, args) -> dict:
     else:
         status = "valid"
 
+    # What the certificate can cover is its balance, capped at the quote it is
+    # being applied to when the caller names one. Without a quote the whole
+    # balance is applicable, and the booking caps the draw at what it charges.
     applicable = ZERO
     if status == "valid":
-        quote = _current_quote(db)
-        applicable = min(balance, _quote_payable(quote)) if quote else balance
+        applicable = balance
+        if args.get("quote_id") is not None:
+            quote = first(db, "fare_quotes", quote_id=args["quote_id"])
+            if quote is None:
+                raise NotFound(f"unknown quote {args['quote_id']!r}")
+            applicable = min(balance, _quote_payable(quote))
 
     return compact([
         ("certificate_id", certificate["certificate_id"]),
@@ -955,19 +918,23 @@ def validate_travel_certificate(db, args) -> dict:
 # ---------------------------------------------------------------------------
 
 
-def _allocate_confirmation_code(db) -> str:
-    """Take the next unissued record locator out of the pool.
+def _record_locator(db) -> str:
+    """A record locator for a new reservation, made up when it is created.
 
-    Airlines issue locators from a pre-generated pool rather than from a counter.
-    Marking the row issued as it is taken means a second booking in a run cannot
-    be handed the first booking's code.
+    The environment's generator hands out the conversation's seeded locators
+    first; past those a locator is drawn at random from the look-alike-free
+    alphabet, redrawing on one a reservation already carries. The draw is seeded
+    from the conversation and the number of reservations on file, so a replay
+    draws the same locator.
     """
-    unissued = rows(db, "confirmation_code_pool", issued_at=None)
-    if not unissued:
-        raise Refusal("no unissued record locator is available")
-    row = min(unissued, key=lambda entry: entry["pool_seq"])
-    row["issued_at"] = scenario_value(db, "scenario_time")
-    return row["code"]
+    def draw() -> str:
+        taken = {row["confirmation_code"] for row in db["reservations"].values()}
+        rng = random.Random(f"{scenario_value(db, 'conversation_id')}:record_locator:{len(taken)}")
+        while True:
+            code = "".join(rng.choice(LOCATOR_ALPHABET) for _ in range(6))
+            if code not in taken:
+                return code
+    return new_id(db, "record_locator", fallback=draw)
 
 
 def _next_traveler_seq(db) -> int:
@@ -1020,8 +987,7 @@ def book_reservation(db, args) -> dict:
             raise Refusal(
                 "booking does not match the quote it cites",
                 {"quote_id": quote["quote_id"], "differing_fields": differing})
-        scenario_time = scenario_value(db, "scenario_time")
-        if quote["expires_at"] < scenario_time:
+        if datetime.fromisoformat(quote["expires_at"]) < now(db):
             raise Refusal("quote has expired; reprice before booking",
                           {"quote_id": quote["quote_id"],
                            "expires_at": quote["expires_at"]})
@@ -1076,7 +1042,7 @@ def book_reservation(db, args) -> dict:
         if certificate is None:
             raise NotFound(
                 f"certificate {args['certificate_id']!r} is not held on this account")
-        scenario_date = (scenario_value(db, "scenario_time") or "")[:10]
+        scenario_date = _today(db)
         if certificate["status"] != "valid" or (
                 certificate["expires_at"] is not None
                 and certificate["expires_at"] < scenario_date):
@@ -1097,10 +1063,9 @@ def book_reservation(db, args) -> dict:
             {"payment_method_token": args["payment_method_token"]})
 
     remainder = _cents(charged_total - certificate_applied)
-    code = _allocate_confirmation_code(db)
-    reservation_id = (scenario_id(db, "next_reservation_id", "reservations", "reservation_id")
-                      or f"reservation-{code}")
-    created_at = scenario_value(db, "scenario_time")
+    code = _record_locator(db)
+    reservation_id = new_id(db, "reservation")
+    created_at = now_iso(db)
     currency = scenario_value(db, "currency")
     seat_selection_available = bool(first(
         db, "fare_options", flight_id=outbound["flight_id"],
@@ -1132,17 +1097,7 @@ def book_reservation(db, args) -> dict:
 
     traveler_views = []
     for index, traveler in enumerate(travelers, start=1):
-        traveler_id = (scenario_value(db, f"next_traveler_{index}_id")
-                       or f"traveler-{_slug(traveler['full_name'])}")
-        # UNIQUE (reservation_id, traveler_id): two travelers whose names slug
-        # alike in one reservation are refused by the database, and the original
-        # backend reported that as a database error.
-        if any(view["traveler_id"] == traveler_id for view in traveler_views):
-            raise DatabaseError(
-                'duplicate key value violates unique constraint '
-                '"travelers_reservation_id_traveler_id_key"\n'
-                f'DETAIL:  Key (reservation_id, traveler_id)=({reservation_id}, '
-                f'{traveler_id}) already exists.')
+        traveler_id = new_id(db, "traveler")
         insert(db, "travelers", {
             "traveler_seq": _next_traveler_seq(db),
             "reservation_id": reservation_id,
@@ -1175,10 +1130,16 @@ def book_reservation(db, args) -> dict:
             "serial_number_required": rule["serial_number_required"],
         })
 
-    allocations: list[tuple[str, str, Decimal]] = []
+    # Each tender is stored as a reference to what paid: the certificate drawn
+    # down or the tokenized card charged. The label a caller hears is built from
+    # those for the result only, so reconciling a charge never means parsing text.
+    allocations: list[dict] = []
     if certificate is not None:
-        allocations.append((f"travel_certificate_{certificate['code']}",
-                            "travel_certificate", certificate_applied))
+        allocations.append({"label": f"travel_certificate_{certificate['code']}",
+                            "tender_kind": "travel_certificate",
+                            "certificate_id": certificate["certificate_id"],
+                            "payment_method_token": None,
+                            "amount": certificate_applied})
         # The balance is drawn down, and a certificate drawn to nothing is spent.
         left = _num(certificate["available_balance"]) - certificate_applied
         certificate["available_balance"] = as_float(_cents(left))
@@ -1192,17 +1153,21 @@ def book_reservation(db, args) -> dict:
             "currency": currency,
             "redeemed_at": created_at,
         }, KEY_COLUMNS)
-    allocations.append((f"{card['brand'].lower()}_ending_{card['last4']}", "card",
-                        remainder))
+    allocations.append({"label": f"{card['brand'].lower()}_ending_{card['last4']}",
+                        "tender_kind": "card",
+                        "certificate_id": None,
+                        "payment_method_token": card["token"],
+                        "amount": remainder})
 
-    for index, (tender, kind, amount) in enumerate(allocations, start=1):
+    for index, tender in enumerate(allocations, start=1):
         insert(db, "payment_allocations", {
             "allocation_id": f"{reservation_id}-tender-{index}",
             "reservation_id": reservation_id,
             "allocation_index": index,
-            "tender": tender,
-            "tender_kind": kind,
-            "amount": as_float(amount),
+            "tender_kind": tender["tender_kind"],
+            "certificate_id": tender["certificate_id"],
+            "payment_method_token": tender["payment_method_token"],
+            "amount": as_float(tender["amount"]),
             "currency": currency,
         }, KEY_COLUMNS)
 
@@ -1249,8 +1214,8 @@ def book_reservation(db, args) -> dict:
         "mobility_devices": device_views,
         "trip_insurance": trip_insurance,
         "payment_allocation": [
-            {"tender": tender, "amount": as_float(amount)}
-            for (tender, _kind, amount) in allocations
+            {"tender": tender["label"], "amount": as_float(tender["amount"])}
+            for tender in allocations
         ],
         "payment_status": "captured",
         "currency": currency,
@@ -1264,7 +1229,7 @@ def transfer_to_specialist(db, args) -> dict:
         "reason": args["reason"],
         "summary": args["summary"],
         "status": "initiated",
-        "created_at": scenario_value(db, "scenario_time"),
+        "created_at": now_iso(db),
     }, KEY_COLUMNS)
     return {"status": "initiated", "transfer_id": transfer_id}
 
@@ -1283,21 +1248,41 @@ TOOLS = {
 
 # Tools that change the airline's records. The grading layer holds reads free —
 # an agent may look at anything as often as it likes — so the distinction has to
-# be stated somewhere, and the handlers are where it is known. What counts is
-# whether the tool changes the world the caller cares about, not whether it
-# happens to touch a table: search_flights files the search it just ran and
-# calculate_itinerary_price writes the figures it just computed, and both are
-# reads a caller may ask for again. verify_customer_identity is here because the
+# be stated somewhere, and the handlers are where it is known.
+# calculate_itinerary_price is here because it creates a record: every pricing
+# call issues a fare quote with its own identifier and expiry, and the booking
+# is held to the quote it cites. verify_customer_identity is here because the
 # record it files is what authorizes account access for the rest of the call.
 WRITE_TOOLS = {
+    "calculate_itinerary_price",
     "verify_customer_identity",
     "book_reservation",
     "transfer_to_specialist",
 }
 
-# What the two filing reads above write: the search cache and the quote cache.
-# A state hash leaves these tables out so that reading twice is not damage.
-READ_SIDE_EFFECTS: dict[str, list[str] | str] = {
-    "flight_searches": "*",
+# Reads write nothing.
+READ_SIDE_EFFECTS: dict[str, list[str] | str] = {}
+
+# Columns the DB score leaves out, because they record when something happened
+# or point at something that only exists for a moment, rather than what the
+# agent did.
+CLOCK_COLUMNS: dict[str, list[str] | str] = {
+    # Fare quotes are ephemeral: a quote lapses a day after it is priced, and an
+    # agent may reprice as often as the conversation needs (with and without
+    # insurance, one bag or two) before the customer settles on one. What was
+    # finally bought is scored on the reservation itself, whose flights, fare
+    # class, counts, insurance, and total have to match the quote it cites.
     "fare_quotes": "*",
+    # For the same reason the reservation's pointer to its quote is not scored:
+    # an agent that priced twice books against its second quote, whose
+    # identifier differs from the recording's only because of the extra call.
+    "reservations": ["created_at", "quote_id"],
+    # A search on a route and dates nobody has checked before files the search,
+    # which pricing then reads the travel dates from, because neither pricing
+    # nor booking takes dates. It is a cache of availability checks, not a
+    # booking record, so searching again or searching more is not damage.
+    "flight_searches": "*",
+    "identity_verifications": ["created_at"],
+    "certificate_redemptions": ["redeemed_at"],
+    "specialist_transfers": ["created_at"],
 }

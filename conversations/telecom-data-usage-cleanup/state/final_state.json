@@ -29,7 +29,7 @@
         "usage",
         "billing"
       ],
-      "verified_at": "2026-08-27T19:31:08-05:00"
+      "verified_at": "2026-08-27T19:31:07-05:00"
     },
     "ec8443dc-5fa9-4579-8dbe-5eafc61d53ac": {
       "entity_type": "mobile_line",
@@ -43,8 +43,8 @@
       "active_addon_transaction_id": "dfdab773-2580-4908-91cf-99a2b4826547",
       "usage_last_24_hours": {
         "measurement_source": "carrier_metering",
-        "window_start": "2026-08-26T19:30:00-05:00",
-        "window_end": "2026-08-27T19:30:00-05:00",
+        "window_start": "2026-08-26T19:31:42-05:00",
+        "window_end": "2026-08-27T19:31:42-05:00",
         "samples": [
           {
             "start": "2026-08-27T00:00:00-05:00",
@@ -115,7 +115,7 @@
       "charged_price": 40.0,
       "currency": "USD",
       "bill_reference": "7af62370-8858-4af6-b2cd-2b702fd15586",
-      "effective_at": "2026-08-27T19:37:35-05:00",
+      "effective_at": "2026-08-27T19:37:32-05:00",
       "added_high_speed_gigabytes": 5.0,
       "remaining_high_speed_gigabytes": 7.2
     },

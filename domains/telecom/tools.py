@@ -3,9 +3,12 @@
 Ported from the PostgreSQL tool server in PR #17. Each tool is (db, args) -> result
 and may mutate db in place; see env/toolkit.py for the row layout and helpers.
 
-Handlers hold domain logic only. Every identifier, price, allowance, timestamp,
-and eligibility decision that appears in a result is read or computed from the
-database, never from wall time and never generated at random.
+Handlers hold domain logic only. Every price, allowance, and eligibility
+decision that appears in a result is read or computed from the database. A new
+verification or add-on transaction identifier comes from the environment's
+seeded generator (toolkit.new_id), and "now" is the call clock (toolkit.now),
+which moves through the call, so a timestamp says when the thing happened in
+this call rather than repeating a recording.
 
 The load-bearing case is high-speed data. No handler stores or reads a
 "remaining" figure: the plan carries the allowance, `usage_samples` carry
@@ -26,7 +29,7 @@ from decimal import ROUND_HALF_EVEN, ROUND_HALF_UP, Decimal
 from zoneinfo import ZoneInfo
 
 from toolkit import (NotFound, Refusal, allocate_id, as_float, as_list_always, compact,
-                     first, insert, rows, scenario_id, scenario_value)
+                     first, insert, new_id, now, rows, scenario_value)
 
 KEY_COLUMNS = {
     "addon_offers": [
@@ -78,13 +81,6 @@ KEY_COLUMNS = {
     "tool_access_requirements": [
         "tool_name"
     ],
-    "tool_clock": [
-        "tool_name",
-        "call_index"
-    ],
-    "tool_clock_cursor": [
-        "tool_name"
-    ],
     "usage_samples": [
         "sample_id"
     ],
@@ -93,12 +89,15 @@ KEY_COLUMNS = {
     ]
 }
 
-# Tables and columns that read tools write as a side effect. Every timed read
-# advances its tool's call counter in tool_clock_cursor so that a second read is
-# stamped later than the first; that is bookkeeping about the call, not a change
-# to anyone's account, so a state comparison leaves it out.
-READ_SIDE_EFFECTS: dict[str, list[str] | str] = {
-    "tool_clock_cursor": "*",
+# Reads write nothing: a read takes its "as of" time from the call clock.
+READ_SIDE_EFFECTS: dict[str, list[str] | str] = {}
+
+# Columns that only record when something happened. The DB score leaves them
+# out, so an agent is judged on what it did, not the second it did it.
+CLOCK_COLUMNS: dict[str, list[str] | str] = {
+    "identity_verifications": ["verified_at"],
+    "addon_transactions": ["effective_at"],
+    "specialist_transfers": ["created_at"],
 }
 
 UTC = timezone.utc
@@ -168,13 +167,8 @@ def _spoken_date(iso_date: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# scenario clock and access gate
+# call clock and access gate
 # ---------------------------------------------------------------------------
-
-
-def _scenario_now(db) -> datetime:
-    """scenario_now(): the conversation's clock, in place of now()."""
-    return _instant(scenario_value(db, "scenario_time"))
 
 
 def _scenario_zone(db) -> ZoneInfo:
@@ -200,35 +194,10 @@ def _intake_channel(db) -> str:
     return scenario_value(db, "intake_channel")
 
 
-def _tool_time(db, tool_name: str) -> tuple[datetime, str]:
-    """Advance the tool's call counter and return the instant it reports.
-
-    Recorded results carry a different timestamp per call, and a backend would
-    take those from its own clock. This environment has no clock, so the elapsed
-    offsets observed on the call live in `tool_clock`, keyed by tool and
-    invocation ordinal. Past the recorded offsets the cursor's step keeps the
-    clock moving forward, so an unrecorded second call is stamped later than the
-    first rather than identically.
-
-    Returns the typed instant and the string the tool emits for it.
-    """
-    cursor = db["tool_clock_cursor"].get(tool_name)
-    if cursor is None:
-        raise KeyError(f"no clock cursor for tool {tool_name!r}")
-    cursor["calls_served"] += 1
-
-    index = cursor["calls_served"]
-    recorded = db["tool_clock"].get(f"{tool_name}|{index}")
-    if recorded is not None:
-        offset = recorded["offset_seconds"]
-    else:
-        clock = rows(db, "tool_clock", tool_name=tool_name)
-        last_index = max((row["call_index"] for row in clock), default=0)
-        last_offset = max((row["offset_seconds"] for row in clock), default=0)
-        offset = last_offset + cursor["default_step_seconds"] * (index - last_index)
-
-    stamped = _scenario_now(db) + timedelta(seconds=offset)
-    return stamped, _scenario_iso(db, stamped)
+def _stamp(db) -> tuple[datetime, str]:
+    """The current instant and the string a tool emits for it."""
+    instant = now(db)
+    return instant, _scenario_iso(db, instant)
 
 
 def _required_scope(db, tool_name: str) -> str | None:
@@ -389,9 +358,8 @@ def _verification_id(db, customer: dict, channel: str) -> str:
 
     One verification record per caller per channel: re-verifying the same caller
     on the same channel refreshes it rather than accumulating identical records,
-    so a caller who already holds one keeps its identifier. A new record takes
-    the scenario's seeded identifier while that is free, and otherwise one
-    derived from the account stem and the channel.
+    so a caller who already holds one keeps its identifier. A new record gets a
+    fresh identifier from the environment's generator.
 
     The existing record is looked up first on purpose. The PostgreSQL handler
     went straight to the seeded identifier, so the first verification of a
@@ -403,10 +371,7 @@ def _verification_id(db, customer: dict, channel: str) -> str:
                      customer_id=customer["customer_id"], channel=channel)
     if existing is not None:
         return existing["verification_id"]
-    return (scenario_id(db, "next_identity_verification_id",
-                        "identity_verifications", "verification_id",
-                        {"customer_id": customer["customer_id"], "channel": channel})
-            or f"verification-{customer['slug']}-{channel}")
+    return new_id(db, "identity_verification")
 
 
 def verify_customer_identity(db, args) -> dict:
@@ -445,7 +410,7 @@ def verify_customer_identity(db, args) -> dict:
 
     scope = as_list_always(policy["granted_scope"]) if status == "verified" else []
     verification_id = _verification_id(db, customer, channel)
-    verified_at, verified_at_display = _tool_time(db, "verify_customer_identity")
+    verified_at, verified_at_display = _stamp(db)
 
     # An upsert on the identifier: a refresh keeps the record's customer and
     # channel and replaces the outcome.
@@ -454,7 +419,6 @@ def verify_customer_identity(db, args) -> dict:
         "matched_factors": matched,
         "access_scope": scope,
         "verified_at": _stored(verified_at),
-        "verified_at_display": verified_at_display,
     }
     record = db["identity_verifications"].get(verification_id)
     if record is not None:
@@ -542,7 +506,7 @@ def get_line_data_usage(db, args) -> dict:
             raise Refusal("a custom window requires window_start and window_end")
         lo, hi = _instant(args["window_start"]), _instant(args["window_end"])
     elif window == "last_24_hours":
-        hi = _scenario_now(db)
+        hi = now(db)
         lo = hi - timedelta(hours=24)
     else:
         cycle = db["billing_cycles"][line["billing_cycle_id"]]
@@ -571,7 +535,7 @@ def get_line_data_usage(db, args) -> dict:
     cycle_id = cycles[0] if len(cycles) == 1 else line["billing_cycle_id"]
 
     balance = _balance(db, line)
-    as_of = _tool_time(db, "get_line_data_usage")[1]
+    as_of = _stamp(db)[1]
 
     return {
         "line_id": line["line_id"],
@@ -640,7 +604,7 @@ def get_customer_bills(db, args) -> dict:
     # The cycle's bounds are returned as dates; how long until it resets is the
     # reader's arithmetic against the call's own clock.
     cycle_requested = "cycle" in sections
-    as_of = _tool_time(db, "get_customer_bills")[1]
+    as_of = _stamp(db)[1]
 
     return compact([
         ("bill_id", bill["bill_id"]),
@@ -662,15 +626,14 @@ def get_data_addon_offers(db, args) -> dict:
                         line["customer_id"])
 
     overdue = _overdue_bills(db, line["customer_id"])
-    # Current means unexpired against the scenario clock and not withdrawn from
+    # Current means unexpired against the call clock and not withdrawn from
     # the catalog. Eligibility is reported per offer rather than filtered on, so
     # an offer this line cannot buy comes back saying so instead of vanishing.
-    now = _scenario_now(db)
+    as_of_instant, as_of = _stamp(db)
     offers = sorted(
         (offer for offer in rows(db, "addon_offers", plan_id=line["plan_id"], withdrawn=False)
-         if _instant(offer["expires_at"]) > now),
+         if _instant(offer["expires_at"]) > as_of_instant),
         key=lambda offer: (_decimal(offer["data_gigabytes"]), offer["offer_id"]))
-    as_of = _tool_time(db, "get_data_addon_offers")[1]
 
     return {
         "line_id": line["line_id"],
@@ -696,34 +659,6 @@ def get_data_addon_offers(db, args) -> dict:
 # ---------------------------------------------------------------------------
 
 
-def _allocate_transaction_id(db, line_id: str, gigabytes: float) -> str:
-    """Issue the add-on transaction identifier for a purchase on this line.
-
-    The allocator holds the account stem; the size of the add-on completes it,
-    which is where `dfdab773-2580-4908-91cf-99a2b4826547` comes from. The issued
-    ordinal is appended only from the second purchase onward, so the first
-    purchase reads as a name and a repeat cannot collide with it. Written here
-    rather than through toolkit.allocate_id because that helper substitutes the
-    ordinal unconditionally.
-
-    The stem belongs to the account, not the line, so two lines on one account
-    can arrive at the same identifier for the same size of add-on. An issued
-    identifier that is already taken is skipped and the next ordinal drawn. The
-    PostgreSQL handler did not skip, and the second purchase failed with a 500 on
-    the transaction's primary key.
-    """
-    issued = db["id_allocator"].get(f"addon_transaction|{line_id}")
-    if issued is None:
-        raise Refusal(f"line {line_id!r} has no add-on transaction allocator")
-    stem = f"{issued['template']}-{gigabytes:g}gb"
-    while True:
-        ordinal = issued["next_value"]
-        issued["next_value"] = ordinal + 1
-        transaction_id = stem if ordinal == 1 else f"{stem}-{ordinal}"
-        if db["addon_transactions"].get(transaction_id) is None:
-            return transaction_id
-
-
 def add_data_addon(db, args) -> dict:
     line = _line(db, args["line_id"])
     _check_customer_verified(db, "add_data_addon", line["customer_id"])
@@ -738,7 +673,7 @@ def add_data_addon(db, args) -> dict:
     if offer["plan_id"] != line["plan_id"]:
         raise Refusal(
             f"offer {offer['offer_id']!r} is not offered on plan {line['plan_id']!r}")
-    if offer["withdrawn"] or not _instant(offer["expires_at"]) > _scenario_now(db):
+    if offer["withdrawn"] or not _instant(offer["expires_at"]) > now(db):
         raise Refusal(f"offer {offer['offer_id']!r} is no longer current")
 
     overdue = _overdue_bills(db, line["customer_id"])
@@ -762,10 +697,8 @@ def add_data_addon(db, args) -> dict:
             f"account {line['customer_id']!r} has no open bill to charge")
 
     gigabytes = as_float(offer["data_gigabytes"])
-    transaction_id = (scenario_id(db, "next_addon_transaction_id",
-                                  "addon_transactions", "transaction_id")
-                      or _allocate_transaction_id(db, line["line_id"], gigabytes))
-    effective_at, effective_at_display = _tool_time(db, "add_data_addon")
+    transaction_id = new_id(db, "addon_transaction")
+    effective_at, effective_at_display = _stamp(db)
 
     # An add-on that only takes effect next cycle is not usable data yet, so it
     # is recorded as pending and the balance, which counts active rows only, does
@@ -783,7 +716,6 @@ def add_data_addon(db, args) -> dict:
         "charged_price": offer["price"],
         "currency": offer["currency"],
         "effective_at": _stored(effective_at),
-        "effective_at_display": effective_at_display,
         "authorized_by_customer": True,
     }, KEY_COLUMNS)
     insert(db, "bill_charges", {
@@ -816,14 +748,12 @@ def add_data_addon(db, args) -> dict:
 
 def transfer_to_specialist(db, args) -> dict:
     transfer_id = allocate_id(db, "specialist_transfer")
-    created_at, created_at_display = _tool_time(db, "transfer_to_specialist")
     insert(db, "specialist_transfers", {
         "transfer_id": transfer_id,
         "reason": args["reason"],
         "summary": args["summary"],
         "status": "accepted",
-        "created_at": _stored(created_at),
-        "created_at_display": created_at_display,
+        "created_at": _stored(now(db)),
     }, KEY_COLUMNS)
     return {"status": "accepted", "transfer_id": transfer_id}
 
@@ -841,14 +771,9 @@ TOOLS = {
 
 # Tools that change the carrier's records. Reads are free - an agent may look at
 # anything as often as it likes - so the distinction has to be stated somewhere,
-# and the handlers are where it is known. What counts is whether the tool changes
-# the world the caller cares about, not whether it happens to touch a table:
-# get_line_data_usage, get_customer_bills and get_data_addon_offers each advance
-# tool_clock_cursor so that a second call is stamped later than the first, and
-# that is bookkeeping (READ_SIDE_EFFECTS), not a change to the customer's account.
-# verify_customer_identity is here because the record it files is what
-# authorizes account access, and its scope is what every protected read is
-# checked against.
+# and the handlers are where it is known. verify_customer_identity is here
+# because the record it files is what authorizes account access, and its scope
+# is what every protected read is checked against.
 WRITE_TOOLS = {
     "verify_customer_identity",
     "add_data_addon",

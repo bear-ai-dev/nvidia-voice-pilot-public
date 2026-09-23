@@ -1,11 +1,13 @@
 {
  "claim_overrides": {
   "9e90544a-3497-4aee-a1f0-4437d4f4684c": {
-   "consumed_at": "2026-08-27T18:12:00-05:00",
+   "consumed_at": "2026-08-27T18:15:07-05:00",
    "override_id": "9e90544a-3497-4aee-a1f0-4437d4f4684c",
+   "plan_id": "plan-midwest-choice-ppo",
    "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
    "reason": "lost_medication",
-   "requested_at": "2026-08-27T18:12:00-05:00",
+   "requested_at": "2026-08-27T18:14:07-05:00",
+   "rule_id": "override-lost-medication",
    "status": "approved_one_time",
    "urgency_context": "Patient leaves town on the morning of 2026-08-28 and needs the inhaler on the evening of 2026-08-27"
   }
@@ -2349,7 +2351,7 @@
    "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
    "reason": null,
    "status": "paid",
-   "submitted_at": "2026-08-27T18:12:00-05:00"
+   "submitted_at": "2026-08-27T18:15:07-05:00"
   },
   "31": {
    "claim_seq": 31,
@@ -8112,123 +8114,123 @@
  "plan_override_rules": {
   "plan-heartland-basic-hmo|dose_change": {
    "decision": "approved",
-   "override_id": "override-hb-dose",
    "plan_id": "plan-heartland-basic-hmo",
-   "reason": "dose_change"
+   "reason": "dose_change",
+   "rule_id": "override-hb-dose"
   },
   "plan-heartland-basic-hmo|lost_medication": {
    "decision": "pending_patient_participation",
-   "override_id": "override-hb-lost",
    "plan_id": "plan-heartland-basic-hmo",
-   "reason": "lost_medication"
+   "reason": "lost_medication",
+   "rule_id": "override-hb-lost"
   },
   "plan-heartland-basic-hmo|other": {
    "decision": "denied",
-   "override_id": "override-hb-other",
    "plan_id": "plan-heartland-basic-hmo",
-   "reason": "other"
+   "reason": "other",
+   "rule_id": "override-hb-other"
   },
   "plan-heartland-basic-hmo|vacation_supply": {
    "decision": "denied",
-   "override_id": "override-hb-vacation",
    "plan_id": "plan-heartland-basic-hmo",
-   "reason": "vacation_supply"
+   "reason": "vacation_supply",
+   "rule_id": "override-hb-vacation"
   },
   "plan-lakeshore-value|dose_change": {
    "decision": "denied",
-   "override_id": "override-lv-dose",
    "plan_id": "plan-lakeshore-value",
-   "reason": "dose_change"
+   "reason": "dose_change",
+   "rule_id": "override-lv-dose"
   },
   "plan-lakeshore-value|lost_medication": {
    "decision": "approved_one_time",
-   "override_id": "override-lv-lost",
    "plan_id": "plan-lakeshore-value",
-   "reason": "lost_medication"
+   "reason": "lost_medication",
+   "rule_id": "override-lv-lost"
   },
   "plan-lakeshore-value|other": {
    "decision": "denied",
-   "override_id": "override-lv-other",
    "plan_id": "plan-lakeshore-value",
-   "reason": "other"
+   "reason": "other",
+   "rule_id": "override-lv-other"
   },
   "plan-lakeshore-value|vacation_supply": {
    "decision": "pending_patient_participation",
-   "override_id": "override-lv-vacation",
    "plan_id": "plan-lakeshore-value",
-   "reason": "vacation_supply"
+   "reason": "vacation_supply",
+   "rule_id": "override-lv-vacation"
   },
   "plan-midwest-choice-ppo|dose_change": {
    "decision": "pending_patient_participation",
-   "override_id": "override-dose-change",
    "plan_id": "plan-midwest-choice-ppo",
-   "reason": "dose_change"
+   "reason": "dose_change",
+   "rule_id": "override-dose-change"
   },
   "plan-midwest-choice-ppo|lost_medication": {
    "decision": "approved_one_time",
-   "override_id": "9e90544a-3497-4aee-a1f0-4437d4f4684c",
    "plan_id": "plan-midwest-choice-ppo",
-   "reason": "lost_medication"
+   "reason": "lost_medication",
+   "rule_id": "override-lost-medication"
   },
   "plan-midwest-choice-ppo|other": {
    "decision": "denied",
-   "override_id": "override-other",
    "plan_id": "plan-midwest-choice-ppo",
-   "reason": "other"
+   "reason": "other",
+   "rule_id": "override-other"
   },
   "plan-midwest-choice-ppo|vacation_supply": {
    "decision": "pending_patient_participation",
-   "override_id": "override-vacation-supply",
    "plan_id": "plan-midwest-choice-ppo",
-   "reason": "vacation_supply"
+   "reason": "vacation_supply",
+   "rule_id": "override-vacation-supply"
   },
   "plan-northstar-select|dose_change": {
    "decision": "approved",
-   "override_id": "override-ns-dose",
    "plan_id": "plan-northstar-select",
-   "reason": "dose_change"
+   "reason": "dose_change",
+   "rule_id": "override-ns-dose"
   },
   "plan-northstar-select|lost_medication": {
    "decision": "approved",
-   "override_id": "override-ns-lost",
    "plan_id": "plan-northstar-select",
-   "reason": "lost_medication"
+   "reason": "lost_medication",
+   "rule_id": "override-ns-lost"
   },
   "plan-northstar-select|other": {
    "decision": "pending_patient_participation",
-   "override_id": "override-ns-other",
    "plan_id": "plan-northstar-select",
-   "reason": "other"
+   "reason": "other",
+   "rule_id": "override-ns-other"
   },
   "plan-northstar-select|vacation_supply": {
    "decision": "approved_one_time",
-   "override_id": "override-ns-vacation",
    "plan_id": "plan-northstar-select",
-   "reason": "vacation_supply"
+   "reason": "vacation_supply",
+   "rule_id": "override-ns-vacation"
   },
   "plan-uninsured-cash|dose_change": {
    "decision": "denied",
-   "override_id": "override-uc-dose",
    "plan_id": "plan-uninsured-cash",
-   "reason": "dose_change"
+   "reason": "dose_change",
+   "rule_id": "override-uc-dose"
   },
   "plan-uninsured-cash|lost_medication": {
    "decision": "denied",
-   "override_id": "override-uc-lost",
    "plan_id": "plan-uninsured-cash",
-   "reason": "lost_medication"
+   "reason": "lost_medication",
+   "rule_id": "override-uc-lost"
   },
   "plan-uninsured-cash|other": {
    "decision": "denied",
-   "override_id": "override-uc-other",
    "plan_id": "plan-uninsured-cash",
-   "reason": "other"
+   "reason": "other",
+   "rule_id": "override-uc-other"
   },
   "plan-uninsured-cash|vacation_supply": {
    "decision": "denied",
-   "override_id": "override-uc-vacation",
    "plan_id": "plan-uninsured-cash",
-   "reason": "vacation_supply"
+   "reason": "vacation_supply",
+   "rule_id": "override-uc-vacation"
   }
  },
  "prescriptions": {
@@ -15066,6 +15068,10 @@
   }
  },
  "scenario": {
+  "call_started_at": {
+   "key": "call_started_at",
+   "value": "2026-08-27T18:12:00-05:00"
+  },
   "conversation_id": {
    "key": "conversation_id",
    "value": "pharmacy-travel-refill"

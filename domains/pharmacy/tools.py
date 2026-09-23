@@ -3,10 +3,13 @@
 Ported from the PostgreSQL tool server in PR #17. Each tool is (db, args) -> result
 and may mutate db in place; see env/toolkit.py for the row layout and helpers.
 
-Tools hold domain logic only. Every identifier, amount, store hour, payer
-decision, and queue estimate that appears in a result is read from the database,
-never computed from wall time or generated at random, so a result is reproducible
-and an operator can explain any value by pointing at a row.
+Tools hold domain logic only. Every amount, store hour, payer decision, and
+queue estimate that appears in a result is read from the database, so an
+operator can explain any value by pointing at a row. A new override's identifier
+comes from the environment's seeded generator (toolkit.new_id), the way a payer
+issues one per request, and every timestamp a write records comes from the call
+clock (toolkit.now), so a replay is reproducible without the database holding
+copies of what a recording happened to show.
 
 The original server ran on a database created with the C.UTF-8 locale, so text
 compares and sorts by code point, which is how Python compares str. Where it
@@ -19,7 +22,7 @@ import re
 from datetime import date
 
 from toolkit import (NotFound, Refusal, allocate_id, as_int, as_list_always, compact,
-                     first, insert, rows, scenario_value)
+                     first, insert, new_id, now_iso, rows)
 
 # Key columns per table: a row's key in db[table] is these columns joined by "|".
 KEY_COLUMNS = {
@@ -324,25 +327,28 @@ def request_claim_override(db, args) -> dict:
     if rule is None:
         raise Refusal(f"payer plan {plan_id!r} has no policy for reason {reason!r}")
 
-    requested_at = scenario_value(db, "scenario_time")
-    # The override identifier is the plan's, per reason, so asking again upserts
-    # the existing row: only the urgency and the request time are refreshed, and
-    # the prescription, decision, and any consumption stay as first recorded.
-    existing = db["claim_overrides"].get(rule["override_id"])
+    # An override belongs to the request that raised it: one prescription, one
+    # reason. The payer's rule decides it, and the payer issues its own
+    # identifier for it, so a second patient on the same plan asking for the
+    # same reason gets an override of their own. Asking again for the same
+    # prescription and reason returns the override already on file unchanged,
+    # so the original request, and whether a one-time approval has been used,
+    # are not overwritten.
+    existing = first(db, "claim_overrides", prescription_id=prescription_id, reason=reason)
     if existing is not None:
-        existing["urgency_context"] = args.get("urgency_context")
-        existing["requested_at"] = requested_at
-    else:
-        insert(db, "claim_overrides", {
-            "override_id": rule["override_id"],
-            "prescription_id": prescription_id,
-            "reason": reason,
-            "status": rule["decision"],
-            "urgency_context": args.get("urgency_context"),
-            "requested_at": requested_at,
-            "consumed_at": None,
-        }, KEY_COLUMNS)
-    return {"override_id": rule["override_id"], "status": rule["decision"]}
+        return {"override_id": existing["override_id"], "status": existing["status"]}
+    override = insert(db, "claim_overrides", {
+        "override_id": new_id(db, "claim_override"),
+        "prescription_id": prescription_id,
+        "plan_id": plan_id,
+        "rule_id": rule["rule_id"],
+        "reason": reason,
+        "status": rule["decision"],
+        "urgency_context": args.get("urgency_context"),
+        "requested_at": now_iso(db),
+        "consumed_at": None,
+    }, KEY_COLUMNS)
+    return {"override_id": override["override_id"], "status": override["status"]}
 
 
 def _append_claim(db, row: dict) -> None:
@@ -370,7 +376,7 @@ def submit_prescription_claim(db, args) -> dict:
         raise NotFound(f"unknown prescription {prescription_id!r}")
     rx = found[0]
 
-    submitted_at = scenario_value(db, "scenario_time")
+    submitted_at = now_iso(db)
     override = None
     override_id = args.get("override_id")
     if override_id:
@@ -552,7 +558,7 @@ def request_prescription_transfer(db, args) -> dict:
         "reason": args.get("reason"),
         "patient_authorized": True,
         "original_fill_active": True,
-        "requested_at": scenario_value(db, "scenario_time"),
+        "requested_at": now_iso(db),
     }, KEY_COLUMNS)
     # A request is not a completed transfer: the original fill stays active until
     # a pharmacist accepts.
@@ -571,7 +577,7 @@ def transfer_to_specialist(db, args) -> dict:
         "reason": args["reason"],
         "summary": args["summary"],
         "status": "initiated",
-        "created_at": scenario_value(db, "scenario_time"),
+        "created_at": now_iso(db),
     }, KEY_COLUMNS)
     return {"status": "initiated", "transfer_id": transfer_id}
 
@@ -601,3 +607,12 @@ WRITE_TOOLS = {
 # No read tool writes anything here (the original server's only read-side write
 # was its tool_call_log, which this database does not carry).
 READ_SIDE_EFFECTS: dict[str, list[str] | str] = {}
+
+# Columns that only record when something happened. The DB score leaves them
+# out, so an agent is judged on what it did, not the second it did it.
+CLOCK_COLUMNS: dict[str, list[str] | str] = {
+    "claim_overrides": ["requested_at", "consumed_at"],
+    "claims": ["submitted_at"],
+    "transfer_requests": ["requested_at"],
+    "specialist_transfers": ["created_at"],
+}

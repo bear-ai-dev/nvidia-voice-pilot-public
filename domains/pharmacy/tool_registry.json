@@ -293,7 +293,7 @@
     },
     {
       "name": "request_claim_override",
-      "description": "Request a payer decision for an eligible prescription-claim exception; the payer may require the patient to participate.",
+      "description": "Request a payer decision for an eligible prescription-claim exception; the payer may require the patient to participate. Each prescription and reason gets its own override; asking again for the same prescription and reason returns the override already on file.",
       "parameters": {
         "type": "object",
         "properties": {
@@ -328,7 +328,7 @@
         "properties": {
           "override_id": {
             "type": "string",
-            "description": "Override identifier.",
+            "description": "Override identifier the payer issued for this request.",
             "format": "uuid"
           },
           "status": {
