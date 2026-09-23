@@ -9,7 +9,7 @@ detail and notification state that appears in a result is read from the
 database, never computed from wall time or generated at random, so a result is
 reproducible and an operator can explain any value by pointing at a row.
 
-Three conventions are worth stating because they decide what a result looks
+Five conventions are worth stating because they decide what a result looks
 like:
 
 Absent versus null. The registry types a handful of fields as string-or-null
@@ -24,10 +24,17 @@ exception. That is a single documented rule here rather than a per-field choice.
 Stored amounts are NUMERIC(10, 2) columns, so a value written to one is rounded
 to cents the way the database rounds it.
 
-Human-relative time. Deadlines and scan times are stored as instants and
-rendered against the scenario clock, so "18:00 tomorrow" is computed from
-2026-08-26T18:00 and the frozen clock rather than stored as a sentence. Stored
-instants are ISO 8601 strings in UTC, which is how the database returned them.
+Time. Results carry timestamps and dates, never phrases relative to the call:
+a deadline is 2026-08-26T18:00:00-04:00, not "18:00 tomorrow", and working out
+"tomorrow" from the scenario time is the agent's job. Stored instants are ISO
+8601 strings in UTC, which is how the database returned them; a result renders
+them in the scenario's timezone, which is how the desk displays them. Delivery
+estimates are calendar dates.
+
+Records, not conclusions. A result reports what the records hold. It does not
+add a judgement the agent should draw from them (whether a scan looks like a
+mis-scan), a disclaimer the agent should voice (that an estimate or a pickup is
+not guaranteed), or a sentence written for the agent to repeat.
 
 Ordering follows the original queries' ORDER BY clauses. The database used a
 C.UTF-8 collation, so text sorts by code point exactly as Python compares str.
@@ -51,6 +58,7 @@ from __future__ import annotations
 import datetime as dt
 import re
 from decimal import ROUND_HALF_UP, Decimal
+from zoneinfo import ZoneInfo
 
 from toolkit import (NotFound, Refusal, ToolError, allocate_id, as_float, as_int,
                      as_list_always, compact, first, insert, rows, scenario_id,
@@ -110,9 +118,6 @@ KEY_COLUMNS = {
     ],
     "payments": [
         "payment_seq"
-    ],
-    "pickup_site_suffixes": [
-        "suffix"
     ],
     "product_variants": [
         "variant_reference"
@@ -231,29 +236,18 @@ def _money(value):
     return as_float(value)
 
 
-def _clock_display(instant: dt.datetime, now: dt.datetime) -> str:
-    """Render an instant the way the desk speaks it: a time and a relative day."""
-    delta = (instant.date() - now.date()).days
-    hhmm = instant.strftime("%H:%M")
-    if delta == 0:
-        return f"{hhmm} today"
-    if delta == 1:
-        return f"{hhmm} tomorrow"
-    if delta == -1:
-        return f"{hhmm} yesterday"
-    return f"{hhmm} on {instant.strftime('%B')} {instant.day}"
+def _local_instant(db, value: str | dt.datetime | None) -> str | None:
+    """Render an instant as ISO 8601 in the scenario's timezone.
 
-
-def _delivery_display(day: dt.date, now: dt.datetime) -> str:
-    """Render a delivery estimate the way the desk speaks it.
-
-    A date inside the coming week is named by its weekday, because that is what
-    a caller can act on; anything further out falls back to a calendar date.
+    The scenario names its timezone; one that does not falls back to the
+    scenario clock's own UTC offset.
     """
-    delta = (day - now.date()).days
-    if 0 <= delta <= 6:
-        return f"{day.strftime('%A')} end of day"
-    return f"{day.strftime('%B')} {day.day} end of day"
+    if value is None:
+        return None
+    instant = _instant(value) if isinstance(value, str) else value
+    zone = scenario_value(db, "timezone")
+    tz = ZoneInfo(zone) if zone else _now(db).tzinfo
+    return instant.astimezone(tz).isoformat()
 
 
 def _mask_reference(db, order_reference: str) -> str:
@@ -463,6 +457,23 @@ def _latest_scan(db, order_reference: str) -> dict | None:
                default=None)
 
 
+def _carrier_evidence(db, scan: dict) -> dict:
+    """The raw fields of a carrier scan, for the evidence panel.
+
+    What the scan does or does not show about where the package went is for
+    the reader to work out. The unit, locker and photo are emitted even when
+    null, because null is the carrier's answer that it recorded none.
+    """
+    evidence = compact([
+        ("scanned_at", _local_instant(db, scan["scanned_at"])),
+        ("location", scan["location"]),
+        ("evidence_location", scan["evidence_location"]),
+    ])
+    evidence.update(unit_number=scan["unit_number"], locker=scan["locker"],
+                    photo=scan["photo_reference"])
+    return evidence
+
+
 def _public_case_number(db, case_id: str) -> str:
     if case_id == scenario_value(db, "target_case_id"):
         return scenario_value(db, "target_case_number") or case_id
@@ -507,7 +518,7 @@ def _case_view(db, case: dict, reference: str) -> dict:
         "item": case["item_description"],
         "status": case["status"],
         "carrier_response": case["carrier_response"],
-        "deadline": case["deadline_display"],
+        "deadline": _local_instant(db, case["deadline_at"]),
         "carrier_may_contact_customer": case["carrier_may_contact_customer"],
         "replacement_created": case["replacement_created"],
         "preferences": preferences,
@@ -638,7 +649,7 @@ def get_order(db, args) -> dict:
         fulfillment.append(("status", order["fulfillment_status"]))
         if scan:
             fulfillment.append(("latest_scan", {
-                "time": scan["scanned_at_display"],
+                "scanned_at": _local_instant(db, scan["scanned_at"]),
                 "location": scan["location"],
                 # Null is the answer "the carrier took none", not an unknown.
                 "photo": scan["photo_reference"],
@@ -651,13 +662,7 @@ def get_order(db, args) -> dict:
         else:
             scan = _latest_scan(db, reference)
             if scan:
-                fulfillment.append(("carrier_evidence", {
-                    "scan_location": scan["evidence_location"] or scan["location"],
-                    "unit_number": scan["unit_number"],
-                    "locker": scan["locker"],
-                    "photo": scan["photo_reference"],
-                    "possible_misscan": scan["possible_misscan"],
-                }))
+                fulfillment.append(("carrier_evidence", _carrier_evidence(db, scan)))
     if fulfillment:
         result.append(("fulfillment", dict(fulfillment)))
 
@@ -724,7 +729,7 @@ def get_order(db, args) -> dict:
                      row["optional_photo_upload_available"]),
                     ("photo_upload_blocks_fulfillment",
                      row["photo_upload_blocks_fulfillment"]),
-                    ("estimated_delivery", row["estimated_delivery_display"]),
+                    ("estimated_delivery", row["estimated_delivery_on"]),
                     ("default_fulfillment", row["default_fulfillment"]),
                 ])
                 for row in resolutions
@@ -789,24 +794,6 @@ def _require_items(db, order_reference: str, item_references: list[str]) -> None
         )
 
 
-def _pickup_site(db, location: str) -> str:
-    """Normalize a spoken pickup location to the site a reviewer instruction names.
-
-    A customer asks for "the West 23rd Street pickup counter"; the instruction a
-    reviewer reads is about checking West 23rd Street. The endings that get
-    stripped are rows, so a new label form is a seed change rather than a code
-    change. Longer endings are tried first, so " pickup counter" wins over
-    " counter".
-    """
-    text = location.strip()
-    suffixes = sorted((row["suffix"] for row in db["pickup_site_suffixes"].values()),
-                      key=len, reverse=True)
-    for suffix in suffixes:
-        if text.lower().endswith(suffix.lower()):
-            return text[: -len(suffix)].strip()
-    return text
-
-
 def _case_policy(db, case_type: str) -> dict:
     policy = db["case_type_policy"].get(case_type)
     if policy is None:
@@ -819,16 +806,14 @@ def _case_row(**columns) -> dict:
     row = dict.fromkeys([
         "case_number", "order_reference", "customer_id", "case_type", "status",
         "reason", "item_description", "carrier_response", "deadline_at",
-        "deadline_display", "carrier_may_contact_customer", "replacement_created",
+        "carrier_may_contact_customer", "replacement_created",
         "requested_resolution", "needed_by", "approval_required", "approval_channel",
         "next_action", "eligibility_triggers", "review_window_min_days",
         "review_window_max_days", "duplicate_refund_blocked",
         "return_evidence_attached", "return_reference", "payment_reference",
-        "amount_under_review", "fee_reimbursement_approved", "pickup_guaranteed",
-        "opened_at",
+        "amount_under_review", "opened_at",
     ])
-    row.update(replacement_created=False, fee_reimbursement_approved=False,
-               pickup_guaranteed=False)
+    row.update(replacement_created=False)
     row.update(columns)
     return row
 
@@ -843,7 +828,6 @@ def open_delivery_trace(db, args) -> dict:
     hour, minute = policy["deadline_local_time"].split(":")
     deadline = dt.datetime(deadline_day.year, deadline_day.month, deadline_day.day,
                            int(hour), int(minute), tzinfo=now.tzinfo)
-    deadline_display = _clock_display(deadline, now)
 
     case_number = _new_case_number(db)
     needed_by = args.get("needed_by")
@@ -857,7 +841,6 @@ def open_delivery_trace(db, args) -> dict:
         item_description=order["representative_item"],
         carrier_response="none",
         deadline_at=_stored_instant(deadline),
-        deadline_display=deadline_display,
         carrier_may_contact_customer=policy["carrier_may_contact_customer"],
         replacement_created=False,
         requested_resolution=args.get("requested_resolution"),
@@ -867,7 +850,6 @@ def open_delivery_trace(db, args) -> dict:
         approval_channel=policy["approval_channel"],
         next_action=policy["next_action"],
         eligibility_triggers=policy["eligibility_triggers"],
-        pickup_guaranteed=policy["pickup_guaranteed"],
         opened_at=_stored_instant(now),
     ))
     for item_reference in args["item_references"]:
@@ -881,7 +863,7 @@ def open_delivery_trace(db, args) -> dict:
         ("case_id", case_number),
         ("case_number", _case_display_number(db, case_number)),
         ("status", policy["initial_status"]),
-        ("carrier_response_deadline", deadline_display),
+        ("carrier_response_deadline", _local_instant(db, deadline)),
         ("replacement_created", False),
         ("eligibility_triggers", as_list_always(policy["eligibility_triggers"])),
         ("next_action", policy["next_action"]),
@@ -1043,9 +1025,6 @@ def create_replacement_order(db, args) -> dict:
     center = min(centers, key=lambda row: row["dc_id"], default=None)
 
     estimated_on = eligibility["estimated_delivery_on"]
-    estimated_display = eligibility["estimated_delivery_display"]
-    if estimated_on is not None and estimated_display is None:
-        estimated_display = _delivery_display(dt.date.fromisoformat(estimated_on), now)
 
     disposition = None
     safety = None
@@ -1065,8 +1044,6 @@ def create_replacement_order(db, args) -> dict:
         "fulfillment_method": args["fulfillment_method"],
         "fulfillment_location": args.get("fulfillment_location") or original["address_label"],
         "estimated_delivery_on": estimated_on,
-        "estimated_delivery_display": estimated_display,
-        "estimate_guaranteed": False,
         "distribution_center": center["display_name"] if center else None,
         "distribution_center_status": "provisional_until_shipped",
         "tracking_notifications": True,
@@ -1095,7 +1072,6 @@ def create_replacement_order(db, args) -> dict:
         "photo_link_section": template["photo_link_section"],
         "included_fields": template["included_fields"],
         "sent_at": _stored_instant(now),
-        "sent_at_display": None,
         "created_at": _stored_instant(now),
     })
 
@@ -1113,8 +1089,7 @@ def create_replacement_order(db, args) -> dict:
         ("fulfillment", compact([
             ("method", args["fulfillment_method"]),
             ("location", args.get("fulfillment_location") or original["address_label"]),
-            ("estimated_delivery", estimated_display),
-            ("estimate_guaranteed", False),
+            ("estimated_delivery", estimated_on),
             ("distribution_center", center["display_name"] if center else None),
             ("distribution_center_status", "provisional_until_shipped"),
             ("tracking_notifications", True),
@@ -1145,19 +1120,14 @@ def update_case(db, args) -> dict:
     requested = args.get("requested_resolution")
     if note is None and pickup is None and requested is None:
         raise Refusal("no note, resolution, or preference was supplied")
-    # What the case said before this update, which is what the result reports.
-    before = dict(case)
 
     now = _now(db)
-    fee_note = False
     if note is not None:
-        # The note's topic is the first matching pattern, preferring one that
-        # discloses the fee decision.
+        # The note's topic is the first matching topic, by name.
         topics = sorted(
             (row for row in db["note_topics"].values() if _ilike(note, row["match_pattern"])),
-            key=lambda row: (not row["discloses_fee_decision"], row["topic"]))
+            key=lambda row: row["topic"])
         topic = topics[0] if topics else None
-        fee_note = bool(topic and topic["discloses_fee_decision"])
         numbers = [row["note_no"] for row in rows(db, "case_notes",
                                                    case_number=case["case_number"])]
         _add(db, "case_notes", {
@@ -1172,44 +1142,31 @@ def update_case(db, args) -> dict:
     if requested is not None:
         case["requested_resolution"] = requested
 
-    review_instruction = None
     if pickup is not None:
-        policy = _case_policy(db, case["case_type"])
-        template = policy["preference_instruction_template"]
-        if not template:
+        if not _case_policy(db, case["case_type"])["accepts_pickup_preference"]:
             raise Refusal(
                 f"a {case['case_type']} does not carry a pickup preference")
-        site = _pickup_site(db, pickup)
-        review_instruction = template.replace("{site}", site)
         preference = db["case_preferences"].get(case["case_number"])
         if preference is None:
             _add(db, "case_preferences", {
                 "case_number": case["case_number"],
                 "pickup_location": pickup,
-                "pickup_site": site,
-                "review_instruction": review_instruction,
                 "visible_to_next_reviewer": True,
                 "recorded_at": _stored_instant(now),
             })
         else:
-            preference.update(pickup_location=pickup, pickup_site=site,
-                              review_instruction=review_instruction,
-                              recorded_at=_stored_instant(now))
+            preference.update(pickup_location=pickup, recorded_at=_stored_instant(now))
 
     # A preference changes what the next reviewer will do; a note only tells
     # them something. The two outcomes are distinct in the registry and the
-    # caller is told which one happened.
+    # caller is told which one happened, along with the preference as stored.
     status = "preference_added" if (pickup is not None or requested is not None) \
         else "note_added"
     return compact([
         ("status", status),
         ("visible_to_next_reviewer", True),
-        ("review_instruction", review_instruction),
-        ("pickup_guaranteed", before["pickup_guaranteed"] if pickup is not None else None),
-        # Policy forbids approving a bank fee while the trace is open, so a note
-        # that raises one is answered rather than silently filed.
-        ("fee_reimbursement_approved",
-         before["fee_reimbursement_approved"] if fee_note else None),
+        ("requested_resolution", case["requested_resolution"] if requested is not None else None),
+        ("preferences", {"pickup": pickup} if pickup is not None else None),
     ])
 
 
@@ -1258,7 +1215,6 @@ def send_case_notification(db, args) -> dict:
             subject_prefix=template["subject_prefix"],
             optional_photo_link=template["optional_photo_link"],
             photo_link_section=template["photo_link_section"],
-            sent_at_display=None,
             created_at=_stored_instant(now),
         ))
     else:
