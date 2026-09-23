@@ -65,6 +65,17 @@
   "welcome_offers": 15,
   "workflow_profiles": 3
  },
+ "read_side_effects": {
+  "self_service_sessions": [
+   "status",
+   "opened_at"
+  ],
+  "channel_confirmations": [
+   "status",
+   "verified_at"
+  ],
+  "card_section_read_cursor": "*"
+ },
  "rows": {
   "scenario": {
    "scenario_time": {

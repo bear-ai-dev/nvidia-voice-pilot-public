@@ -64,6 +64,13 @@
   "section_view": 2,
   "specialist_transfers": 0
  },
+ "read_side_effects": {
+  "notifications": [
+   "status",
+   "status_index"
+  ],
+  "section_read_cursor": "*"
+ },
  "rows": {
   "case_preferences": {
    "8cf648a4-ca60-4387-bc11-ec38f426123a": {

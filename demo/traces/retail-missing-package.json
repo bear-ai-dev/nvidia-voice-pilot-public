@@ -64,6 +64,13 @@
   "section_view": 2,
   "specialist_transfers": 0
  },
+ "read_side_effects": {
+  "notifications": [
+   "status",
+   "status_index"
+  ],
+  "section_read_cursor": "*"
+ },
  "rows": {
   "carrier_scans": {
    "594": {

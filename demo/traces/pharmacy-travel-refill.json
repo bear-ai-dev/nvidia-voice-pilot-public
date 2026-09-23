@@ -54,6 +54,7 @@
   "stores": 25,
   "transfer_requests": 0
  },
+ "read_side_effects": {},
  "rows": {
   "notification_destinations": {
    "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e": {

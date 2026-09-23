@@ -66,6 +66,10 @@
   "travel_certificates": 66,
   "travelers": 702
  },
+ "read_side_effects": {
+  "flight_searches": "*",
+  "fare_quotes": "*"
+ },
  "rows": {
   "airport_area_links": {
    "national-mall|BWI": {

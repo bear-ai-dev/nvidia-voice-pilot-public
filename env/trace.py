@@ -96,6 +96,9 @@ def build(conversation_id: str) -> dict:
            "nl_assertions": task["evaluation_criteria"]["nl_assertions"],
            "reward_basis": task["evaluation_criteria"]["reward_basis"]},
         "tables": {table: len(rows) for table, rows in sorted(db_before.items())},
+        # Columns a read writes as a side effect, left out of the DB hash; the
+        # demo marks them so a change a lookup caused is not mistaken for work.
+        "read_side_effects": getattr(env.tools, "READ_SIDE_EFFECTS", {}),
         "rows": touched_rows(db_before, steps),
         "events": events,
         "evaluation": scored,

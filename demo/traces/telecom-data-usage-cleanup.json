@@ -60,6 +60,9 @@
   "usage_samples": 560,
   "verification_policies": 3
  },
+ "read_side_effects": {
+  "tool_clock_cursor": "*"
+ },
  "rows": {
   "customers": {
    "6dcb2039-012b-4723-a256-13bb7b6467c2": {
