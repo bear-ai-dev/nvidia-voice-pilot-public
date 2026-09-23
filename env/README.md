@@ -19,7 +19,9 @@ domain.
 | `domains/<domain>/tools.py` | The tools. Each is a function `(db, args) -> result` that reads and writes the JSON database. |
 | `domains/<domain>/tasks.json` | One tau2 task per conversation. |
 | `conversations/<id>/state/db.json` | The backend at the start of the call: every table, keyed by row. |
-| `conversations/<id>/state/db_after.json` | The backend after the recorded calls. |
+| `conversations/<id>/state/db_after.json` | The backend after the recorded calls and the call's outside events. |
+| `conversations/<id>/state/events.json` | Things other people do during the call, each at its own time: the customer entering a texted code, a merchant retrying a charge, an email being delivered. |
+| `conversations/<id>/state/ids.json` | The seed for the ID generator, so a replay issues the IDs the recording used. |
 | `env/` | The runtime, the tau2-style scorer, and the checks. Standard library only. |
 
 Domains covered: banking (4 calls), retail (3), pharmacy, airline and telecom
@@ -39,6 +41,23 @@ The data is synthetic. The records the recorded call touches match what the
 tools returned in the recording, field for field; everything else is generated
 to be consistent with it.
 
+The backend behaves like a system rather than a script
+([docs/BACKEND_REALISM.md](../docs/BACKEND_REALISM.md)):
+
+- **Reads never change data.** Looking at a record returns the whole record,
+  the same way every time.
+- **Time moves.** The runtime's clock is the call's start time
+  (`call_started_at` in the `scenario` table) plus how far into the call a tool
+  call happens. Tools read it with `toolkit.now(db)` and stamp writes with it.
+- **Other people act on their own schedule.** `events.json` lists what happens
+  outside the agent's tools. Before each tool call the runtime applies every
+  event that has come due and whose conditions hold; an event that has to wait
+  (a hotel retrying a charge only once the card is unblocked) happens, and is
+  stamped, when its conditions first hold.
+- **New records get new IDs.** A record exists only once the action that
+  creates it happens, and its ID comes from `toolkit.new_id`, seeded from
+  `ids.json`.
+
 ## The task file
 
 Each task has the fields tau2 uses:
@@ -55,12 +74,12 @@ Each task has the fields tau2 uses:
 
 `env/evaluate.py` scores a run as tau2 does: reward = DB x COMMUNICATE.
 
-- **DB.** Replay the reference actions on a fresh copy of `db.json`, hash the
-  result, and compare it with the hash of the run's end state. Any route to the
-  same end state passes. A few columns change when a record is only read, such
-  as a read counter. Those are listed in `READ_SIDE_EFFECTS` in each `tools.py`
-  and left out of the hash, so an agent can look at anything as often as it
-  likes.
+- **DB.** Replay the reference actions on a fresh copy of `db.json` at their
+  recorded times, let the call's outside events play out, hash the result, and
+  compare it with the hash of the run's end state. Any route to the same end
+  state passes. Columns that only record when something happened are listed in
+  `CLOCK_COLUMNS` in each `tools.py` and left out of the hash, so an agent is
+  judged on what it did, not the second it did it.
 - **COMMUNICATE.** Each `communicate_info` string must appear in an agent
   message, lowercased and with commas removed, exactly as tau2 checks it.
 
@@ -72,11 +91,12 @@ python3 env/replay.py
 
 For each conversation this checks that:
 
-1. every recorded tool call returns exactly the recorded output,
-2. the database afterwards equals `db_after.json`,
-3. the task's actions are the recorded calls,
-4. the recorded conversation scores 1.0,
-5. repeating every read still scores 1.0, and leaving out any write fails the DB check.
+1. every recorded tool call, made at its recorded time, returns exactly the recorded output, which also fits the tool's result schema,
+2. no read tool writes anything,
+3. the database afterwards, with the outside events applied, equals `db_after.json`,
+4. the task's actions are the recorded calls,
+5. the recorded conversation scores 1.0,
+6. repeating every read still scores 1.0, and leaving out any write fails the DB check.
 
 To drive an environment from your own agent loop:
 
@@ -86,9 +106,12 @@ from runtime import Environment
 from evaluate import evaluate, find_task
 
 env = Environment.for_conversation("pharmacy-travel-refill")
-step = env.call("lookup_patient", {"full_name": "Miles Carter", "date_of_birth": "1988-06-14"})
+step = env.call("lookup_patient", {"full_name": "Miles Carter", "date_of_birth": "1988-06-14"},
+                at=24)          # seconds into the call; omit it and the clock moves 20 s per call
 step.status, step.output   # 200 and the result the agent sees
 step.reads, step.writes    # the records the call read and changed
+step.events                # outside events that happened before this call
+env.finish()               # let the rest of the call's events play out
 
 task = find_task("pharmacy-travel-refill")
 evaluate(task, [
