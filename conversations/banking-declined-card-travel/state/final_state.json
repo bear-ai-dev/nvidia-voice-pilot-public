@@ -85,19 +85,16 @@
           "destinations": [
             "Portland, Maine"
           ],
-          "return_date": "2026-08-30",
-          "authorization_guaranteed": false
+          "return_date": "2026-08-30"
         }
       ]
     },
     "471a2d47-a132-4551-a522-5f6ac88b48e7": {
       "entity_type": "knowledge_record",
       "record_id": "471a2d47-a132-4551-a522-5f6ac88b48e7",
+      "title": "Hotel authorization holds",
       "effective_at": "2026-07-01",
-      "incidental_holds_may_exceed_room_total": true,
-      "available_credit_must_cover_full_authorization": true,
-      "authorization_guaranteed": false,
-      "pending_duration": "may remain pending for a few days after checkout depending on merchant finalization"
+      "content": "Hotels commonly authorize an amount for incidentals on top of the room charges, so a hotel hold can exceed the room total. An authorization is approved only when the card's available credit covers the full authorized amount. No authorization is guaranteed to be approved. A hotel hold may remain pending for a few days after checkout, depending on when the merchant finalizes the charge."
     }
   }
 }

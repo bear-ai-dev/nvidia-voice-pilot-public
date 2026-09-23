@@ -452,7 +452,7 @@
     },
     {
       "name": "search_knowledge_base",
-      "description": "Search external, versioned product and process documentation that is not already included in the system policy. The backend selects the retrieval method and returns exactly one versioned record; which optional content fields are present depends on the record.",
+      "description": "Search external, versioned product and process documentation that is not already included in the system policy. The backend selects the retrieval method and returns exactly one versioned record. Most records are knowledge articles: a title and prose content written as the bank's documentation, not as an answer to the query. Product-catalog records return structured product or welcome-offer rows, with any terms that go with them as content.",
       "parameters": {
         "type": "object",
         "properties": {
@@ -477,6 +477,10 @@
             "type": "string",
             "description": "Versioned external knowledge record.",
             "format": "uuid"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of the knowledge article or catalog view."
           },
           "effective_at": {
             "type": "string",
@@ -576,166 +580,14 @@
               "additionalProperties": false
             }
           },
-          "offers_can_change": {
-            "type": "boolean",
-            "description": "Whether the listed offers can change."
-          },
-          "approval_guaranteed": {
-            "type": "boolean",
-            "description": "Whether approval is guaranteed (always false in observed records)."
-          },
-          "airline_incidental_credit": {
-            "type": "boolean",
-            "description": "Whether the product carries an airline incidental credit."
-          },
-          "automatic_free_checked_bag": {
-            "type": "boolean",
-            "description": "Whether a free checked bag is automatic."
-          },
-          "airline_specific_rules_apply": {
-            "type": "boolean",
-            "description": "Whether airline-specific rules apply to the benefit."
-          },
-          "decision_notice": {
-            "type": "object",
-            "description": "What an adverse-action decision notice contains.",
-            "properties": {
-              "explains_factors": {
-                "type": "boolean",
-                "description": "Whether the notice explains decision factors."
-              },
-              "may_include_reconsideration_contact": {
-                "type": "boolean",
-                "description": "Whether the notice may include a reconsideration contact."
-              }
-            },
-            "required": [],
-            "additionalProperties": false
-          },
-          "phone_agent_can_override_underwriting": {
-            "type": "boolean",
-            "description": "Whether phone agents can override underwriting decisions."
-          },
-          "guidance": {
+          "content": {
             "type": "string",
-            "description": "Field-specific or process guidance text."
-          },
-          "login_identifier_may_remain_same": {
-            "type": "boolean",
-            "description": "Whether the login identifier may remain unchanged after an email change."
-          },
-          "future_notices_use_primary_email": {
-            "type": "boolean",
-            "description": "Whether future notices route to the primary email."
-          },
-          "unexpected_prompt_guidance": {
-            "type": "string",
-            "description": "Guidance for unexpected prompts, messages, or links."
-          },
-          "incidental_holds_may_exceed_room_total": {
-            "type": "boolean",
-            "description": "Whether hotel incidental holds may exceed the room total."
-          },
-          "available_credit_must_cover_full_authorization": {
-            "type": "boolean",
-            "description": "Whether available credit must cover the full authorization."
-          },
-          "authorization_guaranteed": {
-            "type": "boolean",
-            "description": "Whether future authorization is guaranteed."
-          },
-          "pending_duration": {
-            "type": "string",
-            "description": "How long an authorization may remain pending."
-          },
-          "qualifying_purchase_window_days": {
-            "type": "integer",
-            "description": "Days allowed for the referral qualifying purchase.",
-            "minimum": 0
-          },
-          "posting_window": {
-            "type": "string",
-            "description": "Reward posting window description."
-          },
-          "excluded": {
-            "type": "array",
-            "description": "Transaction types excluded from qualification.",
-            "items": {
-              "type": "string",
-              "description": "Excluded transaction type."
-            }
-          },
-          "ordinary_retail_purchase": {
-            "type": "string",
-            "description": "Eligibility rule for an ordinary retail purchase."
-          },
-          "purchase_pending_meanings": {
-            "type": "array",
-            "description": "Possible meanings of a purchase-pending qualification state.",
-            "items": {
-              "type": "string",
-              "description": "Meaning of the pending state."
-            }
-          },
-          "offer": {
-            "type": "string",
-            "description": "Offer terms as published, e.g. '$100 statement credit'."
-          },
-          "deadline_status": {
-            "type": "string",
-            "description": "Whether the offer deadline has passed, e.g. 'not_passed'."
-          },
-          "exact_deadline": {
-            "type": "string",
-            "description": "Where or how the exact deadline is available, e.g. 'available_in_tracker'."
-          },
-          "email_mismatch_effect": {
-            "type": "string",
-            "description": "Effect of an invitation/application email mismatch on referral matching."
-          },
-          "approved_status_meaning": {
-            "type": "string",
-            "description": "Meaning of an approved referral application status."
-          },
-          "reapplication_guidance": {
-            "type": "string",
-            "description": "Guidance about duplicate or repeat applications."
-          },
-          "steps": {
-            "type": "array",
-            "description": "Ordered procedure steps.",
-            "items": {
-              "type": "string",
-              "description": "Procedure step."
-            }
-          },
-          "posted_charge_can_be_erased": {
-            "type": "boolean",
-            "description": "Whether a posted charge can simply be erased outside the dispute process."
-          },
-          "provisional_credit_guaranteed": {
-            "type": "boolean",
-            "description": "Whether provisional credit is guaranteed."
-          },
-          "investigation_timing_basis": {
-            "type": "string",
-            "description": "What investigation timing depends on, e.g. 'transaction_type'."
-          },
-          "post_submit_outputs": {
-            "type": "array",
-            "description": "What the customer receives after submitting a dispute.",
-            "items": {
-              "type": "string",
-              "description": "Post-submission output."
-            }
-          },
-          "unused_unsubmitted_session_waives_future_rights": {
-            "type": "boolean",
-            "description": "Whether leaving a dispute session unsubmitted waives future dispute rights."
+            "description": "Article text: the policy, procedure, or benefit terms as the bank documents them, or the terms that accompany catalog rows. The agent reasons from it to the customer's question."
           }
         },
         "required": [
           "record_id",
+          "title",
           "effective_at"
         ],
         "additionalProperties": false
@@ -976,10 +828,6 @@
                   "type": "string",
                   "description": "Stated return date.",
                   "format": "date"
-                },
-                "authorization_guaranteed": {
-                  "type": "boolean",
-                  "description": "Whether the notice guarantees authorization."
                 }
               },
               "required": [
@@ -1065,7 +913,7 @@
     },
     {
       "name": "create_travel_notice",
-      "description": "Add a travel notice without promising that every future authorization will be approved.",
+      "description": "Add a travel notice to a card. The result is the created notice record.",
       "parameters": {
         "type": "object",
         "properties": {
@@ -1112,22 +960,18 @@
             "type": "string",
             "description": "Travel-notice identifier.",
             "format": "uuid"
-          },
-          "authorization_guaranteed": {
-            "type": "boolean",
-            "description": "Whether the notice guarantees authorization."
           }
         },
         "required": [
           "status",
-          "authorization_guaranteed"
+          "notice_id"
         ],
         "additionalProperties": false
       }
     },
     {
       "name": "get_referrals",
-      "description": "Retrieve referral invitations, offer terms, qualification state, and posting state without exposing the referred person's private transactions.",
+      "description": "Retrieve referral invitations, offer terms, qualification state and deadline, and posting state without exposing the referred person's private transactions.",
       "parameters": {
         "type": "object",
         "properties": {
@@ -1163,7 +1007,8 @@
                 },
                 "invited_at": {
                   "type": "string",
-                  "description": "Invitation date as displayed to the customer, e.g. 'August 2'."
+                  "description": "Date the invitation was sent.",
+                  "format": "date"
                 },
                 "invited_contact": {
                   "type": "object",
@@ -1200,6 +1045,11 @@
                   "type": "string",
                   "description": "Offer terms as displayed, e.g. '$100 statement credit'."
                 },
+                "qualification_deadline": {
+                  "type": "string",
+                  "description": "Last date by which the referred customer's qualifying purchase must post for this referral to qualify.",
+                  "format": "date"
+                },
                 "reference_code": {
                   "type": "string",
                   "description": "Customer-facing referral reference code; distinct from the internal referral UUID."
@@ -1210,7 +1060,8 @@
                 "application_status",
                 "qualification_status",
                 "offer",
-                "reference_code"
+                "reference_code",
+                "qualification_deadline"
               ],
               "additionalProperties": false
             }
@@ -1224,7 +1075,7 @@
     },
     {
       "name": "get_credit_card_transactions",
-      "description": "Retrieve candidate credit-card transactions for a verified customer using amount, descriptor, date, or card filters.",
+      "description": "Retrieve candidate posted credit-card transactions for a verified customer using amount, descriptor, date, or card filters, each with any authorization records the ledger links to it.",
       "parameters": {
         "type": "object",
         "properties": {
@@ -1292,10 +1143,47 @@
                   "type": "string",
                   "description": "Merchant or transaction category, e.g. 'online marketplace'."
                 },
-                "preceded_by_authorization_amount": {
-                  "type": "number",
-                  "description": "Amount of the small pre-authorization that preceded this charge, in the same currency.",
-                  "minimum": 0
+                "authorizations": {
+                  "type": "array",
+                  "description": "Authorization records linked to this posted transaction, such as a small authorization the merchant placed before submitting the charge; present when any exist.",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "transaction_id": {
+                        "type": "string",
+                        "description": "Stable transaction identifier of the authorization.",
+                        "format": "uuid"
+                      },
+                      "amount": {
+                        "type": "number",
+                        "description": "Authorized amount.",
+                        "minimum": 0
+                      },
+                      "currency": {
+                        "type": "string",
+                        "description": "Currency for amount.",
+                        "enum": [
+                          "USD"
+                        ]
+                      },
+                      "status": {
+                        "type": "string",
+                        "description": "Authorization state, e.g. 'approved'."
+                      },
+                      "occurred_at": {
+                        "type": "string",
+                        "description": "Authorization time when available.",
+                        "format": "date-time"
+                      }
+                    },
+                    "required": [
+                      "transaction_id",
+                      "amount",
+                      "currency",
+                      "status"
+                    ],
+                    "additionalProperties": false
+                  }
                 }
               },
               "required": [

@@ -37,7 +37,7 @@ Use `get_trusted_channel_confirmation` to read the current backend state after t
 
 ### Card account and transactions
 
-A card account may include card status, available credit, authorizations, declines, restrictions, and travel notices. A transaction has a stable transaction identifier and may include its descriptor, amount, date, card, merchant details, and household or saved-wallet indicators. Account-specific facts must come from the relevant read result.
+A card account may include card status, available credit, authorizations, declines, restrictions, and travel notices. A transaction has a stable transaction identifier and may include its descriptor, amount, date, card, merchant details, and household or saved-wallet indicators. A posted transaction may have linked authorization records, such as a small authorization a merchant placed before submitting the charge; each is its own record with an amount, status, and time. Account-specific facts must come from the relevant read result.
 
 ### Subscription billing
 
@@ -45,11 +45,11 @@ A supported subscription-billing profile has a stable subscriber identifier, sub
 
 ### Referral
 
-A referral has a stable referral identifier, offer terms, qualification state, and posting state. The referring customer's reward state is distinct from the referred person's private account or transaction data.
+A referral has a stable referral identifier, invitation date, offer terms, qualification state, qualification deadline, and posting state. The referring customer's reward state is distinct from the referred person's private account or transaction data.
 
 ### External knowledge base
 
-A knowledge-base result should identify the source, effective time or date, stable record or product identifier, and applicable terms or instructions. Product names and marketing labels are not substitutes for stable resource identifiers.
+A knowledge-base result identifies the source record, its title, and its effective date. Most records are articles whose content documents a product, policy, or procedure in general terms; an article is not an answer to the customer's question, and the agent applies it to the customer's situation using the customer's own records. Product-catalog records carry structured product or offer rows with stable product identifiers. Product names and marketing labels are not substitutes for stable resource identifiers.
 
 ### Secure self-service session
 
@@ -103,7 +103,7 @@ A notification has a notification identifier, secure related resource, channel, 
 - Do not ask the customer to speak a one-time code. The customer completes that step through the approved secure path.
 - Before the email mutation, call `get_trusted_channel_confirmation` and require an unexpired successful status.
 - The email-change mutation must reference the successful verification and confirmation records.
-- State the new primary email, transition notices, notification routing, and any login-identifier effect only when the mutation result, this system policy, or a current knowledge-base result explicitly provides those fields.
+- State the new primary email, transition notices, notification routing, and any login-identifier effect only when the mutation result, this system policy, or a current knowledge-base article explicitly states them.
 - Direct the customer to the secure banking site for an unexpected prompt, message, or link.
 
 ## Card declines and travel notices
@@ -113,13 +113,14 @@ A notification has a notification identifier, secure related resource, channel, 
 - Removing a restriction does not guarantee a future authorization. Available credit, merchant holds, and other authorization controls may still apply.
 - A travel notice is informational and does not guarantee approval.
 - Before creating a travel notice, confirm the destinations and return date with the customer. Use the customer-stated values without adding or inferring locations.
-- After a restriction or travel-notice mutation, report only the status and limitations returned by the tool.
+- After a restriction or travel-notice mutation, report only the resulting status returned by the tool. Take any limitation, such as the absence of an authorization guarantee, from this policy or a knowledge-base article, not from the mutation result.
 
 ## Referrals
 
 - Referral support may expose the referring customer's invitation, qualification, reward, and posting state.
 - Do not expose the referred person's purchases, balance, transactions, or other private account information.
 - State offer terms, qualification requirements, and posting windows exactly as returned, including the applicable source or offer version when available.
+- The knowledge base describes referral offers and rules, not individual referrals. Determine whether a referral's qualification deadline has passed by comparing the deadline on the referral record with the time returned by `get_current_time`.
 - If the referral cannot be resolved to one record, ask for a stable identifier or transfer rather than guessing which referral applies.
 
 ## Unfamiliar transactions and disputes

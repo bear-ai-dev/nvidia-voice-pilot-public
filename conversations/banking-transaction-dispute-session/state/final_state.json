@@ -20,31 +20,29 @@
         "card_last4": "9102",
         "amount": 243.18,
         "category": "online marketplace",
-        "preceded_by_authorization_amount": 1.0
+        "authorizations": [
+          {
+            "transaction_id": "9cf83fca-ef5b-50a8-907a-00a38412b2ee",
+            "amount": 1.0,
+            "currency": "USD",
+            "status": "approved",
+            "occurred_at": "2026-02-22T21:12:00-05:00"
+          }
+        ]
       }
     },
     "knowledge_records": {
       "8d5fe793-b41b-48c9-aef8-e3ffd9d1d4ab": {
         "record_id": "8d5fe793-b41b-48c9-aef8-e3ffd9d1d4ab",
+        "title": "Unauthorized card transactions: review and dispute procedure",
         "effective_at": "2026-01-15",
-        "steps": [
-          "review household use",
-          "review saved wallets",
-          "submit only if unauthorized"
-        ],
-        "posted_charge_can_be_erased": false,
-        "provisional_credit_guaranteed": false,
-        "investigation_timing_basis": "transaction_type",
-        "post_submit_outputs": [
-          "claim reference",
-          "written timing disclosures in secure messages"
-        ]
+        "content": "An unfamiliar charge is reviewed first for household use and for cards saved in digital wallets or merchant accounts. A dispute is submitted by the customer through the secure dispute session, and only for a transaction the customer did not authorize. A posted charge is not erased outside the dispute process. Provisional credit is not guaranteed, and investigation timing depends on the transaction type. After submission the customer receives a claim reference and written timing disclosures in secure messages."
       },
       "022398d3-51e3-4dcd-b56b-064d53b159f0": {
         "record_id": "022398d3-51e3-4dcd-b56b-064d53b159f0",
+        "title": "Dispute sessions: lifecycle and dispute rights",
         "effective_at": "2026-01-15",
-        "unused_unsubmitted_session_waives_future_rights": false,
-        "guidance": "Contact the bank promptly if a genuinely unauthorized transaction is later discovered."
+        "content": "A dispute session is issued to the customer's secure message centre and completed by the customer in online banking. Issuing or opening a session does not create a claim; a claim exists only once the customer submits the form. A session that is closed or left unsubmitted ends without a claim and does not waive the customer's right to dispute that transaction or any other transaction later. A customer who later identifies a genuinely unauthorized transaction should contact the bank promptly."
       }
     },
     "identity_verifications": {

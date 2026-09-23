@@ -611,21 +611,9 @@ def _welcome_offers(db, _record) -> dict:
     ]}
 
 
-def _product_airline_benefits(db, record) -> dict:
-    product = db["card_products"].get(record["subject_product_id"])
-    if product is None:
-        raise NotFound(f"unknown product {record['subject_product_id']!r}")
-    return {
-        "airline_incidental_credit": product["airline_incidental_credit"],
-        "automatic_free_checked_bag": product["automatic_free_checked_bag"],
-        "airline_specific_rules_apply": product["airline_specific_rules_apply"],
-    }
-
-
 PROJECTIONS = {
     "travel_card_matches": _travel_card_matches,
     "welcome_offers": _welcome_offers,
-    "product_airline_benefits": _product_airline_benefits,
 }
 
 
@@ -640,16 +628,21 @@ def search_knowledge_base(db, args) -> dict:
     record = min(matching, key=lambda r: (-r["priority"], -len(r["query_pattern"]),
                                           r["record_id"]))
 
+    # A record is a knowledge article: a title and prose content, written as the
+    # bank's own documentation rather than as an answer to the query that found
+    # it. A record that is a view of the product catalog assembles its rows from
+    # the catalog, so a product term the recording never asked about still answers
+    # from the same rows; its content, when it has any, is the terms text that
+    # goes with those rows.
     result: dict = {
         "record_id": record["record_id"],
+        "title": record["title"],
         "effective_at": record["effective_at"],
     }
-    # A record that is really a view of the product catalog assembles its content
-    # from the catalog, so a product term the recording never asked about still
-    # answers from the same rows.
     if record["projection"]:
         result.update(PROJECTIONS[record["projection"]](db, record))
-    result.update(record["payload"])
+    if record["content"] is not None:
+        result["content"] = record["content"]
     return result
 
 
@@ -808,7 +801,6 @@ def get_card_account(db, args) -> dict:
                 ("notice_id", n["notice_id"]),
                 ("destinations", as_list_always(n["destinations"])),
                 ("return_date", n["return_date"] or None),
-                ("authorization_guaranteed", n["authorization_guaranteed"]),
             ])
             for n in notices
         ]
@@ -892,10 +884,10 @@ def resolve_card_restriction(db, args) -> dict:
                 "settlement_state": "pending",
                 "occurred_at": None,
                 "posted_date": None,
-                "preceded_by_authorization_amount": None,
                 "resource_label": None,
                 "short_ref": None,
                 "represented_as": None,
+                "linked_transaction_id": None,
             }, KEY_COLUMNS)
             db["transactions"][row["transaction_id"]]["represented_as"] = new_id
             available -= amount
@@ -925,16 +917,12 @@ def create_travel_notice(db, args) -> dict:
         "card_id": card["card_id"],
         "destinations": list(args["destinations"]),
         "return_date": dt.date.fromisoformat(return_date).isoformat() if return_date else None,
-        "authorization_guaranteed": False,
         "status": "created",
         "created_at": scenario_value(db, "scenario_time"),
     }, KEY_COLUMNS)
-    stored = db["travel_notices"][notice_id]
-    return {
-        "status": "created",
-        "notice_id": notice_id,
-        "authorization_guaranteed": stored["authorization_guaranteed"],
-    }
+    # The record is what was created. What a notice does and does not do for
+    # later authorizations is policy and knowledge-base content, not a field of it.
+    return {"status": "created", "notice_id": notice_id}
 
 
 # ---------------------------------------------------------------------------
@@ -954,14 +942,16 @@ def get_referrals(db, args) -> dict:
             ("referral_id", r["referral_id"]),
             ("reference_code", scenario_value(db, "target_referral_reference")
              if r["referral_id"] == scenario_value(db, "target_referral_id") else None),
-            # Emitted verbatim: the customer hears 'August 2', not an ISO date.
-            ("invited_at", r["invited_at_display"]),
+            ("invited_at", r["invited_on"]),
             ("invited_contact",
              {"channel": r["invited_channel"], "masked": r["invited_masked"]}
              if r["invited_channel"] and r["invited_masked"] else None),
             ("application_status", r["application_status"]),
             ("qualification_status", r["qualification_status"]),
             ("offer", r["offer"]),
+            # The date itself, not whether it has passed: the agent compares it
+            # with get_current_time.
+            ("qualification_deadline", r["deadline_on"]),
         ])
         for r in referrals
     ]}
@@ -1001,8 +991,7 @@ def get_credit_card_transactions(db, args) -> dict:
     found.sort(key=lambda pair: (pair[0]["posted_date"] is None, pair[0]["posted_date"] or ""),
                reverse=True)
     # Statement amounts are decimal money and render as JSON floats, which is how
-    # the recording carries both 243.18 and the 1.0 pre-authorization that
-    # preceded it.
+    # the recording carries 243.18 and the 1.0 authorization linked to it.
     return {"transactions": [
         compact([
             ("transaction_id", t["transaction_id"]),
@@ -1010,11 +999,33 @@ def get_credit_card_transactions(db, args) -> dict:
             ("amount", as_float(t["amount"])),
             ("currency", t["currency"]),
             ("category", t["category"]),
-            ("preceded_by_authorization_amount",
-             as_float(t["preceded_by_authorization_amount"])),
+            ("authorizations", _linked_authorizations(db, t["transaction_id"]) or None),
         ])
         for t, card in found
     ]}
+
+
+def _linked_authorizations(db, transaction_id: str) -> list:
+    """Authorization records the ledger links to a posted transaction.
+
+    A merchant may authorize a small amount before it submits the charge, for
+    example to check a saved card. That authorization is its own ledger row
+    pointing at the posting through linked_transaction_id, and is reported as a
+    row rather than summarised, so the agent reads it as it reads any other.
+    """
+    linked = sorted(rows(db, "transactions", kind="authorization",
+                         linked_transaction_id=transaction_id),
+                    key=lambda a: (a["occurred_at"] or "", a["record_seq"]))
+    return [
+        compact([
+            ("transaction_id", a["transaction_id"]),
+            ("amount", as_float(a["amount"])),
+            ("currency", a["currency"]),
+            ("status", a["status"]),
+            ("occurred_at", a["occurred_at"]),
+        ])
+        for a in linked
+    ]
 
 
 # ---------------------------------------------------------------------------
