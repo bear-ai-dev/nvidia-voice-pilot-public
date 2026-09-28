@@ -219,9 +219,10 @@
                 "type": "object",
                 "description": "Most recent carrier scan.",
                 "properties": {
-                  "time": {
+                  "scanned_at": {
                     "type": "string",
-                    "description": "Human-readable local scan time relative to the call (not ISO)."
+                    "description": "When the scan was recorded; ISO 8601 timestamp with the scenario timezone's UTC offset.",
+                    "format": "date-time"
                   },
                   "location": {
                     "type": "string",
@@ -236,18 +237,27 @@
                   }
                 },
                 "required": [
-                  "time",
+                  "scanned_at",
                   "location"
                 ],
                 "additionalProperties": false
               },
               "carrier_evidence": {
                 "type": "object",
-                "description": "Detailed carrier evidence for the delivery.",
+                "description": "Recorded fields of the latest carrier scan.",
                 "properties": {
-                  "scan_location": {
+                  "scanned_at": {
                     "type": "string",
-                    "description": "Where the carrier recorded the scan."
+                    "description": "When the scan was recorded; ISO 8601 timestamp with the scenario timezone's UTC offset.",
+                    "format": "date-time"
+                  },
+                  "location": {
+                    "type": "string",
+                    "description": "Delivery location the carrier recorded with the scan, e.g. front entrance."
+                  },
+                  "evidence_location": {
+                    "type": "string",
+                    "description": "Where the scan's own location evidence places it, e.g. near building; absent when the carrier captured none."
                   },
                   "unit_number": {
                     "type": [
@@ -269,10 +279,6 @@
                       "null"
                     ],
                     "description": "Delivery photo reference; null when no photo exists."
-                  },
-                  "possible_misscan": {
-                    "type": "boolean",
-                    "description": "Whether the evidence is consistent with a mis-scan."
                   }
                 },
                 "required": [],
@@ -325,7 +331,7 @@
           },
           "refunds": {
             "type": "array",
-            "description": "Return and refund records; a record carries either return acceptance fields or per-tender refund fields.",
+            "description": "Return and refund records for the order: each accepted return, then each per-tender refund; a record carries either return acceptance fields or per-tender refund fields.",
             "items": {
               "type": "object",
               "properties": {
@@ -341,10 +347,10 @@
                   "type": "string",
                   "description": "Location where the return was accepted."
                 },
-                "accepted_age_days": {
-                  "type": "integer",
-                  "description": "Days since the return was accepted.",
-                  "minimum": 0
+                "accepted_on": {
+                  "type": "string",
+                  "description": "Calendar date the return was accepted (ISO 8601).",
+                  "format": "date"
                 },
                 "inventory_disposition": {
                   "type": "string",
@@ -379,7 +385,11 @@
                 },
                 "status": {
                   "type": "string",
-                  "description": "Westline-side refund tender state, e.g. issued_available, submitted_no_settlement_confirmation, active."
+                  "description": "Where the refund stands with Westline and the payment processor, e.g. issued_available, submitted_no_settlement_confirmation."
+                },
+                "ledger_status": {
+                  "type": "string",
+                  "description": "State of the gift-card or store-credit balance the refund issued, e.g. active; absent for a refund to a card."
                 },
                 "used": {
                   "type": "boolean",
@@ -459,7 +469,8 @@
                 },
                 "deadline": {
                   "type": "string",
-                  "description": "Human-readable response deadline relative to the call (not ISO)."
+                  "description": "Response deadline; ISO 8601 timestamp with the scenario timezone's UTC offset.",
+                  "format": "date-time"
                 },
                 "carrier_may_contact_customer": {
                   "type": "boolean",
@@ -519,7 +530,8 @@
                 },
                 "estimated_delivery": {
                   "type": "string",
-                  "description": "Human-readable delivery estimate relative to the call (not ISO)."
+                  "description": "Estimated delivery date (ISO 8601 calendar date).",
+                  "format": "date"
                 },
                 "default_fulfillment": {
                   "type": "string",
@@ -733,7 +745,8 @@
           },
           "carrier_response_deadline": {
             "type": "string",
-            "description": "Human-readable carrier deadline relative to the call (not ISO)."
+            "description": "Carrier response deadline; ISO 8601 timestamp with the scenario timezone's UTC offset.",
+            "format": "date-time"
           },
           "replacement_created": {
             "type": "boolean",
@@ -968,11 +981,8 @@
               },
               "estimated_delivery": {
                 "type": "string",
-                "description": "Human-readable delivery estimate relative to the call (not ISO)."
-              },
-              "estimate_guaranteed": {
-                "type": "boolean",
-                "description": "Whether the delivery estimate is guaranteed."
+                "description": "Estimated delivery date (ISO 8601 calendar date).",
+                "format": "date"
               },
               "distribution_center": {
                 "type": "string",
@@ -1103,17 +1113,27 @@
             "type": "boolean",
             "description": "Whether later reviewers see the update."
           },
-          "review_instruction": {
+          "requested_resolution": {
             "type": "string",
-            "description": "Instruction recorded for the next reviewer."
+            "description": "Requested resolution now stored on the case; present when this update set one.",
+            "enum": [
+              "replacement",
+              "refund",
+              "locate_only",
+              "undecided"
+            ]
           },
-          "pickup_guaranteed": {
-            "type": "boolean",
-            "description": "Whether pickup was guaranteed."
-          },
-          "fee_reimbursement_approved": {
-            "type": "boolean",
-            "description": "Whether fee reimbursement was approved."
+          "preferences": {
+            "type": "object",
+            "description": "Case-scoped preference as stored by this update; present when this update set one.",
+            "properties": {
+              "pickup": {
+                "type": "string",
+                "description": "Preferred pickup location."
+              }
+            },
+            "required": [],
+            "additionalProperties": false
           }
         },
         "required": [

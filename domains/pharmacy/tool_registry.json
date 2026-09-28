@@ -178,16 +178,17 @@
                 "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
                 "description": "Local time the pharmacy counter closes today (HH:MM, 24-hour)."
               },
-              "front_store_closes_later": {
-                "type": "boolean",
-                "description": "Whether the front store stays open after the pharmacy counter closes."
+              "front_store_closes_at": {
+                "type": "string",
+                "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+                "description": "Local time the front store closes today (HH:MM, 24-hour)."
               }
             },
             "required": [
               "store_id",
               "display_name",
               "counter_closes_at",
-              "front_store_closes_later"
+              "front_store_closes_at"
             ],
             "additionalProperties": false
           },
@@ -267,7 +268,7 @@
           },
           "payment_options": {
             "type": "array",
-            "description": "Payment options currently eligible for this prescription.",
+            "description": "Payment options currently eligible for this prescription. Codes name the payment channel; the amount is the copay field.",
             "items": {
               "type": "string"
             }
@@ -292,7 +293,7 @@
     },
     {
       "name": "request_claim_override",
-      "description": "Request a payer decision for an eligible prescription-claim exception; the payer may require the patient to participate.",
+      "description": "Request a payer decision for an eligible prescription-claim exception; the payer may require the patient to participate. Each prescription and reason gets its own override; asking again for the same prescription and reason returns the override already on file.",
       "parameters": {
         "type": "object",
         "properties": {
@@ -327,7 +328,7 @@
         "properties": {
           "override_id": {
             "type": "string",
-            "description": "Override identifier.",
+            "description": "Override identifier the payer issued for this request.",
             "format": "uuid"
           },
           "status": {
@@ -441,7 +442,7 @@
           },
           "payment_options": {
             "type": "array",
-            "description": "Payment options eligible after this claim result.",
+            "description": "Payment options eligible after this claim result. Codes name the payment channel; the amount is the copay field.",
             "items": {
               "type": "string"
             }

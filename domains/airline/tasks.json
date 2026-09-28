@@ -1,0 +1,223 @@
+[
+  {
+    "id": "airline-family-reservation",
+    "description": {
+      "purpose": "Recommend Washington Reagan National for a National Mall stay by comparing the returned airport distances and ground travel times, price a nonstop PHX-DCA round trip (October 14 to 19) in standard economy for the caller and her 12-year-old grandson with two checked bags, a free folding walker and optional insurance, verify her identity, validate her 200 dollar certificate, and book reservation B9RT6M with the remainder on her Visa ending 1182.",
+      "relevant_policies": "domains/airline/policy.md",
+      "notes": "Every figure (the one-stop saving, the fare with bags, insurance, the walker's treatment, the certificate value) must come from the tools before it is spoken. Identity must be verified before stored cards or certificates are used, and the agent must not paraphrase ID or custody rules for the minor or promise seats."
+    },
+    "user_scenario": {
+      "persona": "A warm, slightly hesitant grandmother who laughs at herself, sometimes misses what was said, and double-checks details like dates, codes and totals before she is satisfied.",
+      "instructions": {
+        "domain": "airline",
+        "reason_for_call": "You want to book a round trip from Phoenix to Washington for yourself and your grandson, but the website shows three different Washington airports and you do not know which one you need.",
+        "known_info": "You are Linda Marie Carver (Carver spelled C-A-R-V-E-R), born March 8, 1954.\nYour grandson is Evan James Carver, born July 21, 2014. He is 12 years old.\nYou are staying near the National Mall.\nYou want to leave October 14 and come back October 19.\nYour contact email is linda.carver9@outlook.com.\nYou think there is a Visa ending in 1182 already on your account.\nYou have a travel certificate for 200 dollars with code CT-449108 (say it as C-T-449108).\nYou will each check one suitcase, and you travel with a folding walker.\nYour grandson's mother is not traveling, and he does not have a driver's license.",
+        "unknown_info": "You do not know which Washington airport is best, the flight times, the fares, whether the walker costs extra, or the insurance price.",
+        "task_instructions": "Say you are trying to book from Phoenix to Washington for you and your grandson, and the website shows three airports and you do not know which you need. When asked, say you are staying near the National Mall, and give your travel dates. Accept the airport the agent recommends and say you need nonstop, that you are traveling with your 12-year-old grandson, and that you have a folding walker. When told about basic versus standard fares, say you definitely need standard because you have to sit together. If offered a one-stop comparison, agree as long as it is not a five-hour layover; when you hear the saving, say it is not worth it, choose nonstop, and say you will each check one suitcase plus the walker. When the price and insurance are quoted, ask the agent to go ahead and add the insurance.\n\nGive names, birthdates and email when asked. Say you should have a Visa ending in 1182 on the account and a 200 dollar travel certificate; give the code when asked and confirm the readback. After booking, repeat the confirmation code back as B9RT6M to check it. Ask whether the certificate applied, confirm two checked bags, and ask the agent to repeat the airports. Then ask whether you need a letter from your grandson's mother since she is not traveling, and mention he does not have a driver's license. Ask what birth date they entered for him, then confirm yours. Ask whether the certificate code had a zero or the letter O. Ask whether you can choose seats now; when told to use the reservation screen, report that you see 16A and 16B outbound and 14D and 14E on return, then say confirmed. Ask whether the walker needs a serial number. Ask for the total one more time and say it matches your screen. Say you have written down the confirmation and total, thank the agent for being patient, and end the call."
+      }
+    },
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "airline-family-reservation_0",
+          "name": "list_supported_airports",
+          "arguments": {
+            "destination_area": "Washington, DC National Mall"
+          },
+          "info": "calling tool to list supported airports"
+        },
+        {
+          "action_id": "airline-family-reservation_1",
+          "name": "search_flights",
+          "arguments": {
+            "origin_airport": "PHX",
+            "destination_airport": "DCA",
+            "departure_date": "2026-10-14",
+            "return_date": "2026-10-19",
+            "traveler_count": 2,
+            "max_stops": 0
+          },
+          "info": "calling tool to search for direct flights"
+        },
+        {
+          "action_id": "airline-family-reservation_2",
+          "name": "search_flights",
+          "arguments": {
+            "origin_airport": "PHX",
+            "destination_airport": "DCA",
+            "departure_date": "2026-10-14",
+            "return_date": "2026-10-19",
+            "traveler_count": 2,
+            "max_stops": 1,
+            "max_layover_minutes": 300
+          },
+          "info": "calling tool to search for one-stop flights"
+        },
+        {
+          "action_id": "airline-family-reservation_3",
+          "name": "check_mobility_device_requirements",
+          "arguments": {
+            "device_type": "folding walker"
+          },
+          "info": "check folding-walker requirements before quoting baggage treatment"
+        },
+        {
+          "action_id": "airline-family-reservation_4",
+          "name": "calculate_itinerary_price",
+          "arguments": {
+            "outbound_flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+            "return_flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+            "traveler_count": 2,
+            "fare_class": "standard_economy",
+            "checked_bag_count": 2,
+            "mobility_device_count": 1,
+            "include_insurance_quote": true
+          },
+          "info": "calculate the selected itinerary before stating mobility-device fee and final price"
+        },
+        {
+          "action_id": "airline-family-reservation_5",
+          "name": "verify_customer_identity",
+          "arguments": {
+            "full_name": "Linda Marie Carver",
+            "date_of_birth": "1954-03-08",
+            "email": "linda.carver9@outlook.com"
+          },
+          "info": "validate collected identity factors before stored profile and payment access"
+        },
+        {
+          "action_id": "airline-family-reservation_6",
+          "name": "get_customer_profile",
+          "arguments": {
+            "email": "linda.carver9@outlook.com",
+            "verification_id": "661f8b5c-f3d8-4612-8645-00f9a5ecded8",
+            "include": [
+              "reservations",
+              "payment_methods",
+              "travel_certificates"
+            ]
+          },
+          "info": "calling tool to retrieve the customer profile and reservations"
+        },
+        {
+          "action_id": "airline-family-reservation_7",
+          "name": "validate_travel_certificate",
+          "arguments": {
+            "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+            "verification_id": "661f8b5c-f3d8-4612-8645-00f9a5ecded8",
+            "certificate_code": "CT-449108"
+          },
+          "info": "validate the supplied certificate before applying it"
+        },
+        {
+          "action_id": "airline-family-reservation_8",
+          "name": "book_reservation",
+          "arguments": {
+            "customer_id": "7fe38f6f-b7c5-4f50-a56a-e2d68d6b11d0",
+            "verification_id": "661f8b5c-f3d8-4612-8645-00f9a5ecded8",
+            "quote_id": "b28a0bbf-614c-4616-862c-fbeef88f6495",
+            "certificate_id": "18e422e6-a2c3-4cb8-93fa-daf7a28c328b",
+            "outbound_flight_id": "2133fbc8-ed10-42aa-baa2-12e3d15a6a05",
+            "return_flight_id": "3ac31d55-0dbc-4f79-892e-743257ec9f13",
+            "travelers": [
+              {
+                "full_name": "Linda Marie Carver",
+                "date_of_birth": "1954-03-08"
+              },
+              {
+                "full_name": "Evan James Carver",
+                "date_of_birth": "2014-07-21"
+              }
+            ],
+            "contact_email": "linda.carver9@outlook.com",
+            "fare_class": "standard_economy",
+            "checked_bag_count": 2,
+            "mobility_devices": [
+              "folding walker"
+            ],
+            "include_trip_insurance": true,
+            "payment_method_token": "c1200f87-9c48-41f4-a6f9-04d89f28b2b2",
+            "confirmed_total": 1281.0,
+            "customer_authorized": true
+          },
+          "info": "calling tool to book the new reservation"
+        }
+      ],
+      "env_assertions": null,
+      "communicate_info": [
+        "Washington Reagan National",
+        "$62 total",
+        "$1186.40",
+        "$94.60",
+        "$200",
+        "B9RT6M"
+      ],
+      "nl_assertions": [
+        "Agent verifies the caller's name, date of birth and email before using the stored Visa or the travel certificate.",
+        "Agent tells the caller that the folding walker does not count as paid baggage.",
+        "Agent tells the caller that the trip insurance has exclusions and that she should review the plan document.",
+        "Agent quotes the price including the two checked bags and the insurance before booking the reservation.",
+        "Agent tells the caller that 200 dollars came from the certificate and the rest was charged to the Visa ending in 1182.",
+        "Agent does not paraphrase identification or custody rules for the grandson and directs the caller to official government guidance."
+      ],
+      "reward_basis": [
+        "DB",
+        "COMMUNICATE"
+      ]
+    },
+    "annotations": {
+      "conversation_id": "airline-family-reservation",
+      "goal": "Book a nonstop Phoenix-to-Washington family reservation in standard economy with two checked bags, a folding walker, optional insurance, and split certificate/card payment after comparing airports and alternatives.",
+      "outcome_label": "resolved",
+      "db": "conversations/airline-family-reservation/state/db.json",
+      "db_after": "conversations/airline-family-reservation/state/db_after.json",
+      "action_times": [
+        60.4,
+        93.5,
+        137.8,
+        161.42,
+        181.7,
+        305.8,
+        306.0,
+        345.5,
+        345.6
+      ],
+      "tool_registry": "domains/airline/tool_registry.json",
+      "transcript": "conversations/airline-family-reservation/transcripts/annotated-transcript.json",
+      "audio": "conversations/airline-family-reservation/audio/full.wav",
+      "communicate_sources": [
+        {
+          "info": "Washington Reagan National",
+          "why": "Destination airport recommended and booked",
+          "matched_text": "Yes. Phoenix Sky Harbor to Washington Reagan National."
+        },
+        {
+          "info": "$62 total",
+          "why": "Saving from the best one-stop connection",
+          "matched_text": "Well, ma'am, it does look like the best connection only saves $62 total, and it adds almost three hours each way."
+        },
+        {
+          "info": "$1186.40",
+          "why": "Fare, taxes and two checked bags before insurance",
+          "matched_text": "Okay. So the total without insurance is $1,186.40, and that does include the two checked bags."
+        },
+        {
+          "info": "$94.60",
+          "why": "Trip insurance price",
+          "matched_text": "Insurance adds $94.60, and the coverage does have exclusions, so review the plan document before purchase."
+        },
+        {
+          "info": "$200",
+          "why": "Amount applied from travel certificate CT-449108",
+          "matched_text": "Yes, ma'am. $200 came from the certificate."
+        },
+        {
+          "info": "B9RT6M",
+          "why": "Reservation confirmation code",
+          "matched_text": "Great. Okay, ma'am, and I do suggest you save the confirmation B9RT6M and review the insurance document for exclusions."
+        }
+      ]
+    }
+  }
+]

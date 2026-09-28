@@ -36,7 +36,7 @@
       "order_reference": "ending-5624",
       "return_status": "complete",
       "accepted_at": "Eastwood store",
-      "accepted_age_days": 9,
+      "accepted_on": "2026-08-18",
       "inventory_disposition": "restocked"
     },
     "refund:ending-5624:gift_card": {
@@ -45,6 +45,7 @@
       "tender_type": "gift_card",
       "amount": 40,
       "status": "issued_available",
+      "ledger_status": "active",
       "available_balance": 40,
       "used": false,
       "delivery": "digital_gift_card_number_in_email"
@@ -72,7 +73,6 @@
       ],
       "duplicate_refund_blocked": true,
       "return_evidence_attached": true,
-      "fee_reimbursement_approved": false,
       "notes": [
         {
           "source_call_id": "rr-005",

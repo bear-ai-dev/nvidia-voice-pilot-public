@@ -1,0 +1,515 @@
+[
+  {
+    "id": "retail-damaged-item-replacement",
+    "description": {
+      "purpose": "Find the damaged coffee maker order, read its eligible resolutions and stock, create a zero-balance replacement at the original price shipped to the home address on the order with the return waived, confirm the confirmation email went out, and report the still-open headphones trace without changing it.",
+      "relevant_policies": "domains/retail/policy.md",
+      "notes": "The caller has an open missing-headphones case from yesterday with a pickup preference and a 6 PM carrier deadline. The replacement must not inherit that pickup preference, the open case must not be touched, and the Thursday delivery is only an estimate."
+    },
+    "user_scenario": {
+      "persona": "A friendly, slightly anxious returning customer who says 'okay, okay' often and stammers a little. He worries the two orders will get mixed up and is relieved and appreciative by the end.",
+      "instructions": {
+        "domain": "retail",
+        "reason_for_call": "A coffee maker you ordered from Westline arrived damaged and you want it replaced. You also spoke to Westline yesterday about missing headphones on a different order.",
+        "known_info": "You are Ethan Patel (Patel spelled P-A-T-E-L).\nThe coffee maker order number ends in 4086.\nYour email is ethan.patel@northmail.com (northmail spelled N-O-R-T-H-M-A-I-L).\nThe water tank is cracked at the bottom and the base was damp inside the plastic. The outside of the box was not beaten up.\nYou have not turned it on.\nYou saw the price has gone up since you ordered it.\nYou already took some photos of the damage.\nYesterday you called about missing headphones on another order and asked for a pickup option on that case. The headphones have not turned up.",
+        "unknown_info": "You do not know the replacement order number, where it will ship from, or the current status of the headphones case.",
+        "task_instructions": "Introduce yourself and say you think you spoke to them yesterday about missing headphones. If asked, say the headphones have not turned up yet, but you are calling about a different order: a coffee maker arrived damaged. Give the order ending and email when asked, spelling northmail and Patel. Describe the damage. Say you have not turned it on because you saw the water and thought you should call first. When asked, say you want a replacement for sure, as long as you do not pay the current price, which went up since you ordered.\n\nAsk whether they need pictures before sending the replacement; if told they are optional, say you already took some and will probably add them. After it is submitted, ask where it is shipping to, because you do not want it tied to the pickup request from the headphones case. Say you were worried the two orders would get mixed up. Ask whether Thursday is just an estimate and not a guaranteed time window. Ask if it is coming from the same warehouse as the damaged one, explaining you want to make sure the same issue is not being resent. Ask what to do with the damaged one since you do not need to return it, and mention you could put it in your building's electronics bin. Say you do not see the confirmation email yet; once the agent says it was sent, say you see it (order 8821, zero balance) and will upload photos. Then ask whether there are any updates on the headphones order. Accept that it stays as is and say you will use the link tonight if nothing changes. Thank the agent for handling two issues and end the call."
+      }
+    },
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "retail-damaged-item-replacement_0",
+          "name": "get_order",
+          "arguments": {
+            "order_reference": "ending-4086",
+            "customer_email": "ethan.patel@northmail.com",
+            "include": [
+              "items",
+              "eligible_resolutions",
+              "cases"
+            ]
+          },
+          "info": "open the order record"
+        },
+        {
+          "action_id": "retail-damaged-item-replacement_1",
+          "name": "get_order",
+          "arguments": {
+            "order_reference": "ending-4086",
+            "customer_email": "ethan.patel@northmail.com",
+            "include": [
+              "eligible_resolutions"
+            ]
+          },
+          "info": "review return and replacement options"
+        },
+        {
+          "action_id": "retail-damaged-item-replacement_2",
+          "name": "get_product",
+          "arguments": {
+            "product_reference": "coffee-maker-matte-black-12-cup",
+            "include_inventory": true
+          },
+          "info": "check replacement inventory"
+        },
+        {
+          "action_id": "retail-damaged-item-replacement_3",
+          "name": "create_replacement_order",
+          "arguments": {
+            "order_reference": "ending-4086",
+            "item_references": [
+              "coffee-maker-matte-black-12-cup"
+            ],
+            "reason": "damaged",
+            "fulfillment_method": "ship_to_address",
+            "fulfillment_location": "home_address_on_order",
+            "customer_authorized": true
+          },
+          "info": "create the replacement order"
+        },
+        {
+          "action_id": "retail-damaged-item-replacement_4",
+          "name": "get_order",
+          "arguments": {
+            "order_reference": "ending-8821",
+            "customer_email": "ethan.patel@northmail.com",
+            "include": [
+              "notifications"
+            ]
+          },
+          "info": "refresh replacement-email delivery status"
+        },
+        {
+          "action_id": "retail-damaged-item-replacement_5",
+          "name": "lookup_customer",
+          "arguments": {
+            "email": "ethan.patel@northmail.com"
+          },
+          "info": "resolve the separate headphones order before reading its case"
+        },
+        {
+          "action_id": "retail-damaged-item-replacement_6",
+          "name": "get_order",
+          "arguments": {
+            "order_reference": "ending-7319",
+            "customer_email": "ethan.patel@northmail.com",
+            "include": [
+              "cases"
+            ]
+          },
+          "info": "review the existing missing-package trace"
+        }
+      ],
+      "env_assertions": null,
+      "communicate_info": [
+        "12-cup coffee maker",
+        "your home address",
+        "Thursday by end of day",
+        "end in 8821",
+        "6:00 this evening"
+      ],
+      "nl_assertions": [
+        "Agent tells the caller that the replacement stays at the price he already paid.",
+        "Agent tells the caller that the return is waived so there is no label or drop-off, and that photos are optional and will not hold up the order.",
+        "Agent tells the caller not to plug in the damaged coffee maker because there is moisture in the base.",
+        "Agent confirms that Thursday is an estimate rather than a guaranteed delivery window and that the assigned distribution center can still change before shipping.",
+        "Agent tells the caller that the pickup preference stays only on yesterday's missing-package case and keeps the two orders separate.",
+        "Agent tells the caller that the headphones trace is still open with no carrier response and does not change it before its deadline."
+      ],
+      "reward_basis": [
+        "DB",
+        "COMMUNICATE"
+      ]
+    },
+    "annotations": {
+      "conversation_id": "retail-damaged-item-replacement",
+      "goal": "Replace a water-damaged coffee maker at the original price, keep it separate from an earlier missing-headphones case, and explain the no-return disposition.",
+      "outcome_label": "resolved",
+      "db": "conversations/retail-damaged-item-replacement/state/db.json",
+      "db_after": "conversations/retail-damaged-item-replacement/state/db_after.json",
+      "action_times": [
+        68.0,
+        123.5,
+        141.0,
+        209.5,
+        370.0,
+        410.8,
+        411.0
+      ],
+      "tool_registry": "domains/retail/tool_registry.json",
+      "transcript": "conversations/retail-damaged-item-replacement/transcripts/annotated-transcript.json",
+      "audio": "conversations/retail-damaged-item-replacement/audio/full.wav",
+      "communicate_sources": [
+        {
+          "info": "12-cup coffee maker",
+          "why": "Item identified on order ending 4086",
+          "matched_text": "Okay. So I found a 12-cup coffee maker, matte black."
+        },
+        {
+          "info": "your home address",
+          "why": "Replacement ships to the home address, not the pickup counter from the other case",
+          "matched_text": "So this one is going to your home address."
+        },
+        {
+          "info": "Thursday by end of day",
+          "why": "Estimated delivery of the replacement",
+          "matched_text": "Um, it says right now Thursday by end of day."
+        },
+        {
+          "info": "end in 8821",
+          "why": "Replacement order number ending",
+          "matched_text": "Um, this one will end in 8821."
+        },
+        {
+          "info": "6:00 this evening",
+          "why": "Carrier deadline on the open headphones trace",
+          "matched_text": "There is no carrier response as of yet, and the deadline is still 6:00 this evening."
+        }
+      ]
+    }
+  },
+  {
+    "id": "retail-missing-package",
+    "description": {
+      "purpose": "Find the headphones order, report what the delivered scan does and does not show, check that the same blue model is in stock, open carrier trace WST481662, record the caller's wish for a same-model replacement at the original price with West 23rd Street pickup as a preference, and email the trace confirmation to the order contact.",
+      "relevant_policies": "domains/retail/policy.md",
+      "notes": "The caller is under time pressure for a gift and wants the replacement sent now, but policy requires the trace first and the carrier has until 6 PM tomorrow to answer. Stock is not authorization, no replacement may be created, and the pickup location is a preference, not a promise."
+    },
+    "user_scenario": {
+      "persona": "A polite, slightly anxious young man who fills pauses with 'um' and 'like' and repeats 'okay' when taking things in. He is worried about timing because the item is a gift.",
+      "instructions": {
+        "domain": "retail",
+        "reason_for_call": "Your Westline order says it was delivered, but you do not have it.",
+        "known_info": "You are Ethan Patel.\nThe order number is 7319 and it is a pair of blue noise-canceling headphones.\nThe email on the order is ethan.patel@northmail.com (Patel spelled P-A-T-E-L, northmail spelled N-O-R-T-H-M-A-I-L).\nYou live in an apartment building with a front desk and a package room behind it. You checked both last night and this morning and the desk has nothing for you.\nThe attendant checked the delivery log and shelves and found no driver signature around that time. There is no delivery photo in your email.\nThe headphones are a gift and you fly out Friday around noon, so you need them by Thursday.\nYou prefer the Westline pickup counter on West Twenty-third Street, which you have used before.\nYou know the black version now has a different price.",
+        "unknown_info": "You do not know what the carrier scan shows, whether the item is in stock, or what the trace process involves.",
+        "task_instructions": "Open by saying an order says it was delivered but you do not have it. Give the order number (say it as seven three one nine) and that it is blue noise-canceling headphones, then your email when asked, spelling Patel and northmail. Confirm it is an apartment building and describe the front desk, package room and your checks. If asked about the log, say they checked both, the attendant found no driver signature, and there is no delivery photo in the email. Agree to hold if asked.\n\nWhen told it could be a bad scan or a neighboring entrance, say that is what you figured, explain it is a time-sensitive gift and you fly out Friday around noon, and ask if anything can be done to get it in time. Confirm Thursday is ideal and Friday afternoon does not help. When told a trace comes first, ask whether you have to wait another two days and what that actually means. Then ask whether it goes out automatically and whether they can make an exception given the timing. Ask them to make sure it is the exact same model and the same blue color, noting the black one has a different price now. Ask if it could be sent somewhere other than your building so this does not happen again; when asked, name the West Twenty-third Street pickup counter. Say you mostly just want the first package found. Ask what happens if the package turns up after the replacement ships. Ask for the case number so you do not get double-charged. Accept the email, then say you got it and it says the trace is open until 6:00 tomorrow, and ask if that is the one. Say that is all for this order, thank the agent and end the call."
+      }
+    },
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "retail-missing-package_0",
+          "name": "get_order",
+          "arguments": {
+            "order_reference": "7319",
+            "customer_email": "ethan.patel@northmail.com",
+            "include": [
+              "items",
+              "fulfillment",
+              "carrier_scans"
+            ]
+          },
+          "info": "open the order record"
+        },
+        {
+          "action_id": "retail-missing-package_1",
+          "name": "get_order",
+          "arguments": {
+            "order_reference": "7319",
+            "customer_email": "ethan.patel@northmail.com",
+            "include": [
+              "carrier_scans"
+            ]
+          },
+          "info": "review carrier scan details"
+        },
+        {
+          "action_id": "retail-missing-package_2",
+          "name": "get_product",
+          "arguments": {
+            "product_reference": "blue-noise-canceling-headphones",
+            "include_inventory": true
+          },
+          "info": "check replacement inventory"
+        },
+        {
+          "action_id": "retail-missing-package_3",
+          "name": "open_delivery_trace",
+          "arguments": {
+            "order_reference": "7319",
+            "item_references": [
+              "blue-noise-canceling-headphones"
+            ],
+            "reason": "delivered_not_received",
+            "requested_resolution": "undecided",
+            "needed_by": "2026-08-27"
+          },
+          "info": "open a missing-package trace"
+        },
+        {
+          "action_id": "retail-missing-package_4",
+          "name": "update_case",
+          "arguments": {
+            "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+            "requested_resolution": "replacement",
+            "preferred_pickup_location": "West 23rd Street pickup counter",
+            "note": "Preserve exact blue variant and original price if replacement becomes eligible."
+          },
+          "info": "agent records pickup preference"
+        },
+        {
+          "action_id": "retail-missing-package_5",
+          "name": "send_case_notification",
+          "arguments": {
+            "case_id": "8cf648a4-ca60-4387-bc11-ec38f426123a",
+            "channel": "email",
+            "destination_source": "order_contact",
+            "template": "delivery_trace_confirmation"
+          },
+          "info": "send the delivery-trace email after customer approval"
+        },
+        {
+          "action_id": "retail-missing-package_6",
+          "name": "get_order",
+          "arguments": {
+            "order_reference": "7319",
+            "customer_email": "ethan.patel@northmail.com",
+            "include": [
+              "cases",
+              "notifications"
+            ]
+          },
+          "info": "review the open carrier trace and matching notification"
+        }
+      ],
+      "env_assertions": null,
+      "communicate_info": [
+        "three eighteen",
+        "front entrance",
+        "same blue model",
+        "six tomorrow evening",
+        "WST four eight one"
+      ],
+      "nl_assertions": [
+        "Agent tells the caller that the scan was near the building with no unit number or locker and that it cannot tell whether it was a bad scan or a drop at a neighboring entrance.",
+        "Agent opens a carrier trace before any replacement and does not create a replacement during the call.",
+        "Agent tells the caller that the replacement does not go out automatically and that he must approve it through the link in the trace email or by calling with the case number.",
+        "Agent records the West 23rd Street pickup counter as a preference and tells the caller it cannot promise that location before a replacement exists.",
+        "Agent tells the caller that his original price carries over to the replacement.",
+        "Agent sends the trace confirmation to the email address on the order."
+      ],
+      "reward_basis": [
+        "DB",
+        "COMMUNICATE"
+      ]
+    },
+    "annotations": {
+      "conversation_id": "retail-missing-package",
+      "goal": "Investigate an order scanned delivered but not received, open a carrier trace, and record the customer's replacement and pickup preferences without prematurely creating a replacement.",
+      "outcome_label": "pending_carrier_trace",
+      "db": "conversations/retail-missing-package/state/db.json",
+      "db_after": "conversations/retail-missing-package/state/db_after.json",
+      "action_times": [
+        55.0,
+        129.46,
+        211.65,
+        238.14,
+        346.0,
+        435.0,
+        462.9
+      ],
+      "tool_registry": "domains/retail/tool_registry.json",
+      "transcript": "conversations/retail-missing-package/transcripts/annotated-transcript.json",
+      "audio": "conversations/retail-missing-package/audio/full.wav",
+      "communicate_sources": [
+        {
+          "info": "three eighteen",
+          "why": "Time of the delivered scan yesterday",
+          "matched_text": "The carrier scan says delivered yesterday at three eighteen and left at the front entrance."
+        },
+        {
+          "info": "front entrance",
+          "why": "Where the carrier scan says the package was left",
+          "matched_text": "The carrier scan says delivered yesterday at three eighteen and left at the front entrance."
+        },
+        {
+          "info": "same blue model",
+          "why": "The exact blue variant is in stock",
+          "matched_text": "So the same blue model that you ordered is still in stock."
+        },
+        {
+          "info": "six tomorrow evening",
+          "why": "Carrier station deadline to answer the trace (18:00 the next day)",
+          "matched_text": "The station gets until six tomorrow evening to kind of answer this trace, and if they mark it missing sooner, we can move sooner than that."
+        },
+        {
+          "info": "WST four eight one",
+          "why": "Start of the trace case number WST481662 (recorded as 'WST four eight one- six six two'; the prefix is used because the recorded rendering has a disfluent hyphen)",
+          "matched_text": "The case number is WST four eight one- six six two."
+        }
+      ]
+    }
+  },
+  {
+    "id": "retail-refund-bank-fee",
+    "description": {
+      "purpose": "Find the split-tender return, explain that the 40 dollar gift-card refund is available while the 146.42 dollar debit refund was submitted but never settled, open payment trace WST735204 against the original card with the return receipt attached, note the replaced card and the overdraft fee on the case, and email the confirmation to the order contact.",
+      "relevant_policies": "domains/retail/policy.md",
+      "notes": "The customer wants the refund resent to his new card, which would risk a duplicate while the first request is open. The agent cannot see his bank, cannot promise a date, and cannot approve the overdraft fee while the trace is open."
+    },
+    "user_scenario": {
+      "persona": "A casual, even-tempered young man who is frustrated about the wait but stays polite. He speaks informally and asks practical questions about timing and what happens next.",
+      "instructions": {
+        "domain": "retail",
+        "reason_for_call": "You returned an item at a Westline store over a week ago and the money for the refund still has not come back to your account.",
+        "known_info": "You are Teddy Torrez.\nThe email on the order is teddy.torrez@harbormail.com.\nThe order number ends in 5624 and the return receipt ends in 9182.\nThe item was a black standing desk converter you ordered online and returned to a store because it was too wide for your desk.\nYou paid 40 dollars with a Westline gift card and the rest with your debit card.\nYou got an email about the gift card portion with a new digital gift card number, which you have not tried yet.\nYou are still missing 146 dollars and 42 cents. Your bank shows no refund, not even a pending one.\nThe debit card you paid with ended in 2047. It was replaced last month and the new card ends in 8163. You believe both are linked to the same checking account.\nYou were charged a small overdraft fee because you were expecting this money back.",
+        "unknown_info": "You do not know the status of the debit refund at Westline or how long a trace takes.",
+        "task_instructions": "Open by saying you are trying to figure out what happened to a refund: you returned something at a store over a week ago and the money has not come back. Say it was ordered online, returned to the store, a black standing desk converter that was too wide for your desk. Give the order and return receipt endings (speak digits one at a time) and your email when asked. Confirm the total sounds right by saying you paid 40 dollars with a Westline gift card and the rest on debit. Say the store told you the return was done, but your email only covered the gift card part and you are still missing 146 dollars and 42 cents. Confirm you got a digital gift card number but have not tried it and are more worried about the debit card.\n\nWhen told the debit refund was not confirmed, ask what that means and whether Westline sent it or not, since your bank shows nothing pending. Then mention your card was replaced last month but should be linked to the same checking account, and ask if that could be an issue. Give the old and new card last four when asked. Ask them to just send it to the new card. Ask how long it will take, noting nine days already feels long, then ask if you might be waiting another week. Ask if a reissue would be a check, saying you do not want store credit for the whole amount. Ask them to confirm the 40 dollar gift card actually works. After the trace is opened, ask them to email it to you. Say you see the email and that it says not to contact the store, and ask whether that means the store cannot do anything. Then mention the small overdraft fee and ask whether Westline covers it; say you just wanted it on record. Ask whether you need to call if the refund appears before then. Say you still wish it were back today but it makes more sense now, say that is everything, thank the agent and end the call."
+      }
+    },
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "retail-refund-bank-fee_0",
+          "name": "get_order",
+          "arguments": {
+            "order_reference": "ending-5624",
+            "customer_email": "teddy.torrez@harbormail.com",
+            "include": [
+              "items",
+              "payments",
+              "refunds"
+            ]
+          },
+          "info": "open the order record"
+        },
+        {
+          "action_id": "retail-refund-bank-fee_1",
+          "name": "get_order",
+          "arguments": {
+            "order_reference": "ending-5624",
+            "customer_email": "teddy.torrez@harbormail.com",
+            "include": [
+              "payments",
+              "refunds"
+            ]
+          },
+          "info": "review the refund payment details"
+        },
+        {
+          "action_id": "retail-refund-bank-fee_2",
+          "name": "get_order",
+          "arguments": {
+            "order_reference": "ending-5624",
+            "customer_email": "teddy.torrez@harbormail.com",
+            "include": [
+              "payments",
+              "refunds"
+            ]
+          },
+          "info": "check the refunded gift-card balance"
+        },
+        {
+          "action_id": "retail-refund-bank-fee_3",
+          "name": "open_refund_trace",
+          "arguments": {
+            "order_reference": "ending-5624",
+            "return_reference": "ending-9182",
+            "payment_reference": "card-ending-2047",
+            "amount": 146.42
+          },
+          "info": "open a refund payment trace"
+        },
+        {
+          "action_id": "retail-refund-bank-fee_4",
+          "name": "update_case",
+          "arguments": {
+            "case_id": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+            "note": "Customer reports card ending 2047 was replaced by card ending 8163 and believes both map to the same checking account; external bank-account status is not verified by Westline."
+          },
+          "info": "record the customer's card-replacement report without asserting external bank state"
+        },
+        {
+          "action_id": "retail-refund-bank-fee_5",
+          "name": "send_case_notification",
+          "arguments": {
+            "case_id": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+            "channel": "email",
+            "destination_source": "order_contact",
+            "template": "refund_trace_confirmation"
+          },
+          "info": "send the requested refund-trace confirmation email"
+        },
+        {
+          "action_id": "retail-refund-bank-fee_6",
+          "name": "update_case",
+          "arguments": {
+            "case_id": "b0fee5fa-0534-4c47-a42a-b3a252106888",
+            "note": "Customer reports an overdraft fee while expecting the refund; supporting statement may be reviewed after trace outcome."
+          },
+          "info": "add the bank-fee note to the case"
+        }
+      ],
+      "env_assertions": null,
+      "communicate_info": [
+        "one hundred and eighty-six dollars and forty-two cents",
+        "forty dollars available",
+        "hundred and forty-six dollars and forty-two cents",
+        "WST seven three five two oh four",
+        "three to five business days"
+      ],
+      "nl_assertions": [
+        "Agent tells the caller that the debit refund was submitted but never received a settlement confirmation, and does not tell him the money is on the way.",
+        "Agent declines to send the refund to the new card while the first refund request is still open because he could receive it twice.",
+        "Agent tells the caller that it cannot promise a specific day until the processor responds.",
+        "Agent tells the caller that a reissued refund would not automatically become store credit.",
+        "Agent tells the caller that it cannot approve the bank fee while the trace is open, documents it on the case, and does not promise reimbursement.",
+        "Agent sends the trace confirmation to the email address on the order."
+      ],
+      "reward_basis": [
+        "DB",
+        "COMMUNICATE"
+      ]
+    },
+    "annotations": {
+      "conversation_id": "retail-refund-bank-fee",
+      "goal": "Trace the unsettled debit-card portion of a completed split-tender return without issuing a duplicate refund and record the customer's bank-fee concern.",
+      "outcome_label": "pending_payment_trace",
+      "db": "conversations/retail-refund-bank-fee/state/db.json",
+      "db_after": "conversations/retail-refund-bank-fee/state/db_after.json",
+      "action_times": [
+        55.66,
+        150.6,
+        406.0,
+        426.0,
+        426.2,
+        469.0,
+        526.72
+      ],
+      "tool_registry": "domains/retail/tool_registry.json",
+      "transcript": "conversations/retail-refund-bank-fee/transcripts/annotated-transcript.json",
+      "audio": "conversations/retail-refund-bank-fee/audio/full.wav",
+      "communicate_sources": [
+        {
+          "info": "one hundred and eighty-six dollars and forty-two cents",
+          "why": "Order total after tax for the desk converter",
+          "matched_text": "I see one standing desk converter for one hundred and eighty-six dollars and forty-two cents after tax."
+        },
+        {
+          "info": "forty dollars available",
+          "why": "Available balance on the refunded digital gift card",
+          "matched_text": "So it looks like on my end that the balance and the digital gift card have forty dollars available."
+        },
+        {
+          "info": "hundred and forty-six dollars and forty-two cents",
+          "why": "Debit refund amount under trace",
+          "matched_text": "So I've kind of opened up the payment trace for the remaining a hundred and forty-six dollars and forty-two cents, and the case number is WST seven three five two oh four."
+        },
+        {
+          "info": "WST seven three five two oh four",
+          "why": "Payment trace case number WST735204",
+          "matched_text": "So I've kind of opened up the payment trace for the remaining a hundred and forty-six dollars and forty-two cents, and the case number is WST seven three five two oh four."
+        },
+        {
+          "info": "three to five business days",
+          "why": "Review window for the payment trace",
+          "matched_text": "Um, the review window is usually three to five business days from today."
+        }
+      ]
+    }
+  }
+]

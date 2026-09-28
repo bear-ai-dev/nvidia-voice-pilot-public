@@ -1,0 +1,166 @@
+[
+  {
+    "id": "pharmacy-travel-refill",
+    "description": {
+      "purpose": "Verify the patient, read that his albuterol claim was rejected as refill too soon, get a one-time lost-medication override from the plan and rerun the claim at a 15 dollar copay, flag his travel, check a later-closing backup store, and enable the SMS ready alert while the prescription waits for pharmacist verification.",
+      "relevant_policies": "domains/pharmacy/policy.md",
+      "notes": "The app's processing label hides the real blocker, which must be read from the record. The payer decides the override, the priority note cannot skip pharmacist verification, and store hours and stock for the backup location must come from tools."
+    },
+    "user_scenario": {
+      "persona": "A nervous, stammering patient who repeats words and trails off. He is worried the doctor never sent the prescription and becomes grateful and relieved as the problem is solved.",
+      "instructions": {
+        "domain": "pharmacy",
+        "reason_for_call": "Your prescription was supposed to be ready this afternoon, but the pharmacy app still says it is being processed and you want to know what is going on.",
+        "known_info": "You are Miles Carter, born June 14, 1988.\nThe prescription is an albuterol inhaler that your doctor should have sent this morning.\nYou filled an inhaler last month but left it in a hotel room, and you told the doctor's office that when you asked for the refill.\nYou are leaving town again tomorrow morning.\nYou have one inhaler at home with a couple of doses left.\nIt is about 6:15 PM now and you are about 25 minutes from the pharmacy.",
+        "unknown_info": "You do not know why the prescription is stuck, what your copay will be, or the pharmacy's or any other store's closing time for certain.",
+        "task_instructions": "Open by saying your prescription was supposed to be ready this afternoon but the app still says processing, and ask whether they know anything. Give your name and date of birth together when asked, and say it is the albuterol inhaler your doctor should have sent this morning. If told it stopped at insurance, say the app did not say anything about insurance and ask if you missed something. When asked about a recent inhaler, explain you filled one last month but left it in a hotel room and told the doctor's office. If the agent mentions an override the plan may need to discuss with you, ask if they can call them right now because you leave town tomorrow morning and need it. If asked, say you have one at home with a couple of doses left but need the new one before the trip. Stay on the line while they call.\n\nAfter hearing the result, ask if it is ready now. Ask when they close, suggesting the pharmacy counter closes at 7:00. Say it is about 6:15 now and you are about 25 minutes away and ask if that is fine. Ask them to make sure it does not get pushed to tomorrow. Ask what happens if you do not get the text by about 6:45. Ask whether the other location's counter also closes at 7:00 or later. If they suggest keeping it at this store, agree to leave it there unless they cannot finish it, in which case a transfer is fine. Ask whether you can pay in the app before you get there. Then thank them, say you were worried the doctor never sent it, say you will watch for the text, thank them for calling the insurance, and end the call."
+      }
+    },
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "pharmacy-travel-refill_0",
+          "name": "lookup_patient",
+          "arguments": {
+            "full_name": "Miles Carter",
+            "date_of_birth": "1988-06-14"
+          },
+          "info": "patient lookup implied before prescription retrieval"
+        },
+        {
+          "action_id": "pharmacy-travel-refill_1",
+          "name": "get_prescription",
+          "arguments": {
+            "patient_id": "0e28b5d4-a93b-437e-9ba0-cbe4e7d9dbbb",
+            "medication_name": "albuterol inhaler"
+          },
+          "info": "open the prescription record"
+        },
+        {
+          "action_id": "pharmacy-travel-refill_2",
+          "name": "request_claim_override",
+          "arguments": {
+            "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+            "reason": "lost_medication",
+            "urgency_context": "Patient leaves town on the morning of 2026-08-28 and needs the inhaler on the evening of 2026-08-27"
+          },
+          "info": "contact the insurance plan for an override"
+        },
+        {
+          "action_id": "pharmacy-travel-refill_3",
+          "name": "submit_prescription_claim",
+          "arguments": {
+            "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+            "override_id": "9e90544a-3497-4aee-a1f0-4437d4f4684c"
+          },
+          "info": "rerun the insurance claim"
+        },
+        {
+          "action_id": "pharmacy-travel-refill_4",
+          "name": "update_prescription",
+          "arguments": {
+            "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+            "priority_reason": "traveling on 2026-08-28; waiting for pickup on the evening of 2026-08-27"
+          },
+          "info": "add a travel-priority note"
+        },
+        {
+          "action_id": "pharmacy-travel-refill_5",
+          "name": "search_pharmacy_locations",
+          "arguments": {
+            "origin_store_id": "8e22d41d-843c-4e73-95c0-3c9877366ba9",
+            "open_after_local_time": "19:00"
+          },
+          "info": "search nearby Oak Street locations with counters open after 19:00"
+        },
+        {
+          "action_id": "pharmacy-travel-refill_6",
+          "name": "get_store_inventory",
+          "arguments": {
+            "store_id": "155059ca-b6aa-4372-b0af-86c2d681c393",
+            "medication_id": "9dcd4906-4db3-4290-bccd-afde111823cb"
+          },
+          "info": "check alternate pharmacy inventory"
+        },
+        {
+          "action_id": "pharmacy-travel-refill_7",
+          "name": "update_prescription",
+          "arguments": {
+            "prescription_id": "9670dbb4-6227-48ed-99fc-7ce746085502",
+            "notification_channel": "sms",
+            "notification_destination_id": "94c55afb-c756-4c14-9f4a-0c0cf2e3d69e"
+          },
+          "info": "update the prescription notification"
+        }
+      ],
+      "env_assertions": null,
+      "communicate_info": [
+        "refill is too soon",
+        "one-time lost medication override",
+        "co-pay is $15",
+        "about 30 minutes",
+        "closes at 9:00"
+      ],
+      "nl_assertions": [
+        "Agent confirms the caller's name and date of birth before discussing the prescription.",
+        "Agent requests a lost-medication override from the insurance plan and reports the plan's decision rather than deciding it itself.",
+        "Agent tells the caller that the pharmacist still has to check the prescription and that flagging it cannot skip that verification.",
+        "Agent advises the caller to wait for the ready text before driving over and to call back if he has not heard by 6:45.",
+        "Agent tells the caller that the Park Avenue store has the same inhaler in stock but advises against transferring it yet.",
+        "Agent tells the caller that the ready alert is set to his mobile number and that he can pay the 15 dollar copay at pickup if the app does not offer prepay."
+      ],
+      "reward_basis": [
+        "DB",
+        "COMMUNICATE"
+      ]
+    },
+    "annotations": {
+      "conversation_id": "pharmacy-travel-refill",
+      "goal": "Resolve a refill-too-soon rejection for a lost albuterol inhaler and keep the patient informed about pharmacist review and pickup timing.",
+      "outcome_label": "pending_pharmacist_check",
+      "db": "conversations/pharmacy-travel-refill/state/db.json",
+      "db_after": "conversations/pharmacy-travel-refill/state/db_after.json",
+      "action_times": [
+        24.0,
+        36.5,
+        127.5,
+        187.2,
+        255.68,
+        278.0,
+        284.56,
+        304.2
+      ],
+      "tool_registry": "domains/pharmacy/tool_registry.json",
+      "transcript": "conversations/pharmacy-travel-refill/transcripts/annotated-transcript.json",
+      "audio": "conversations/pharmacy-travel-refill/audio/full.wav",
+      "communicate_sources": [
+        {
+          "info": "refill is too soon",
+          "why": "Reason the insurance claim was rejected",
+          "matched_text": "The claim rejected because the plan thinks that the refill is too soon."
+        },
+        {
+          "info": "one-time lost medication override",
+          "why": "The payer's override decision",
+          "matched_text": "They approved a one-time lost medication override."
+        },
+        {
+          "info": "co-pay is $15",
+          "why": "Copay after the claim was rerun",
+          "matched_text": "I reran the claim and I'm seeing that your co-pay is $15."
+        },
+        {
+          "info": "about 30 minutes",
+          "why": "Estimated wait for pharmacist verification",
+          "matched_text": "You're next in the queue and we're looking at about 30 minutes."
+        },
+        {
+          "info": "closes at 9:00",
+          "why": "Counter closing time of the Park Avenue backup store",
+          "matched_text": "The Park Avenue store closes at 9:00 I believe."
+        }
+      ]
+    }
+  }
+]

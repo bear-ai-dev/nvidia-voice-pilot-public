@@ -24,16 +24,17 @@
       "fulfillment": {
         "status": "delivered",
         "latest_scan": {
-          "time": "15:18 yesterday",
+          "scanned_at": "2026-08-24T15:18:00-04:00",
           "location": "front entrance",
           "photo": null
         },
         "carrier_evidence": {
-          "scan_location": "near building",
+          "scanned_at": "2026-08-24T15:18:00-04:00",
+          "location": "front entrance",
+          "evidence_location": "near building",
           "unit_number": null,
           "locker": null,
-          "photo": null,
-          "possible_misscan": true
+          "photo": null
         }
       },
       "cases": [],

@@ -1,0 +1,736 @@
+[
+  {
+    "id": "banking-account-email-card-application",
+    "description": {
+      "purpose": "Verify the caller, move his profile email to a new address using a confirmation code sent to his mobile on file, compare the published travel-card terms that fit his needs, and deliver a secure card application session for Summit Journey that he completes himself without anything being submitted.",
+      "relevant_policies": "domains/banking/policy.md",
+      "notes": "The address on file is the one he cannot reach, so the change must be confirmed through the trusted SMS channel. Product terms and welcome offers must come from the knowledge base, and the agent must not fill in, submit, or promise the outcome of the application."
+    },
+    "user_scenario": {
+      "persona": "A friendly but slightly flustered young man who stammers and repeats words when he talks. He is relieved once things start working and asks short follow-up questions as they come to him.",
+      "instructions": {
+        "domain": "banking",
+        "reason_for_call": "You are locked out of the old email address linked to your Harbor Stone Bank profile. You tried to change it online twice and each time the code went to the email you cannot access. You also want to apply for a travel credit card before a trip.",
+        "known_info": "You are Johnny Monroe (spell it J-O-H-N-N-Y M-O-N-R-O-E if asked).\nYour account ID is SF204771.\nYour billing ZIP code is 19447.\nThe last four digits of your mobile number are 1251.\nThe new email you want is johnny.monroe.travel@outlook.com.\nWhen the agent says a verification code was sent to your phone, the code you receive is 337464.",
+        "unknown_info": "You do not know which card products the bank offers, their annual fees, or their welcome bonuses. You do not know whether a Reserve card includes free checked bags.",
+        "task_instructions": "Start by explaining that you are locked out of your old email and want to apply for a travel card before a trip. Deal with the email change first. Give your name, account ID, ZIP and phone last four only when asked. When asked for the new email, give johnny.monroe.travel@outlook.com and confirm if it is read back correctly. If the agent says a code was sent to your phone, say 'give me one second' and then read the code 337464.\n\nFor the card, say you do not have a specific card in mind: you want no foreign transaction fee and airport lounge access, but you will not pay 700 dollars a year. After the agent describes the options, ask whether the Reserve card gives free checked bags. Then ask about the welcome bonus. Then say Journey sounds more reasonable and ask the agent to apply for you. If the agent says you have to complete the application yourself, ask them to send you the link or guide you to where you can find it. Ask whether it is going to the new email you just set up. Ask: if you get denied, will they know why? Then ask the agent to confirm the fees for the two cards one more time, and say you will go with Journey.\n\nThen say you can see the application page. Ask whether the housing payment field means your monthly rent or the amount you split with your roommate. Then say it also asks for annual income and you have a salary and freelance work. Do not accept any suggestion to have the agent fill these in. Say you do not want to submit while you are on the phone and ask if you can save it. If the agent asks, confirm you see a save option and mention that there is also a consent about pulling credit. Say you were worried they had already run your credit. Finally ask whether the old email still works for login too, just out of curiosity. Then thank the agent, say you will save the link and finish after dinner, and end the call."
+      }
+    },
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "banking-account-email-card-application_0",
+          "name": "lookup_customer",
+          "arguments": {
+            "account_id": "SF204771"
+          },
+          "info": "find the customer by account ID"
+        },
+        {
+          "action_id": "banking-account-email-card-application_1",
+          "name": "get_current_time",
+          "arguments": {},
+          "info": "retrieve the current time for verification records"
+        },
+        {
+          "action_id": "banking-account-email-card-application_2",
+          "name": "verify_customer_identity",
+          "arguments": {
+            "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+            "billing_zip": "19447",
+            "mobile_last4": "1251"
+          },
+          "info": "validate the supplied identity factors"
+        },
+        {
+          "action_id": "banking-account-email-card-application_3",
+          "name": "start_trusted_channel_confirmation",
+          "arguments": {
+            "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+            "purpose": "email_change",
+            "channel": "sms",
+            "verification_id": "613f42b7-69cd-4767-bf41-9a9db63ff731"
+          },
+          "info": "send a trusted-channel confirmation challenge before the agent says it was sent"
+        },
+        {
+          "action_id": "banking-account-email-card-application_4",
+          "name": "get_trusted_channel_confirmation",
+          "arguments": {
+            "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+            "confirmation_id": "a241c1d7-d6c0-4489-9406-65a28d3bca66"
+          },
+          "info": "read the trusted-channel state without placing the spoken secret in tool arguments"
+        },
+        {
+          "action_id": "banking-account-email-card-application_5",
+          "name": "update_customer_email",
+          "arguments": {
+            "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+            "new_email": "johnny.monroe.travel@outlook.com",
+            "verification_id": "613f42b7-69cd-4767-bf41-9a9db63ff731",
+            "confirmation_id": "a241c1d7-d6c0-4489-9406-65a28d3bca66"
+          },
+          "info": "change the customer email address after backend confirmation"
+        },
+        {
+          "action_id": "banking-account-email-card-application_6",
+          "name": "search_knowledge_base",
+          "arguments": {
+            "query": "travel cards with no foreign transaction fee, lounge access, and annual fee below $700"
+          },
+          "info": "search current card-product knowledge"
+        },
+        {
+          "action_id": "banking-account-email-card-application_7",
+          "name": "search_knowledge_base",
+          "arguments": {
+            "query": "Does Summit Reserve include a free checked bag?"
+          },
+          "info": "search current card-benefit knowledge"
+        },
+        {
+          "action_id": "banking-account-email-card-application_8",
+          "name": "search_knowledge_base",
+          "arguments": {
+            "query": "Current welcome offers for Summit Journey and Summit Reserve"
+          },
+          "info": "search current welcome-offer knowledge"
+        },
+        {
+          "action_id": "banking-account-email-card-application_9",
+          "name": "create_secure_self_service_session",
+          "arguments": {
+            "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+            "workflow": "card_application",
+            "resource_id": "c6c675e6-0faf-4004-a5de-881eaaa805b7",
+            "delivery_channels": [
+              "secure_message",
+              "email_notification"
+            ]
+          },
+          "info": "provide the secure card-application tool"
+        },
+        {
+          "action_id": "banking-account-email-card-application_10",
+          "name": "search_knowledge_base",
+          "arguments": {
+            "query": "What information appears in an adverse-action decision notice and can phone agents override underwriting?"
+          },
+          "info": "retrieve decision-notice and underwriting guidance"
+        },
+        {
+          "action_id": "banking-account-email-card-application_11",
+          "name": "search_knowledge_base",
+          "arguments": {
+            "query": "How should an applicant interpret the monthly housing payment field?"
+          },
+          "info": "retrieve application housing-payment field guidance"
+        },
+        {
+          "action_id": "banking-account-email-card-application_12",
+          "name": "search_knowledge_base",
+          "arguments": {
+            "query": "How should salary and freelance income be reported in the card application?"
+          },
+          "info": "retrieve application income-field guidance"
+        },
+        {
+          "action_id": "banking-account-email-card-application_13",
+          "name": "get_secure_self_service_session",
+          "arguments": {
+            "customer_id": "4d6679ca-bcef-4893-81bf-488f66c8c666",
+            "session_id": "f4136da6-25dc-464b-b50c-8f02a5cc1ca3"
+          },
+          "info": "review whether the application session can be saved and resumed"
+        },
+        {
+          "action_id": "banking-account-email-card-application_14",
+          "name": "search_knowledge_base",
+          "arguments": {
+            "query": "After a profile email change, what happens to the login identifier and future notice routing?"
+          },
+          "info": "retrieve login-identifier and notification-routing guidance"
+        }
+      ],
+      "env_assertions": null,
+      "communicate_info": [
+        "a 95 dollar annual fee",
+        "395 dollar annual fee",
+        "40000 points",
+        "3000 dollars in eligible purchases",
+        "does not automatically provide a free checked bag"
+      ],
+      "nl_assertions": [
+        "Agent verifies the caller's billing ZIP and mobile last four before changing the email or discussing the account.",
+        "Agent confirms the email change with a code sent to the caller's mobile phone on file rather than to the old email address.",
+        "Agent tells the caller that he may receive security notices at both the old and new email addresses during the transition.",
+        "Agent tells the caller that approval is not guaranteed and that phone agents cannot override underwriting.",
+        "Agent tells the caller that he completes the application himself and that the agent cannot choose or alter his financial information.",
+        "Agent tells the caller that opening or saving the application does not submit it and that no credit review has been run."
+      ],
+      "reward_basis": [
+        "DB",
+        "COMMUNICATE"
+      ]
+    },
+    "annotations": {
+      "conversation_id": "banking-account-email-card-application",
+      "goal": "Restore access by changing the customer's email, compare travel-card terms, and issue a customer-controlled application session without submitting an application.",
+      "outcome_label": "resolved",
+      "db": "conversations/banking-account-email-card-application/state/db.json",
+      "db_after": "conversations/banking-account-email-card-application/state/db_after.json",
+      "action_times": [
+        69.7,
+        91.02,
+        91.62,
+        204.0,
+        219.55,
+        219.9,
+        258.38,
+        324.48,
+        347.46,
+        400.39,
+        422.0,
+        489.0,
+        509.4,
+        535.0,
+        588.3
+      ],
+      "tool_registry": "domains/banking/tool_registry.json",
+      "transcript": "conversations/banking-account-email-card-application/transcripts/annotated-transcript.json",
+      "audio": "conversations/banking-account-email-card-application/audio/full.wav",
+      "communicate_sources": [
+        {
+          "info": "a 95 dollar annual fee",
+          "why": "Annual fee of Summit Journey, the card he chose",
+          "matched_text": "We have Summit Journey that has no foreign transaction fee and a 95 dollar annual fee, but has no general lounge membership."
+        },
+        {
+          "info": "395 dollar annual fee",
+          "why": "Annual fee of Summit Reserve, the lounge card he compared against",
+          "matched_text": "And for the Reserve, it's 395 dollar annual fee, no foreign tr- foreign transaction fee, and lounge access subject to its program terms."
+        },
+        {
+          "info": "40000 points",
+          "why": "Summit Journey welcome bonus",
+          "matched_text": "So Journey currently offers 40,000 points after 3,000 dollars in eligible purchases within 90 days."
+        },
+        {
+          "info": "3000 dollars in eligible purchases",
+          "why": "Spend condition for the Summit Journey welcome bonus",
+          "matched_text": "So Journey currently offers 40,000 points after 3,000 dollars in eligible purchases within 90 days."
+        },
+        {
+          "info": "does not automatically provide a free checked bag",
+          "why": "Answer to his question about free checked bags on Summit Reserve",
+          "matched_text": "It offers an annual airline incidental credit, but it does not automatically provide a free checked bag on every airline."
+        }
+      ]
+    }
+  },
+  {
+    "id": "banking-declined-card-travel",
+    "description": {
+      "purpose": "Verify the caller, read why his two 840 dollar hotel attempts were declined, lift the temporary travel review once he confirms the activity, explain what his available credit will cover, confirm the retried hold was approved, and add a travel notice through his Sunday return.",
+      "relevant_policies": "domains/banking/policy.md",
+      "notes": "Another customer with the same name shares the billing ZIP, and the caller-phone factor cannot be asserted by the caller. The two declines have different reasons, and the agent must not promise that the hold, the lifted review, or the travel notice guarantees future approvals."
+    },
+    "user_scenario": {
+      "persona": "A hurried, slightly anxious traveler standing in a hotel lobby. He stammers and repeats words, asks the agent to repeat things, and is audibly relieved once the card goes through.",
+      "instructions": {
+        "domain": "banking",
+        "reason_for_call": "Your credit card was just declined twice at a hotel while you are traveling. You are standing in the hotel lobby and they need a card before you can check in.",
+        "known_info": "You are Colin Reeves.\nYou are calling from the phone number on your account.\nYour billing ZIP code is 20005.\nYour card ends in 6148.\nYou are in Portland, Maine, checking in today at the hotel.\nThe hotel desk ran your card and it declined, and you had them try again.\nThe clerk said the room is 690 dollars and the rest is a deposit, so 840 dollars should be the whole hold.\nThis morning you bought breakfast at Logan Airport.\nYour pending charges are airport parking, breakfast, and the hotel, all yours.\nYou will be back home by Sunday night.",
+        "unknown_info": "You do not know why the card was declined or what your available credit is.",
+        "task_instructions": "Start by giving your name and saying your card was declined twice at a hotel while you are traveling. Confirm you are calling from the number on the account. Give your ZIP and card last four when asked (speak the digits one at a time). Confirm both hotel attempts were yours: the desk ran it, it declined, and you had them try again. Say you are checking in today and are standing in the lobby while they hold the room. After the agent explains the decline, ask them to clear it so the hotel can run the card again. Confirm you are in Portland and that the small airport charge was your breakfast this morning.\n\nWhen the agent explains holds and available credit, ask them to say it again because you missed it. Then say the clerk told you the room is 690 and the rest is a deposit, so you think 840 should be the whole hold. Ask if you can stay on the line while the desk runs the card. Narrate briefly while they run it, then say it went through and you have the receipt. Only if the agent asks, confirm the approved amount. Ask whether the card will get blocked again if you use it elsewhere on the trip. If the agent offers to note your return date, say you will be back home by Sunday night. If asked to look at other pending activity, check and say there is airport parking, the breakfast and the hotel, and all of it is yours. Accept any heads-up about the hold staying pending, say you just needed to get into the room, then thank the agent for staying on the line and end the call."
+      }
+    },
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "banking-declined-card-travel_0",
+          "name": "lookup_customer",
+          "arguments": {
+            "full_name": "Colin Reeves",
+            "billing_zip": "20005",
+            "card_last4": "6148"
+          },
+          "info": "open the customer account"
+        },
+        {
+          "action_id": "banking-declined-card-travel_1",
+          "name": "verify_customer_identity",
+          "arguments": {
+            "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
+            "billing_zip": "20005",
+            "card_last4": "6148"
+          },
+          "info": "validate caller channel, billing ZIP, and card last four before account disclosure"
+        },
+        {
+          "action_id": "banking-declined-card-travel_2",
+          "name": "get_card_account",
+          "arguments": {
+            "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
+            "card_last4": "6148",
+            "include": [
+              "declines"
+            ]
+          },
+          "info": "retrieve the two Harbor View Hotel attempts before reading them back"
+        },
+        {
+          "action_id": "banking-declined-card-travel_3",
+          "name": "get_card_account",
+          "arguments": {
+            "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
+            "card_last4": "6148",
+            "include": [
+              "status",
+              "available_credit",
+              "authorizations",
+              "declines",
+              "restrictions"
+            ]
+          },
+          "info": "review the card decline"
+        },
+        {
+          "action_id": "banking-declined-card-travel_4",
+          "name": "resolve_card_restriction",
+          "arguments": {
+            "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
+            "card_last4": "6148",
+            "restriction_id": "a4e9ecb1-a664-45d0-b3f4-cfe80b54ea8f",
+            "confirmed_transaction_ids": [
+              "5af2030f-3fad-402f-a1de-23501596194a",
+              "3065d723-2455-4a43-9d59-91c8dbb11da0",
+              "131fc14b-fc2e-4ec9-ad07-248d01f7d54b"
+            ]
+          },
+          "info": "remove the temporary card block"
+        },
+        {
+          "action_id": "banking-declined-card-travel_5",
+          "name": "search_knowledge_base",
+          "arguments": {
+            "query": "Hotel incidental authorization holds, available-credit constraints, authorization guarantees, and pending duration"
+          },
+          "info": "retrieve hotel authorization-hold guidance"
+        },
+        {
+          "action_id": "banking-declined-card-travel_6",
+          "name": "get_card_account",
+          "arguments": {
+            "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
+            "card_last4": "6148",
+            "include": [
+              "authorizations"
+            ]
+          },
+          "info": "confirm the successful hotel authorization"
+        },
+        {
+          "action_id": "banking-declined-card-travel_7",
+          "name": "create_travel_notice",
+          "arguments": {
+            "customer_id": "c68e3baf-9314-4fd5-8b8f-85e747f0f9d9",
+            "card_last4": "6148",
+            "destinations": [
+              "Portland, Maine"
+            ],
+            "return_date": "2026-08-30"
+          },
+          "info": "add a travel notice"
+        }
+      ],
+      "env_assertions": null,
+      "communicate_info": [
+        "harbor view hotel",
+        "eight hundred and forty dollars",
+        "nine hundred and twelve dollars",
+        "pending for a few days after checkout"
+      ],
+      "nl_assertions": [
+        "Agent confirms the caller's billing ZIP and card last four and that he is calling from the number on the account before disclosing card details.",
+        "Agent explains that the first hotel attempt triggered a travel review and the second was declined because that review was still open.",
+        "Agent has the caller confirm the hotel attempts and the Logan Airport charge before removing the temporary restriction.",
+        "Agent tells the caller that hotels often authorize more than the room total and that a hold larger than his available credit might not go through.",
+        "Agent checks the account and tells the caller the 840 dollar authorization was approved rather than relying only on his receipt.",
+        "Agent tells the caller that a travel note does not guarantee every purchase will be approved."
+      ],
+      "reward_basis": [
+        "DB",
+        "COMMUNICATE"
+      ]
+    },
+    "annotations": {
+      "conversation_id": "banking-declined-card-travel",
+      "goal": "Clear a legitimate travel-related card restriction, explain available-credit constraints, and add a travel notice after confirming activity.",
+      "outcome_label": "resolved",
+      "db": "conversations/banking-declined-card-travel/state/db.json",
+      "db_after": "conversations/banking-declined-card-travel/state/db_after.json",
+      "action_times": [
+        38.9,
+        38.95,
+        39.0,
+        75.14,
+        128.91,
+        139.0,
+        242.2,
+        315.7
+      ],
+      "tool_registry": "domains/banking/tool_registry.json",
+      "transcript": "conversations/banking-declined-card-travel/transcripts/annotated-transcript.json",
+      "audio": "conversations/banking-declined-card-travel/audio/full.wav",
+      "communicate_sources": [
+        {
+          "info": "harbor view hotel",
+          "why": "Merchant on the two declined attempts",
+          "matched_text": "I have the account, and I see two attempts from Harbor View Hotel for eight hundred and forty dollars."
+        },
+        {
+          "info": "eight hundred and forty dollars",
+          "why": "Amount of the hotel attempts and of the approved retry",
+          "matched_text": "Good. And I also see the authorization approved for eight hundred and forty dollars."
+        },
+        {
+          "info": "nine hundred and twelve dollars",
+          "why": "Available credit on the card",
+          "matched_text": "But your available credit is nine hundred and twelve dollars only."
+        },
+        {
+          "info": "pending for a few days after checkout",
+          "why": "How long the hotel authorization can stay pending",
+          "matched_text": "The hotel may stay pending for a few days after checkout, depending on when it finalizes, so just for you to be aware of that."
+        }
+      ]
+    }
+  },
+  {
+    "id": "banking-referral-missing-reward",
+    "description": {
+      "purpose": "Verify the caller, find his referral and explain from the published terms why the 100 dollar bonus is still pending, then deliver a secure referral-status tracker to his message center with an email notice that a secure message is waiting.",
+      "relevant_policies": "domains/banking/policy.md",
+      "notes": "The referred person is his sister, a third party whose purchases and account details cannot be disclosed or certified. The caller pushes on timing and deadlines, and the agent must not promise a date or estimate a deadline that only the tracker holds."
+    },
+    "user_scenario": {
+      "persona": "A mildly annoyed professional calling from his office. He speaks in short, direct sentences, softens once he understands the process, and gets briefly distracted when someone walks in near the end.",
+      "instructions": {
+        "domain": "banking",
+        "reason_for_call": "You referred your sister for one of the bank's credit cards. She was approved, but your 100 dollar referral bonus never showed up. You have checked the app three times and it just says pending.",
+        "known_info": "You are Daniel Brooks (Brooks spelled B as in Boston, R-O-O-K-S).\nThe email on your profile is daniel.brooks17@gmail.com.\nYour billing ZIP code is 27609.\nYour birthday is October 12.\nYour sister is Alisa Brooks. She applied on August 3 and got the card about 10 days ago. She told you she used it for groceries.\nShe used a different email on her application than the one you invited.",
+        "unknown_info": "You do not know the referral terms, the qualifying purchase window, how long the bonus takes to post, or the exact deadline.",
+        "task_instructions": "Open by saying you referred your sister, she was approved, and the 100 dollar bonus never showed up. Say you are a little annoyed and the app keeps saying pending. Give your name, email, ZIP and birthday only when asked. When asked when your sister applied, say August 3, give her name, and say she got the card about 10 days ago. Mention that she told you she used it for groceries.\n\nIf told it can take up to two billing cycles, push back that the banner made it sound immediate and you thought you would have it by now. Ask whether the 100 dollars is still the offer. Ask how you are supposed to track it without calling every week. If the agent sends you a tracker, say you are opening it and read back that it says purchase qualification pending, and ask if that is the same thing they see. Ask them to email the link too. If they say the tool stays inside online banking but offer an email notice that a secure message is waiting, say okay, do that.\n\nWhen asked if there is anything else, first say that is pretty much it, then ask whether pending means Alisa did something wrong or has not paid her balance yet. Then mention she used a different email on the application than the one you invited and ask if that could break the match. Say she was about to try applying again. Mention the tracker has a question mark next to qualifying purchase; if asked to read it, say it reads: Purchases must be eligible and fully posted, not returned or cash-like. Say she bought groceries so that sounds eligible. Ask for the dates again, then ask whether December is the deadline. Finally say someone just walked into your office and that you are writing to your sister telling her not to reapply, then end the call."
+      }
+    },
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "banking-referral-missing-reward_0",
+          "name": "lookup_customer",
+          "arguments": {
+            "email": "daniel.brooks17@gmail.com"
+          },
+          "info": "find the customer by email"
+        },
+        {
+          "action_id": "banking-referral-missing-reward_1",
+          "name": "get_current_time",
+          "arguments": {},
+          "info": "retrieve the current time for verification records"
+        },
+        {
+          "action_id": "banking-referral-missing-reward_2",
+          "name": "verify_customer_identity",
+          "arguments": {
+            "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+            "billing_zip": "27609",
+            "birth_month_day": "October 12",
+            "verified_at": "2026-08-28T09:09:00-04:00"
+          },
+          "info": "validate the supplied identity factors"
+        },
+        {
+          "action_id": "banking-referral-missing-reward_3",
+          "name": "get_referrals",
+          "arguments": {
+            "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d"
+          },
+          "info": "retrieve referrals created by the customer"
+        },
+        {
+          "action_id": "banking-referral-missing-reward_4",
+          "name": "search_knowledge_base",
+          "arguments": {
+            "query": "referral qualifying purchase rules and reward posting time"
+          },
+          "info": "review referral qualification and reward-posting terms"
+        },
+        {
+          "action_id": "banking-referral-missing-reward_5",
+          "name": "search_knowledge_base",
+          "arguments": {
+            "query": "offer amount and deadline for referral RF8241"
+          },
+          "info": "confirm the referral offer and deadline"
+        },
+        {
+          "action_id": "banking-referral-missing-reward_6",
+          "name": "create_secure_self_service_session",
+          "arguments": {
+            "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+            "workflow": "referral_status",
+            "resource_id": "ce7d58b0-b5fc-42cb-a6e0-7a57929e1205",
+            "delivery_channels": [
+              "secure_message"
+            ]
+          },
+          "info": "send the referral-status self-service tracker"
+        },
+        {
+          "action_id": "banking-referral-missing-reward_7",
+          "name": "send_secure_notification",
+          "arguments": {
+            "customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
+            "related_resource_id": "b549b0e6-fced-4596-8794-db42a62476a6",
+            "channel": "email",
+            "template": "secure_message_waiting"
+          },
+          "info": "customer asks for email notification; agent says Done"
+        },
+        {
+          "action_id": "banking-referral-missing-reward_8",
+          "name": "search_knowledge_base",
+          "arguments": {
+            "query": "Referral matching when invitation and application emails differ; duplicate application guidance"
+          },
+          "info": "retrieve email-mismatch and duplicate-application guidance"
+        }
+      ],
+      "env_assertions": null,
+      "communicate_info": [
+        "100 dollars statement credit",
+        "within 90 days",
+        "2 billing cycles",
+        "RF8241",
+        "August 2nd"
+      ],
+      "nl_assertions": [
+        "Agent verifies the caller's billing ZIP and birth month and day before discussing the referral.",
+        "Agent tells the caller that approval alone does not trigger the referral reward.",
+        "Agent tells the caller that it cannot see or disclose his sister's purchases or balance and cannot confirm her purchase from his profile.",
+        "Agent tells the caller that his sister should not reapply.",
+        "Agent tells the caller that the working tracker stays inside online banking and that the email only says a secure message is waiting.",
+        "Agent does not give the caller an estimated deadline and tells him to use the date shown in the tracker."
+      ],
+      "reward_basis": [
+        "DB",
+        "COMMUNICATE"
+      ]
+    },
+    "annotations": {
+      "conversation_id": "banking-referral-missing-reward",
+      "goal": "Explain a missing $100 referral reward without exposing the referred person's transactions and give the customer a secure status tracker.",
+      "outcome_label": "pending_external_qualification",
+      "db": "conversations/banking-referral-missing-reward/state/db.json",
+      "db_after": "conversations/banking-referral-missing-reward/state/db_after.json",
+      "action_times": [
+        47.16,
+        57.0,
+        130.8,
+        145.0,
+        180.44,
+        231.0,
+        268.74,
+        318.0,
+        379.8
+      ],
+      "tool_registry": "domains/banking/tool_registry.json",
+      "transcript": "conversations/banking-referral-missing-reward/transcripts/annotated-transcript.json",
+      "audio": "conversations/banking-referral-missing-reward/audio/full.wav",
+      "communicate_sources": [
+        {
+          "info": "100 dollars statement credit",
+          "why": "The offer version the invitation was created under",
+          "matched_text": "Yes. Your invitation was created under the 100 dollars statement credit offer."
+        },
+        {
+          "info": "within 90 days",
+          "why": "Qualifying purchase window from the referral terms",
+          "matched_text": "The current terms require the referred customer to make a qualifying purchase within 90 days."
+        },
+        {
+          "info": "2 billing cycles",
+          "why": "Posting delay after the qualifying purchase posts",
+          "matched_text": "The bonus can take up to 2 billing cycles after that purchase posts."
+        },
+        {
+          "info": "RF8241",
+          "why": "Referral reference code to quote on a callback",
+          "matched_text": "If it remains pending after 2 billing cycles from her purchase, contact us again and reference referral RF8241."
+        },
+        {
+          "info": "August 2nd",
+          "why": "Invitation date on the referral record",
+          "matched_text": "Invitation, August 2nd."
+        }
+      ]
+    }
+  },
+  {
+    "id": "banking-transaction-dispute-session",
+    "description": {
+      "purpose": "Verify the caller, find the 243.18 dollar marketplace charge, walk him through the published unauthorized-transaction procedure, and open a secure dispute session he controls, which he then leaves unsubmitted once the charge turns out to be his daughter's purchase on his saved card.",
+      "relevant_policies": "domains/banking/policy.md",
+      "notes": "An unfamiliar descriptor is not proof of fraud, and the right outcome is no dispute at all. The agent must not erase the charge, promise provisional credit, submit anything, or treat an issued session as a filed claim."
+    },
+    "user_scenario": {
+      "persona": "A calm, practical father who is worried but cooperative. He speaks plainly, steps away to check with his daughter mid-call, and is a little embarrassed when the charge turns out to be hers.",
+      "instructions": {
+        "domain": "banking",
+        "reason_for_call": "There is a 243 dollar and 18 cent charge on your credit card from a company you have never heard of. You have not filed anything yet and want to know whether you need to dispute it.",
+        "known_info": "You are Justin Porter.\nThe email on your profile is jporter92@email.com.\nYour billing ZIP code is 64114.\nYour birthday is February 19.\nThe charge is 243.18 dollars. It posted on Monday, no city is listed, and the statement description reads MRKTPLC*8472 (spell it M-R-K-T-P-L-C star 8472).\nYour physical card is in your wallet.\nYour daughter uses that online marketplace.",
+        "unknown_info": "You do not know what the merchant is or who made the purchase. You do not know the bank's dispute procedure.",
+        "task_instructions": "Open by saying there is a 243 dollar and 18 cent charge from a company you have never heard of, that you have not filed anything, and that you are trying to figure out whether you need to dispute it. Give your name and email together when asked, then your ZIP and birthday when asked. When asked what you recognize, say you recognize the amount because it is on your statement, it posted Monday, there is no city, and the description says M-R-K-T-P-L-C star 8472.\n\nSay you did not buy anything for 243 dollars online. Confirm your card is in your wallet. When asked about household use, say your daughter has used the marketplace but not your card, and that you will ask her now. At some point ask whether the agent can just remove the charge. If offered the secure dispute form, say yes, you would rather have it ready while you check with your daughter. Once it is ready, say you can see it and that it asks whether you contacted the merchant; then that it asks whether you want a representative. Say you can finish it yourself and ask what happens after you submit. Say you will call your daughter first and finish it if needed.\n\nThen say your daughter is calling you back and ask the agent to hold. Come back and say she bought a patio set but swears she used her own card. If the agent suggests checking the card ending or a saved wallet, say you texted her, she is checking, and that this is embarrassing. Then say she found it: the receipt shows your last four digits and she clicked too fast at checkout. Do not submit the dispute. Ask whether the agent can cancel the dispute tool, then ask whether leaving it will hurt you later. Say you appreciate being made to check before filing. Ask whether you should remove your card from her account. Ask whether the final outcome is no bank dispute. Then say you are glad you figured it out, that is all, thank the agent and end the call."
+      }
+    },
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "banking-transaction-dispute-session_0",
+          "name": "lookup_customer",
+          "arguments": {
+            "full_name": "Justin Porter",
+            "email": "jporter92@email.com"
+          },
+          "info": "find the customer by name and email"
+        },
+        {
+          "action_id": "banking-transaction-dispute-session_1",
+          "name": "verify_customer_identity",
+          "arguments": {
+            "customer_id": "4e8c3a97-e6ad-4737-aede-c8acd4993277",
+            "billing_zip": "64114",
+            "birth_month_day": "February 19"
+          },
+          "info": "validate the supplied identity factors"
+        },
+        {
+          "action_id": "banking-transaction-dispute-session_2",
+          "name": "get_credit_card_transactions",
+          "arguments": {
+            "customer_id": "4e8c3a97-e6ad-4737-aede-c8acd4993277",
+            "amount": 243.18,
+            "descriptor_contains": "MRKTPLC*8472",
+            "posted_date": "2026-02-23"
+          },
+          "info": "retrieve the customer's credit-card transactions"
+        },
+        {
+          "action_id": "banking-transaction-dispute-session_3",
+          "name": "search_knowledge_base",
+          "arguments": {
+            "query": "unauthorized transaction procedure for unfamiliar marketplace descriptor and possible household use"
+          },
+          "info": "review the unauthorized-transaction procedure"
+        },
+        {
+          "action_id": "banking-transaction-dispute-session_4",
+          "name": "create_secure_self_service_session",
+          "arguments": {
+            "customer_id": "4e8c3a97-e6ad-4737-aede-c8acd4993277",
+            "workflow": "transaction_dispute",
+            "resource_id": "b2047621-d2c7-437c-bb56-c81a700e2099",
+            "delivery_channels": [
+              "secure_message"
+            ]
+          },
+          "info": "open a secure dispute session for transaction ending 8472"
+        },
+        {
+          "action_id": "banking-transaction-dispute-session_5",
+          "name": "get_secure_self_service_session",
+          "arguments": {
+            "customer_id": "4e8c3a97-e6ad-4737-aede-c8acd4993277",
+            "session_id": "0ae36057-bbbb-42e3-994f-55f064bc374c"
+          },
+          "info": "review the issued dispute session; no claim has been submitted"
+        },
+        {
+          "action_id": "banking-transaction-dispute-session_6",
+          "name": "search_knowledge_base",
+          "arguments": {
+            "query": "Does an unused unsubmitted dispute session affect future dispute rights?"
+          },
+          "info": "retrieve unused-session and future-rights guidance"
+        }
+      ],
+      "env_assertions": null,
+      "communicate_info": [
+        "ending 9102",
+        "online marketplace",
+        "one dollar authorization",
+        "ending 8472"
+      ],
+      "nl_assertions": [
+        "Agent verifies the caller's billing ZIP and birth month and day before discussing the transaction.",
+        "Agent tells the caller that it cannot erase a posted charge.",
+        "Agent tells the caller that filing a dispute does not guarantee provisional credit.",
+        "Agent tells the caller that he reviews and submits the dispute himself and that no claim is recorded until he presses Submit.",
+        "Agent tells the caller not to submit an unauthorized-transaction claim once the charge is identified as his daughter's purchase.",
+        "Agent tells the caller that leaving the dispute session unsubmitted does not waive his future dispute rights."
+      ],
+      "reward_basis": [
+        "DB",
+        "COMMUNICATE"
+      ]
+    },
+    "annotations": {
+      "conversation_id": "banking-transaction-dispute-session",
+      "goal": "Identify an unfamiliar $243.18 transaction and prepare a customer-controlled dispute path without filing a false claim.",
+      "outcome_label": "resolved_without_dispute",
+      "db": "conversations/banking-transaction-dispute-session/state/db.json",
+      "db_after": "conversations/banking-transaction-dispute-session/state/db_after.json",
+      "action_times": [
+        38.42,
+        59.06,
+        104.76,
+        185.0,
+        226.9,
+        293.8,
+        414.6
+      ],
+      "tool_registry": "domains/banking/tool_registry.json",
+      "transcript": "conversations/banking-transaction-dispute-session/transcripts/annotated-transcript.json",
+      "audio": "conversations/banking-transaction-dispute-session/audio/full.wav",
+      "communicate_sources": [
+        {
+          "info": "ending 9102",
+          "why": "Last four of the card the charge posted to",
+          "matched_text": "I found the transactions on the card ending 9102."
+        },
+        {
+          "info": "online marketplace",
+          "why": "Merchant category of the charge",
+          "matched_text": "The merchant category is online marketplace, and it posted after a smaller one dollar authorization."
+        },
+        {
+          "info": "one dollar authorization",
+          "why": "Small authorization that preceded the posted charge",
+          "matched_text": "The merchant category is online marketplace, and it posted after a smaller one dollar authorization."
+        },
+        {
+          "info": "ending 8472",
+          "why": "Label of the secure dispute session in online banking",
+          "matched_text": "Look for review transaction ending 8472."
+        }
+      ]
+    }
+  }
+]

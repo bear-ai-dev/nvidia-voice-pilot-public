@@ -114,7 +114,7 @@
       {
         "type": "function_call_output",
         "call_id": "ph-002",
-        "output": "\n\n{\"prescription_id\":\"9670dbb4-6227-48ed-99fc-7ce746085502\",\"medication_id\":\"9dcd4906-4db3-4290-bccd-afde111823cb\",\"medication_name\":\"albuterol inhaler\",\"received_at\":\"2026-08-27T10:42:00-05:00\",\"prescription_valid\":true,\"workflow_status\":\"claim_rejected\",\"fill_store\":{\"store_id\":\"8e22d41d-843c-4e73-95c0-3c9877366ba9\",\"display_name\":\"Oak Street Pharmacy\",\"counter_closes_at\":\"19:00\",\"front_store_closes_later\":true},\"claim\":{\"status\":\"rejected\",\"reason\":\"refill_too_soon\"},\"customer_facing_status\":\"processing\",\"queue\":{\"status\":\"blocked_by_claim\"},\"notification\":{\"ready_alert_destination_id\":\"94c55afb-c756-4c14-9f4a-0c0cf2e3d69e\"},\"payment_options\":[\"pay_at_pickup\"]}"
+        "output": "\n\n{\"prescription_id\":\"9670dbb4-6227-48ed-99fc-7ce746085502\",\"medication_id\":\"9dcd4906-4db3-4290-bccd-afde111823cb\",\"medication_name\":\"albuterol inhaler\",\"received_at\":\"2026-08-27T10:42:00-05:00\",\"prescription_valid\":true,\"workflow_status\":\"claim_rejected\",\"customer_facing_status\":\"processing\",\"fill_store\":{\"store_id\":\"8e22d41d-843c-4e73-95c0-3c9877366ba9\",\"display_name\":\"Oak Street Pharmacy\",\"counter_closes_at\":\"19:00\",\"front_store_closes_at\":\"22:00\"},\"claim\":{\"status\":\"rejected\",\"reason\":\"refill_too_soon\"},\"queue\":{\"status\":\"blocked_by_claim\"},\"notification\":{\"ready_alert_destination_id\":\"94c55afb-c756-4c14-9f4a-0c0cf2e3d69e\"},\"payment_options\":[\"pay_at_pickup\"]}"
       },
       {
         "id": "msg_0004_0008",
@@ -281,7 +281,7 @@
       {
         "type": "function_call_output",
         "call_id": "ph-004",
-        "output": "\n\n{\"claim_status\":\"paid\",\"copay\":15,\"currency\":\"USD\",\"next_workflow_status\":\"awaiting_pharmacist_verification\",\"queue\":{\"status\":\"active\",\"position\":1,\"estimated_minutes\":30},\"payment_options\":[\"app_prepay_if_offered_when_ready\",\"pay_15_at_pickup\"]}"
+        "output": "\n\n{\"claim_status\":\"paid\",\"copay\":15,\"currency\":\"USD\",\"next_workflow_status\":\"awaiting_pharmacist_verification\",\"queue\":{\"status\":\"active\",\"position\":1,\"estimated_minutes\":30},\"payment_options\":[\"app_prepay_if_offered_when_ready\",\"pay_at_pickup\"]}"
       },
       {
         "id": "msg_0004_0021",
@@ -630,7 +630,7 @@
       {
         "type": "function",
         "name": "request_claim_override",
-        "description": "Request a payer decision for an eligible prescription-claim exception; the payer may require the patient to participate.",
+        "description": "Request a payer decision for an eligible prescription-claim exception; the payer may require the patient to participate. Each prescription and reason gets its own override; asking again for the same prescription and reason returns the override already on file.",
         "parameters": {
           "type": "object",
           "properties": {

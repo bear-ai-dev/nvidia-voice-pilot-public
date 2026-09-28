@@ -33,7 +33,7 @@
           "photo_required": false,
           "optional_photo_upload_available": true,
           "photo_upload_blocks_fulfillment": false,
-          "estimated_delivery": "Thursday end of day",
+          "estimated_delivery": "2026-08-27",
           "default_fulfillment": "home_address_on_order"
         },
         {
@@ -61,7 +61,7 @@
       "item": "blue noise-canceling headphones",
       "status": "open",
       "carrier_response": "none",
-      "deadline": "18:00 today",
+      "deadline": "2026-08-26T18:00:00-04:00",
       "preferences": {
         "pickup": "West 23rd Street pickup counter"
       },
@@ -91,8 +91,7 @@
       "fulfillment": {
         "method": "ship_to_address",
         "location": "home_address_on_order",
-        "estimated_delivery": "Thursday end of day",
-        "estimate_guaranteed": false,
+        "estimated_delivery": "2026-08-27",
         "distribution_center": "Edison",
         "distribution_center_status": "provisional_until_shipped",
         "tracking_notifications": true

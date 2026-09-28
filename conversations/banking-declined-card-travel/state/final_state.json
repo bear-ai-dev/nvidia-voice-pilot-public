@@ -54,17 +54,12 @@
       ],
       "authorizations": [
         {
-          "transaction_id": "131fc14b-fc2e-4ec9-ad07-248d01f7d54b",
-          "merchant": "Logan Airport",
-          "amount": 32,
-          "status": "approved",
-          "occurred_at": "2026-08-28T08:05:00-04:00"
-        },
-        {
           "transaction_id": "f96da295-2259-4311-b31d-661ab6053092",
           "merchant": "Harbor View Hotel",
+          "merchant_location": "Portland, Maine",
           "amount": 840,
-          "status": "approved"
+          "status": "approved",
+          "occurred_at": "2026-08-28T14:33:49-04:00"
         }
       ],
       "restrictions": [
@@ -85,19 +80,16 @@
           "destinations": [
             "Portland, Maine"
           ],
-          "return_date": "2026-08-30",
-          "authorization_guaranteed": false
+          "return_date": "2026-08-30"
         }
       ]
     },
     "471a2d47-a132-4551-a522-5f6ac88b48e7": {
       "entity_type": "knowledge_record",
       "record_id": "471a2d47-a132-4551-a522-5f6ac88b48e7",
+      "title": "Hotel authorization holds",
       "effective_at": "2026-07-01",
-      "incidental_holds_may_exceed_room_total": true,
-      "available_credit_must_cover_full_authorization": true,
-      "authorization_guaranteed": false,
-      "pending_duration": "may remain pending for a few days after checkout depending on merchant finalization"
+      "content": "Hotels commonly authorize an amount for incidentals on top of the room charges, so a hotel hold can exceed the room total. An authorization is approved only when the card's available credit covers the full authorized amount. No authorization is guaranteed to be approved. A hotel hold may remain pending for a few days after checkout, depending on when the merchant finalizes the charge."
     }
   }
 }

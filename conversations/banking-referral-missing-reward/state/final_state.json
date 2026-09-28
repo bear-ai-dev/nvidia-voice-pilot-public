@@ -19,7 +19,7 @@
       "ce7d58b0-b5fc-42cb-a6e0-7a57929e1205": {
         "referral_id": "ce7d58b0-b5fc-42cb-a6e0-7a57929e1205",
         "referring_customer_id": "34d61a18-ede8-4533-b130-7e5937bc1e9d",
-        "invited_at": "August 2",
+        "invited_at": "2026-08-02",
         "invited_contact": {
           "channel": "email",
           "masked": "a-brooks…"
@@ -27,41 +27,28 @@
         "application_status": "approved",
         "qualification_status": "purchase_pending",
         "offer": "$100 statement credit",
+        "qualification_deadline": "2026-10-31",
         "reference_code": "RF8241"
       }
     },
     "knowledge_records": {
       "10b2dc73-a682-4061-b3e6-96e0b2ea4eab": {
         "record_id": "10b2dc73-a682-4061-b3e6-96e0b2ea4eab",
+        "title": "Referral rewards: qualification and posting",
         "effective_at": "2026-07-01",
-        "qualifying_purchase_window_days": 90,
-        "posting_window": "up to two billing cycles after qualifying purchase posts",
-        "excluded": [
-          "cash advances",
-          "balance transfers",
-          "fees",
-          "returned purchases"
-        ],
-        "ordinary_retail_purchase": "eligible_if_posted_in_window_and_not_returned",
-        "purchase_pending_meanings": [
-          "qualifying purchase has not posted",
-          "referral match is processing",
-          "reward has not reached posting stage"
-        ]
+        "content": "A referral reward is earned when the referred customer is approved and then makes a qualifying purchase within 90 days of the invitation; that date is recorded on each referral as its qualification deadline. A qualifying purchase is an eligible purchase that posts to the referred customer's account within that window and is not returned; ordinary retail purchases qualify on those terms. Cash advances, balance transfers, fees, and returned purchases do not qualify. The reward posts up to two billing cycles after the qualifying purchase posts. A qualification status of purchase_pending covers three situations: the qualifying purchase has not posted, the referral match is still processing, or the reward has not reached its posting stage. The referral status tracker shows the invite, approval, qualification, and reward posting stages. Neither the tracker nor the referring customer's referral records show the referred customer's transactions."
       },
       "dab2da6a-4343-4ea3-9b0d-df98a0c96360": {
         "record_id": "dab2da6a-4343-4ea3-9b0d-df98a0c96360",
+        "title": "Referral offer: $100 statement credit",
         "effective_at": "2026-08-02",
-        "offer": "$100 statement credit",
-        "deadline_status": "not_passed",
-        "exact_deadline": "available_in_tracker"
+        "content": "Under this version of the referral offer, the referring customer earns a $100 statement credit when the referred customer is approved and makes a qualifying purchase by the referral's qualification deadline. The offer that applies to a referral is the version in effect when the invitation was created, and it is shown on the referral record. Each referral's qualification deadline is 90 days after its invitation date; it is recorded on the referral and shown in the referral status tracker in online banking."
       },
       "888435a5-5535-4cf4-acf8-be056a7fc41e": {
         "record_id": "888435a5-5535-4cf4-acf8-be056a7fc41e",
+        "title": "Referral matching: differing emails and repeat applications",
         "effective_at": "2026-07-01",
-        "email_mismatch_effect": "may delay automated matching",
-        "approved_status_meaning": "application is associated to the referral",
-        "reapplication_guidance": "do not reapply; use the referred customer's secure account for card questions"
+        "content": "Referrals are matched to applications automatically. When the referred person applies with an email address that differs from the one the invitation was sent to, automated matching may be delayed. An application_status of approved on a referral record means the application has been associated with that referral. A repeat application does not change an existing referral match; it creates a separate application. Questions about the referred customer's card are handled through the referred customer's own secure account."
       }
     },
     "identity_verifications": {
@@ -73,7 +60,7 @@
           "billing_zip",
           "birth_month_day"
         ],
-        "verified_at": "2026-08-28T09:09:00-04:00"
+        "verified_at": "2026-08-28T09:10:13-04:00"
       }
     },
     "secure_self_service_sessions": {

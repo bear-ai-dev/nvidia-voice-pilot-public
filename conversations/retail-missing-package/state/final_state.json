@@ -24,16 +24,17 @@
       "fulfillment": {
         "status": "delivered",
         "latest_scan": {
-          "time": "15:18 yesterday",
+          "scanned_at": "2026-08-24T15:18:00-04:00",
           "location": "front entrance",
           "photo": null
         },
         "carrier_evidence": {
-          "scan_location": "near building",
+          "scanned_at": "2026-08-24T15:18:00-04:00",
+          "location": "front entrance",
+          "evidence_location": "near building",
           "unit_number": null,
           "locker": null,
-          "photo": null,
-          "possible_misscan": true
+          "photo": null
         }
       },
       "cases": [
@@ -62,7 +63,7 @@
       ],
       "reason": "delivered_not_received",
       "status": "open",
-      "carrier_response_deadline": "18:00 tomorrow",
+      "carrier_response_deadline": "2026-08-26T18:00:00-04:00",
       "replacement_created": false,
       "eligibility_triggers": [
         "carrier_confirms_missing",
@@ -74,8 +75,6 @@
       "requested_resolution": "replacement",
       "preferred_pickup_location": "West 23rd Street pickup counter",
       "note": "Preserve exact blue variant and original price if replacement becomes eligible.",
-      "review_instruction": "Check West 23rd Street pickup availability first after replacement eligibility.",
-      "pickup_guaranteed": false,
       "visible_to_next_reviewer": true,
       "carrier_may_contact_customer": true,
       "notification_status": "sent",

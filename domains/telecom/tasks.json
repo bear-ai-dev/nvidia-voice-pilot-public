@@ -1,0 +1,190 @@
+[
+  {
+    "id": "telecom-data-usage-cleanup",
+    "description": {
+      "purpose": "Verify the caller, report the 11.8 GB of carrier-metered overnight usage and his 2.2 GB remaining, guide him to find and fix the Streambox cellular-download setting and turn on Data Saver, explain the cycle reset and slowdown with no overage, and add the 5 GB for 40 dollar add-on only after he explicitly authorizes it, then confirm service works.",
+      "relevant_policies": "domains/telecom/policy.md",
+      "notes": "Carrier metering is aggregate and cannot attribute usage to an app, used data cannot be restored, and unexpected usage is not evidence of hacking. The add-on terms must come from the offer, and the agent should try settings fixes before selling data."
+    },
+    "user_scenario": {
+      "persona": "An annoyed but reasonable young professional who says 'like' and 'um' a lot and pushes back on paying for something an app caused. He warms up once the cause is found and appreciates not being pushed into a sale.",
+      "instructions": {
+        "domain": "telecom",
+        "reason_for_call": "You woke up to an alert saying you had used almost all your mobile data, but you were asleep and on your home Wi-Fi the whole night, so you want to know what happened.",
+        "known_info": "You are Benjamin Reed (Reed spelled R-E-E-D), born November 22, 1991.\nYour mobile number is 404-555-0176 and you are calling from it.\nYour phone is a Pixel 8.\nThe alert said you had used 85% of your data.\nLast night you started downloading a season of a show in the Streambox app for a flight, and you thought it would wait for Wi-Fi.\nYou are traveling for work before your billing cycle resets and need maps and email to work.\nOn your phone, when you look: the data usage screen shows Streambox first with 10.9 GB in the background; Streambox's Download Over Cellular setting is on; Data Saver's unrestricted apps list contains Streambox, Cloud Photos and your work email. A speed test shows 62 down and 8 up.",
+        "unknown_info": "You do not know how much data the carrier measured, how much you have left, when your cycle resets, whether you have overage charges, or what extra data costs.",
+        "task_instructions": "Open by saying things are not great: you woke up to an alert that you used your data while you were asleep. Give your number (the one you are calling from), then your name and date of birth when asked. Confirm the Pixel 8 is the phone you are using and say the alert said 85% but you were on home Wi-Fi all night. When told how much was used, react with disbelief and ask whether someone hacked your phone. Follow the agent's instructions on your phone and report only what you would see (listed in known info). Say you started downloading a season for a flight and thought it would wait for Wi-Fi. Say you are surprised the cellular download setting was on and never turned it on. After changing the setting, ask whether the data is coming back. Ask them to check when the cycle resets because you are traveling for work before then. When told the plan slows down, ask how much, since you need maps and email.\n\nWhen the agent offers paid data, push back that 40 dollars is a lot for something the app did and ask if there is anything else you can do. Agree to try settings first. Follow the Data Saver steps and ask whether the unrestricted apps option is supposed to be there. Say you only need your work email in the background, turn off the others, and ask whether Cloud Photos could have used some data too. Then say that after everything you still think you need the extra data and ask them to add it. Only when the agent states the amount, price and billing, say yes, you authorize it. Ask if you can test that it works before hanging up; follow the steps and report the speed test result and that Streambox says downloads are paused until Wi-Fi. Say you are still annoyed about the 40 dollars but glad you found the cause, thank the agent for making you check instead of just selling you data, and end the call."
+      }
+    },
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "telecom-data-usage-cleanup_0",
+          "name": "lookup_customer",
+          "arguments": {
+            "mobile_number": "404-555-0176",
+            "full_name": "Benjamin Reed",
+            "date_of_birth": "November 22, 1991"
+          },
+          "info": "find a customer using their phone number"
+        },
+        {
+          "action_id": "telecom-data-usage-cleanup_1",
+          "name": "verify_customer_identity",
+          "arguments": {
+            "customer_id": "6dcb2039-012b-4723-a256-13bb7b6467c2",
+            "mobile_number": "404-555-0176",
+            "full_name": "Benjamin Reed",
+            "date_of_birth": "November 22, 1991"
+          },
+          "info": "validate collected identity factors before account access"
+        },
+        {
+          "action_id": "telecom-data-usage-cleanup_2",
+          "name": "get_customer_account",
+          "arguments": {
+            "customer_id": "6dcb2039-012b-4723-a256-13bb7b6467c2",
+            "verification_id": "ae1d7bf3-792a-4a70-8673-16c535063f29",
+            "include": [
+              "lines",
+              "devices",
+              "plans"
+            ]
+          },
+          "info": "retrieve customer, line, device, and plan using the resolved customer ID"
+        },
+        {
+          "action_id": "telecom-data-usage-cleanup_3",
+          "name": "get_line_data_usage",
+          "arguments": {
+            "line_id": "ec8443dc-5fa9-4579-8dbe-5eafc61d53ac",
+            "verification_id": "ae1d7bf3-792a-4a70-8673-16c535063f29",
+            "window": "last_24_hours"
+          },
+          "info": "check the line's current data usage"
+        },
+        {
+          "action_id": "telecom-data-usage-cleanup_4",
+          "name": "get_customer_bills",
+          "arguments": {
+            "customer_id": "6dcb2039-012b-4723-a256-13bb7b6467c2",
+            "verification_id": "ae1d7bf3-792a-4a70-8673-16c535063f29",
+            "status": "current",
+            "include": [
+              "cycle"
+            ]
+          },
+          "info": "retrieve the customer's current bill"
+        },
+        {
+          "action_id": "telecom-data-usage-cleanup_5",
+          "name": "get_customer_bills",
+          "arguments": {
+            "customer_id": "6dcb2039-012b-4723-a256-13bb7b6467c2",
+            "verification_id": "ae1d7bf3-792a-4a70-8673-16c535063f29",
+            "status": "current",
+            "include": [
+              "charges",
+              "overages",
+              "plan_behavior"
+            ]
+          },
+          "info": "open the scoped current-bill sections after the agent says so"
+        },
+        {
+          "action_id": "telecom-data-usage-cleanup_6",
+          "name": "get_data_addon_offers",
+          "arguments": {
+            "line_id": "ec8443dc-5fa9-4579-8dbe-5eafc61d53ac",
+            "verification_id": "ae1d7bf3-792a-4a70-8673-16c535063f29"
+          },
+          "info": "retrieve a current eligible offer before quoting it"
+        },
+        {
+          "action_id": "telecom-data-usage-cleanup_7",
+          "name": "add_data_addon",
+          "arguments": {
+            "line_id": "ec8443dc-5fa9-4579-8dbe-5eafc61d53ac",
+            "offer_id": "21298486-3eca-4c2e-8d07-2b13c0a33fcc",
+            "customer_authorized": true
+          },
+          "info": "add additional mobile data and charge it to the customer's bill"
+        }
+      ],
+      "env_assertions": null,
+      "communicate_info": [
+        "11.8 gigabytes",
+        "2.2 gigabytes",
+        "nine days",
+        "no overage charge",
+        "$40 on the next bill",
+        "7.2 gigabytes"
+      ],
+      "nl_assertions": [
+        "Agent verifies the caller's mobile number, full name and date of birth before discussing the account.",
+        "Agent tells the caller that the overnight usage does not necessarily mean his phone was hacked.",
+        "Agent tells the caller that used data cannot be put back into the plan.",
+        "Agent tells the caller that the plan slows down after the included high-speed data is used.",
+        "Agent offers Data Saver and background restrictions before the add-on and adds the add-on only after the caller explicitly authorizes 5 GB for 40 dollars on his next bill.",
+        "Agent has the caller run a speed test and check that Streambox pauses downloads without Wi-Fi before ending the call."
+      ],
+      "reward_basis": [
+        "DB",
+        "COMMUNICATE"
+      ]
+    },
+    "annotations": {
+      "conversation_id": "telecom-data-usage-cleanup",
+      "goal": "Identify overnight mobile-data usage, guide the customer through app-permission and Data Saver cleanup, add an explicitly authorized high-speed data add-on, and verify service.",
+      "outcome_label": "resolved",
+      "db": "conversations/telecom-data-usage-cleanup/state/db.json",
+      "db_after": "conversations/telecom-data-usage-cleanup/state/db_after.json",
+      "action_times": [
+        63.58,
+        67.5,
+        70.5,
+        102.34,
+        248.5,
+        260.0,
+        285.5,
+        452.6
+      ],
+      "tool_registry": "domains/telecom/tool_registry.json",
+      "transcript": "conversations/telecom-data-usage-cleanup/transcripts/annotated-transcript.json",
+      "audio": "conversations/telecom-data-usage-cleanup/audio/full.wav",
+      "communicate_sources": [
+        {
+          "info": "11.8 gigabytes",
+          "why": "Carrier-metered usage overnight",
+          "matched_text": "So what I'm seeing on my end is the line used 11.8 gigabytes between about midnight and 4:00 in the morning."
+        },
+        {
+          "info": "2.2 gigabytes",
+          "why": "High-speed data remaining before the add-on",
+          "matched_text": "You still have 2.2 gigabytes left until the cycle resets."
+        },
+        {
+          "info": "nine days",
+          "why": "Time until the billing cycle resets",
+          "matched_text": "So your cycle resets in nine days."
+        },
+        {
+          "info": "no overage charge",
+          "why": "Current bill has no overage",
+          "matched_text": "So it looks like there's no overage charge just yet."
+        },
+        {
+          "info": "$40 on the next bill",
+          "why": "Add-on price and billing timing for 5 GB of high-speed data",
+          "matched_text": "I can add five gigabytes of high-speed data for $40 on the next bill."
+        },
+        {
+          "info": "7.2 gigabytes",
+          "why": "High-speed data balance after the add-on",
+          "matched_text": "Your line should now show 7.2 gigabytes of high-speed data available for the rest of the cycle."
+        }
+      ]
+    }
+  }
+]
