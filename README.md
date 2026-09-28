@@ -75,8 +75,8 @@ timing.
 Function outputs are records and measurements, not the agent's conclusions: a
 result lists airports with their distances rather than naming the one to
 recommend, and a knowledge-base result is an article rather than a true or
-false answer to the caller's question. 35 of the 85 outputs in the runnable
-conversations were revised to this rule; the
+false answer to the caller's question. 47 of the 85 outputs in the ten
+conversations with backend state were revised to this rule; the
 [revision log](docs/TOOL_OUTPUT_REVISIONS.md) lists each one.
 
 All annotated transcripts are under [conversations/](conversations/):
@@ -222,26 +222,22 @@ The distribution counts each speech event once from the timestamped
 `event_metadata` copy, rather than double-counting the mirrored message-level
 annotations.
 
-## 8. Runnable tau2 environments
+## 8. tau2 task files and backend state
 
-Ten of the conversations also ship as runnable environments in tau2-bench's
-shape, so an agent can be simulated through the same call and scored the way
-Tau-voice scores it:
+Ten of the conversations also ship in tau2-bench's shape:
 
 - `conversations/<conversation-id>/state/db.json` and `db_after.json`: the
-  full backend before and after the recorded tool calls, as JSON. Unlike the
-  reconstructed `initial_state.json` above, this is every table the tools read,
-  including other customers such as a second person with the caller's name.
-- `domains/<domain>/tools.py`: tools that read and write that database. Every
-  argument is checked against the domain's `tool_registry.json`, and every
-  recorded call returns exactly its recorded output.
+  full backend before and after the call, as JSON shaped
+  `{table: {row_key: row}}`. Unlike the reconstructed `initial_state.json`
+  above, this is every table the tools work with, including other customers,
+  such as a second person with the caller's name. `db_after.json` also reflects
+  what other people did during the call, such as the customer entering a code
+  texted to them or a merchant retrying a charge.
 - `domains/<domain>/tasks.json`: one tau2 task per conversation, with user
-  simulator instructions, the reference actions, the facts the agent must say,
-  and behaviour assertions for an LLM judge. Reward is DB x COMMUNICATE.
-
-Run `python3 env/replay.py` to check every conversation end to end. The
-[environment guide](env/README.md) covers the layout, scoring and how to drive
-an environment from an agent loop.
+  simulator instructions, the reference actions (the recorded tool calls, with
+  their times in the call), the facts the agent must say, and behaviour
+  assertions for an LLM judge. The reward basis is DB x COMMUNICATE, with
+  `db_after.json` as the target database state.
 
 ## Known behavioral exception
 

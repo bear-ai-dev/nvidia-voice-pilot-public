@@ -9,9 +9,10 @@ trained on those results learns to read a verdict aloud, while Tau-voice
 rewards an agent that reads data and reaches the conclusion itself.
 
 This revision changes the tools so they return records and measurements, and
-updates the recorded results to match. 35 of the 85 recorded results changed.
-The spoken audio, the transcripts of what was said, and the tool calls the
-agent made (names and arguments) did not change.
+updates the recorded results to match. 35 of the 85 recorded results changed in
+this pass, and a second pass (below) brought the total to 47. The spoken audio,
+the transcripts of what was said, and the tool calls the agent made (names and
+arguments) did not change.
 
 ## The rule applied
 
@@ -90,11 +91,32 @@ looser than before:
 - `airline-family-reservation`: "adds almost three hours each way" fits the outbound (170 minutes longer) better than the return (160 minutes).
 - `retail-damaged-item-replacement`: "Thursday by end of day" rests on a delivery date; "end of day" is no longer stated.
 
+## Second pass: consistent records and times
+
+A review of every database change the calls make found places where the
+backend was replaying the recording rather than behaving like a system: a
+record that showed different fields on a first and second look, a status that
+changed because someone looked at it, times frozen at one instant. After fixing
+those, 16 more recorded results changed, 12 of them in calls this log does not
+already list:
+
+- Card and order lookups now return the full record every time. The first look
+  in `banking-declined-card-travel` (bt-003, bt-004, bt-007),
+  `retail-refund-bank-fee` (rr-001, rr-002, rr-003),
+  `retail-damaged-item-replacement` (rd-001) and `retail-missing-package`
+  (rm-001) now shows fields that used to appear only on a second look.
+- Timestamps follow the call's own clock: the airline quote expiry (af-004), a
+  banking verification time (br-003), and six telecom times (td-001b, td-003,
+  td-004, td-004b, td-004c, td-005) that moved by one to three seconds; the
+  telecom usage window is now measured back from the moment of the call.
+
+What other people did during the call now shows in `db_after.json` as their own
+changes rather than as side effects of a tool: the customer entering a texted
+code or opening a link, a hotel retrying a charge once the card is unblocked,
+an airport charge clearing, an email being delivered.
+
 ## Where the changes live
 
-- `domains/<domain>/tools.py`, `tool_registry.json` and `policy.md`
+- `domains/<domain>/tool_registry.json` and `policy.md`
 - `conversations/<id>/transcripts/annotated-transcript.json`: the revised results, and the policy and tool definitions embedded in each transcript (also synced in `duplicate-streaming-charge` and `flight-status-connection-risk`, whose own results did not change)
 - `conversations/<id>/state/`: the JSON databases and the reconstructed state files
-
-`python3 env/replay.py` checks that every recorded result is exactly what the
-tools return from the database, and that every recording still scores 1.0.
