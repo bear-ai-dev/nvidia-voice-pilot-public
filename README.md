@@ -241,8 +241,7 @@ Tau-voice scores it:
 
 Run `python3 env/replay.py` to check every conversation end to end. The
 [environment guide](env/README.md) covers the layout, scoring and how to drive
-an environment from an agent loop, and `demo/index.html` replays each call with
-its audio, tool calls and database changes.
+an environment from an agent loop.
 
 ## Known behavioral exception
 

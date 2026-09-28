@@ -140,14 +140,3 @@ question, disclaimers or speech-ready times. The recorded outputs in the
 annotated transcripts were updated to match, so they are still exactly what the
 tools return. [docs/TOOL_OUTPUT_REVISIONS.md](../docs/TOOL_OUTPUT_REVISIONS.md)
 lists every change.
-
-## Demo
-
-`demo/index.html` replays each recorded call against its database: the audio,
-each tool call with its arguments and result, the records it read and changed,
-and the score. Build its data with `demo/build.sh`, then serve the folder:
-
-```bash
-demo/build.sh
-python3 -m http.server --directory demo 8765
-```

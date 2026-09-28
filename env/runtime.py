@@ -7,8 +7,8 @@ behind one domain's tools.
 
 Every call is validated against the domain's tool registry before it runs, and a
 call that fails leaves the database exactly as it was. Each step also records
-which rows the tool read and which it changed, which is what the demo draws and
-what makes a run inspectable after the fact.
+which rows the tool read and which it changed, which makes a run inspectable
+after the fact.
 """
 from __future__ import annotations
 
